@@ -1,0 +1,1948 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>UGS Games</title>
+<link id="siteIcon" rel="icon" href="data:image/svg+xml,%3Csvg 
+
+
+xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🎮%3C/text%3E%3C/svg%3E">
+
+<style>
+:root {
+    --bg:#090b12;
+    --panel:rgba(20,24,36,.96);
+    --accent:#6d8cff;
+    --accent-light:#9aaaff;
+    --text:#f4f6ff;
+    --muted:#9da5ba;
+    --border:rgba(255,255,255,.08);
+    --danger:#ff5f6d;
+    --flag:#ff646d;
+}
+
+* {
+    box-sizing:border-box;
+}
+
+html {
+    scroll-behavior:smooth;
+}
+
+body {
+    margin:0;
+    min-height:100vh;
+    font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    color:var(--text);
+    background:
+        radial-gradient(circle at 20% 0%,rgba(91,109,255,.18),transparent 32%),
+        radial-gradient(circle at 90% 10%,rgba(143,67,255,.14),transparent 28%),
+        linear-gradient(135deg,#080a10,#0c1019 50%,#0a0c14);
+    background-attachment:fixed;
+}
+
+button,input {
+    font-family:inherit;
+}
+
+.sidebar {
+    position:fixed;
+    top:0;
+    left:0;
+    width:82px;
+    height:100vh;
+    padding:18px 12px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:9px;
+    background:rgba(10,13,21,.84);
+    backdrop-filter:blur(22px);
+    -webkit-backdrop-filter:blur(22px);
+    border-right:1px solid var(--border);
+    overflow-y:auto;
+    z-index:1000;
+    box-shadow:8px 0 35px rgba(0,0,0,.18);
+}
+
+.sidebar::-webkit-scrollbar {
+    width:4px;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background:rgba(255,255,255,.15);
+    border-radius:20px;
+}
+
+.sidebar-btn {
+    width:52px;
+    height:52px;
+    flex-shrink:0;
+    border:1px solid rgba(255,255,255,.07);
+    border-radius:15px;
+    background:rgba(255,255,255,.055);
+    color:var(--muted);
+    font-size:16px;
+    font-weight:700;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transition:.2s ease;
+}
+
+.sidebar-btn:hover,
+.sidebar-btn.active {
+    transform:translateY(-2px);
+    background:linear-gradient(135deg,var(--accent),#806dff);
+    color:white;
+    box-shadow:0 8px 25px rgba(109,140,255,.28);
+}
+
+#flaggedSidebarButton:hover,
+#flaggedSidebarButton.active {
+    background:linear-gradient(135deg,#ff5d69,#ff795f);
+    box-shadow:0 8px 25px rgba(255,95,109,.25);
+}
+
+.sidebar-divider {
+    width:40px;
+    height:1px;
+    flex-shrink:0;
+    background:var(--border);
+    margin:4px 0;
+}
+
+#folder-buttons {
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:9px;
+}
+
+.folder-sidebar {
+    position:relative;
+    width:52px;
+    height:52px;
+    flex-shrink:0;
+}
+
+.folder-sidebar .sidebar-btn {
+    width:52px;
+    height:52px;
+}
+
+.folder-delete {
+    position:absolute;
+    top:-5px;
+    right:-5px;
+    width:19px;
+    height:19px;
+    border:2px solid #0b0e16;
+    border-radius:50%;
+    background:var(--danger);
+    color:white;
+    font-size:12px;
+    line-height:15px;
+    padding:0;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    z-index:5;
+}
+
+.folder-sidebar:hover .folder-delete {
+    display:flex;
+}
+
+.main-content {
+    margin-left:82px;
+    min-height:100vh;
+    padding:45px 35px 70px;
+}
+
+.content-wrapper {
+    width:min(1050px,100%);
+    margin:0 auto;
+}
+
+.hero {
+    text-align:center;
+    margin-bottom:28px;
+}
+
+.logo {
+    width:70px;
+    height:70px;
+    margin:0 auto 18px;
+    border-radius:22px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:30px;
+    background:linear-gradient(135deg,#637fff,#8b68ff);
+    box-shadow:0 15px 40px rgba(100,116,255,.3);
+}
+
+h1 {
+    margin:0;
+    font-size:clamp(32px,5vw,52px);
+    line-height:1;
+    letter-spacing:-2px;
+    font-weight:800;
+    background:linear-gradient(135deg,#fff,#aab7ff);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+}
+
+.subtitle {
+    margin:15px auto 0;
+    max-width:650px;
+    color:var(--muted);
+    font-size:15px;
+    line-height:1.6;
+}
+
+.subtitle a,
+.footer a {
+    color:var(--accent-light);
+    text-decoration:none;
+}
+
+.subtitle a:hover,
+.footer a:hover {
+    text-decoration:underline;
+}
+
+.top-controls {
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:10px;
+    flex-wrap:wrap;
+    margin:0 auto 20px;
+}
+
+.control-btn {
+    padding:10px 15px;
+    border:1px solid var(--border);
+    border-radius:11px;
+    background:rgba(255,255,255,.05);
+    color:var(--muted);
+    font-size:13px;
+    font-weight:600;
+    cursor:pointer;
+    transition:.2s ease;
+}
+
+.control-btn:hover {
+    background:rgba(109,140,255,.14);
+    border-color:rgba(109,140,255,.4);
+    color:white;
+}
+
+.control-btn.primary {
+    background:rgba(109,140,255,.13);
+    color:#aebcff;
+    border-color:rgba(109,140,255,.25);
+}
+
+.search-area {
+    margin:0 auto 24px;
+    max-width:720px;
+}
+
+.search-box {
+    position:relative;
+}
+
+.search-icon {
+    position:absolute;
+    left:18px;
+    top:50%;
+    transform:translateY(-50%);
+    color:var(--muted);
+    font-size:18px;
+    pointer-events:none;
+}
+
+#searchInput {
+    width:100%;
+    padding:17px 20px 17px 50px;
+    border:1px solid var(--border);
+    border-radius:16px;
+    outline:none;
+    background:rgba(17,21,31,.8);
+    color:white;
+    font-size:15px;
+    backdrop-filter:blur(15px);
+    box-shadow:0 10px 35px rgba(0,0,0,.2);
+}
+
+#searchInput::placeholder {
+    color:#737c91;
+}
+
+#searchInput:focus {
+    border-color:rgba(109,140,255,.65);
+    box-shadow:0 0 0 4px rgba(109,140,255,.09),0 15px 40px rgba(0,0,0,.25);
+}
+
+.top-section {
+    margin:0 auto 24px;
+    max-width:900px;
+}
+
+.top-section-header {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:12px;
+}
+
+.top-section-title {
+    margin:0;
+    font-size:19px;
+    font-weight:800;
+}
+
+.top-section-count {
+    color:var(--muted);
+    font-size:12px;
+}
+
+.top-games {
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(250px,1fr));
+    gap:10px;
+}
+
+.top-game {
+    position:relative;
+}
+
+.top-game .play-game {
+    width:100%;
+    min-height:52px;
+    padding:13px 105px 13px 16px;
+    border:1px solid var(--border);
+    border-radius:13px;
+    background:rgba(20,25,37,.85);
+    color:#eef1ff;
+    text-align:left;
+    font-size:13px;
+    font-weight:600;
+    cursor:pointer;
+    transition:.2s ease;
+}
+
+.top-game .play-game:hover {
+    transform:translateY(-2px);
+    border-color:rgba(109,140,255,.4);
+    background:rgba(34,41,61,.95);
+}
+
+.top-star,
+.top-flag {
+    position:absolute;
+    top:50%;
+    transform:translateY(-50%);
+    width:34px;
+    height:34px;
+    border:0;
+    border-radius:9px;
+    background:rgba(255,255,255,.05);
+    cursor:pointer;
+    font-size:18px;
+}
+
+.top-star {
+    right:46px;
+    color:#747c90;
+}
+
+.top-star:hover,
+.top-star.starred {
+    color:#ffd447;
+    background:rgba(255,205,70,.12);
+}
+
+.top-flag {
+    right:8px;
+    color:#747c90;
+}
+
+.top-flag:hover,
+.top-flag.flagged {
+    color:var(--flag);
+    background:rgba(255,100,109,.12);
+}
+
+.clear-recent-btn {
+    padding:6px 10px;
+    border:1px solid rgba(255,95,109,.25);
+    border-radius:8px;
+    background:rgba(255,95,109,.08);
+    color:#ff727d;
+    font-size:11px;
+    font-weight:700;
+    cursor:pointer;
+}
+
+.clear-recent-btn:hover {
+    background:rgba(255,95,109,.18);
+    color:#ff9098;
+}
+
+#lolbutton {
+    display:block;
+    margin:0 auto 35px;
+    padding:12px 20px;
+    border:1px solid rgba(109,140,255,.25);
+    border-radius:12px;
+    background:rgba(109,140,255,.09);
+    color:#aebcff;
+    font-size:13px;
+    font-weight:600;
+    cursor:pointer;
+    transition:.2s ease;
+}
+
+#lolbutton:hover {
+    transform:translateY(-2px);
+    background:rgba(109,140,255,.18);
+}
+
+.letter-section {
+    margin:0 auto 42px;
+    max-width:900px;
+}
+
+.letter-header {
+    display:flex;
+    align-items:center;
+    gap:13px;
+    margin-bottom:15px;
+    padding-bottom:12px;
+    color:white;
+    font-size:24px;
+    font-weight:800;
+    border-bottom:1px solid var(--border);
+}
+
+.letter-header::before {
+    content:"";
+    width:5px;
+    height:25px;
+    border-radius:10px;
+    background:linear-gradient(180deg,var(--accent),#9a72ff);
+    box-shadow:0 0 15px rgba(109,140,255,.45);
+}
+
+.buttons-container {
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+    gap:10px;
+}
+
+.game-card {
+    position:relative;
+    display:flex;
+    min-width:0;
+}
+
+.game-card > input[type="button"] {
+    width:100%;
+    min-height:58px;
+    padding:14px 125px 14px 17px;
+    border:1px solid var(--border);
+    border-radius:14px;
+    background:linear-gradient(145deg,rgba(24,29,43,.9),rgba(16,20,30,.9));
+    color:#eef1ff;
+    font-size:14px;
+    font-weight:600;
+    text-align:left;
+    cursor:pointer;
+    box-shadow:0 7px 20px rgba(0,0,0,.15);
+    transition:.2s ease;
+}
+
+.game-card > input[type="button"]:hover {
+    transform:translateY(-3px);
+    border-color:rgba(109,140,255,.4);
+    background:linear-gradient(145deg,rgba(35,42,62,.95),rgba(21,26,39,.95));
+    box-shadow:0 12px 30px rgba(0,0,0,.3);
+}
+
+.game-star,
+.game-flag,
+.folder-add {
+    position:absolute;
+    top:50%;
+    transform:translateY(-50%);
+    border:0;
+    cursor:pointer;
+    z-index:3;
+}
+
+.game-star,
+.game-flag {
+    width:34px;
+    height:34px;
+    border-radius:9px;
+    background:rgba(255,255,255,.06);
+    font-size:18px;
+}
+
+.game-star {
+    right:10px;
+    color:#6e7588;
+}
+
+.game-star:hover,
+.game-star.starred {
+    color:#ffd447;
+    background:rgba(255,205,70,.12);
+}
+
+.game-flag {
+    right:49px;
+    color:#6e7588;
+}
+
+.game-flag:hover,
+.game-flag.flagged {
+    color:var(--flag);
+    background:rgba(255,100,109,.12);
+}
+
+.folder-add {
+    right:88px;
+    width:30px;
+    height:30px;
+    border-radius:8px;
+    background:transparent;
+    color:#737c91;
+    opacity:0;
+}
+
+.game-card:hover .folder-add {
+    opacity:1;
+}
+
+.folder-add:hover {
+    background:rgba(109,140,255,.15);
+    color:#aebcff;
+}
+
+.flagged-game > input[type="button"] {
+    border-color:rgba(255,100,109,.18);
+}
+
+.folder-view {
+    max-width:900px;
+    margin:0 auto;
+}
+
+.folder-title {
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-bottom:20px;
+    flex-wrap:wrap;
+}
+
+.folder-title h2 {
+    margin:0;
+    font-size:28px;
+}
+
+.folder-title span {
+    color:var(--muted);
+    font-size:13px;
+}
+
+.back-button {
+    padding:9px 14px;
+    border:1px solid var(--border);
+    border-radius:10px;
+    background:rgba(255,255,255,.05);
+    color:var(--muted);
+    cursor:pointer;
+}
+
+.back-button:hover {
+    color:white;
+    background:rgba(255,255,255,.1);
+}
+
+.empty-message {
+    padding:35px 20px;
+    border:1px dashed var(--border);
+    border-radius:16px;
+    color:var(--muted);
+    text-align:center;
+    background:rgba(255,255,255,.02);
+    grid-column:1/-1;
+}
+
+.modal-overlay {
+    position:fixed;
+    inset:0;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    background:rgba(0,0,0,.68);
+    backdrop-filter:blur(10px);
+    z-index:5000;
+}
+
+.modal-overlay.show {
+    display:flex;
+}
+
+.modal {
+    width:min(510px,100%);
+    max-height:90vh;
+    overflow-y:auto;
+    padding:26px;
+    border:1px solid var(--border);
+    border-radius:20px;
+    background:rgba(17,21,31,.98);
+    box-shadow:0 25px 80px rgba(0,0,0,.5);
+}
+
+.modal h2 {
+    margin:0 0 22px;
+    font-size:21px;
+}
+
+.modal input[type="text"] {
+    width:100%;
+    padding:13px 15px;
+    border:1px solid rgba(0,120,220,.28);
+    border-radius:10px;
+    outline:none;
+    background:#0b0d11;
+    color:white;
+    font-size:14px;
+}
+
+.modal input[type="text"]:focus {
+    border-color:#168cff;
+    box-shadow:0 0 0 1px rgba(22,140,255,.15);
+}
+
+.modal label {
+    display:block;
+    margin:18px 0 8px;
+    color:#8d8d8f;
+    font-size:13px;
+    font-weight:800;
+    text-transform:uppercase;
+}
+
+.modal-buttons {
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr;
+    gap:10px;
+    margin-top:25px;
+}
+
+.modal-btn {
+    min-height:60px;
+    padding:10px 14px;
+    border:1px solid transparent;
+    border-radius:11px;
+    cursor:pointer;
+    font-size:14px;
+    font-weight:800;
+}
+
+.modal-cancel {
+    background:#202020;
+    color:#ccc;
+    border-color:#393939;
+}
+
+.modal-confirm {
+    background:#168cff;
+    color:#000;
+}
+
+.modal-reset {
+    background:#202020;
+    color:#ff646b;
+    border-color:rgba(255,80,90,.35);
+}
+
+.settings-title {
+    display:flex;
+    align-items:center;
+    gap:9px;
+    color:#168cff;
+}
+
+.settings-note {
+    color:#777;
+    font-size:11px;
+    margin-top:8px;
+    line-height:1.4;
+}
+
+.setting-row {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:20px;
+    margin-top:20px;
+    padding:15px;
+    border:1px solid var(--border);
+    border-radius:12px;
+    background:rgba(255,255,255,.025);
+}
+
+.setting-info {
+    min-width:0;
+}
+
+.setting-name {
+    color:#eee;
+    font-size:14px;
+    font-weight:700;
+}
+
+.setting-description {
+    margin-top:4px;
+    color:#70788b;
+    font-size:11px;
+    line-height:1.4;
+}
+
+.switch {
+    position:relative;
+    flex-shrink:0;
+    width:48px;
+    height:27px;
+}
+
+.switch input {
+    width:0;
+    height:0;
+    opacity:0;
+}
+
+.slider {
+    position:absolute;
+    inset:0;
+    border-radius:30px;
+    background:#292d37;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.slider::before {
+    content:"";
+    position:absolute;
+    width:21px;
+    height:21px;
+    left:3px;
+    top:3px;
+    border-radius:50%;
+    background:#8b92a1;
+    transition:.2s;
+}
+
+.switch input:checked + .slider {
+    background:#168cff;
+}
+
+.switch input:checked + .slider::before {
+    transform:translateX(21px);
+    background:white;
+}
+
+.footer {
+    margin-top:60px;
+    padding-top:25px;
+    border-top:1px solid var(--border);
+    text-align:center;
+    color:#646d81;
+    font-size:12px;
+}
+
+.footer p {
+    margin:8px;
+}
+
+@media(max-width:768px) {
+    .sidebar {
+        width:100%;
+        height:65px;
+        top:auto;
+        bottom:0;
+        left:0;
+        padding:7px 10px;
+        flex-direction:row;
+        justify-content:flex-start;
+        overflow-x:auto;
+        overflow-y:hidden;
+        border-right:none;
+        border-top:1px solid var(--border);
+        box-shadow:0 -10px 30px rgba(0,0,0,.3);
+    }
+
+    .sidebar-btn,
+    .folder-sidebar {
+        flex:0 0 48px;
+        width:48px;
+        height:48px;
+    }
+
+    .folder-sidebar .sidebar-btn {
+        width:48px;
+        height:48px;
+    }
+
+    .sidebar-divider {
+        width:1px;
+        height:40px;
+        margin:0 4px;
+    }
+
+    #folder-buttons {
+        flex-direction:row;
+        gap:8px;
+    }
+
+    .main-content {
+        margin-left:0;
+        padding:30px 17px 95px;
+    }
+
+    .logo {
+        width:60px;
+        height:60px;
+        border-radius:18px;
+        font-size:25px;
+    }
+
+    .buttons-container,
+    .top-games {
+        grid-template-columns:1fr;
+    }
+
+    .letter-header {
+        font-size:21px;
+    }
+
+    #lolbutton {
+        width:100%;
+    }
+
+    .folder-add {
+        opacity:1;
+    }
+
+    .modal-buttons {
+        grid-template-columns:1fr;
+    }
+
+    .modal-btn {
+        min-height:52px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="sidebar" id="sidebar">
+    <button class="sidebar-btn active" id="allSidebarButton" title="All Games" onclick="showAllGames()">⌂</button>
+    <button class="sidebar-btn" id="favoritesSidebarButton" title="Favorites" onclick="showFavorites()">★</button>
+    <button class="sidebar-btn" id="flaggedSidebarButton" title="Flagged Games" onclick="showFlagged()">⚑</button>
+
+    <div class="sidebar-divider"></div>
+
+    <div id="folder-buttons"></div>
+
+    <button class="sidebar-btn" title="Create New Folder" onclick="openCreateFolder()">+</button>
+</div>
+
+<main class="main-content">
+<div class="content-wrapper">
+
+<header class="hero">
+    <div class="logo">🎮</div>
+    <h1>UGS Games</h1>
+    <p class="subtitle">
+        A clean collection of games powered by
+        <a href="https://docs.google.com/document/d/1_FmH3BlSBQI7FGgAQL59-ZPe8eCxs35wel6JUyVaG8Q/" target="_blank">
+            Ultimate Game Stash
+        </a>
+    </p>
+</header>
+
+<div class="top-controls">
+    <button class="control-btn primary" onclick="openCreateFolder()">📁 New Folder</button>
+    <button class="control-btn" onclick="openSettings()">⚙️ Settings</button>
+</div>
+
+<div class="search-area">
+    <div class="search-box">
+        <span class="search-icon">⌕</span>
+        <input type="text" id="searchInput" placeholder="Search games..." autocomplete="off">
+    </div>
+</div>
+
+<section class="top-section" id="recentSection">
+    <div class="top-section-header">
+        <h2 class="top-section-title">🕘 Recently Played</h2>
+        <div style="display:flex;align-items:center;gap:10px;">
+            <span class="top-section-count" id="recentCount"></span>
+            <button class="clear-recent-btn" onclick="clearRecentlyPlayed()">Clear</button>
+        </div>
+    </div>
+    <div class="top-games" id="recentGames"></div>
+</section>
+
+<section class="top-section" id="favoritesSection">
+    <div class="top-section-header">
+        <h2 class="top-section-title">⭐ Favorites</h2>
+        <span class="top-section-count" id="favoriteCount"></span>
+    </div>
+    <div class="top-games" id="topFavorites"></div>
+</section>
+
+<button id="lolbutton" onclick="loadGameScript()">↻ Click here if games aren't loading</button>
+
+<div id="sections-container"></div>
+<div id="special-view"></div>
+
+<footer class="footer">
+    <p>
+        Game data provided through
+        <a href="https://docs.google.com/document/d/1_FmH3BlSBQI7FGgAQL59-ZPe8eCxs35wel6JUyVaG8Q/" target="_blank">
+            Ultimate Game Stash
+        </a>
+    </p>
+    <p>
+        Discord:
+        <a href="https://discord.gg/rmVsAqkpkA" target="_blank">
+            Join the UGS Discord
+        </a>
+    </p>
+</footer>
+
+</div>
+</main>
+
+<div class="modal-overlay" id="createFolderModal">
+    <div class="modal">
+        <h2>📁 Create New Folder</h2>
+        <input id="folderNameInput" type="text" placeholder="Enter folder name..." maxlength="30">
+        <div class="modal-buttons">
+            <button class="modal-btn modal-cancel" onclick="closeCreateFolder()">Cancel</button>
+            <button class="modal-btn modal-confirm" onclick="createFolder()">Create Folder</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="folderSelectModal">
+    <div class="modal">
+        <h2>📁 Add Game to Folder</h2>
+        <div id="folderList"></div>
+        <div class="modal-buttons">
+            <button class="modal-btn modal-cancel" onclick="closeFolderSelect()">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="settingsModal">
+    <div class="modal">
+        <h2 class="settings-title">⚙️ Site Settings</h2>
+
+        <label for="maskTitleInput">Disguise Site — Tab Title</label>
+        <input id="maskTitleInput" type="text" placeholder="ParentVUE" maxlength="80">
+
+        <label for="faviconInput">Disguise Site — Favicon URL</label>
+        <input id="faviconInput" type="text" placeholder="https://example.com/favicon.ico">
+
+        <label for="hideUrlInput">Hide Site — URL</label>
+        <input id="hideUrlInput" type="text" placeholder="https://example.com/">
+
+        <div class="setting-row">
+            <div class="setting-info">
+                <div class="setting-name">🚩 Show flagged games</div>
+                <div class="setting-description">
+                    When disabled, flagged games are hidden from the main game list.
+                </div>
+            </div>
+
+            <label class="switch">
+                <input type="checkbox" id="showFlaggedInput">
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <div class="settings-note">
+            Your settings, favorites, folders, flags, and recently played games are saved locally in your browser.
+        </div>
+
+        <div class="modal-buttons">
+            <button class="modal-btn modal-confirm" onclick="saveSettings()">Save</button>
+            <button class="modal-btn modal-reset" onclick="resetSettings()">Reset</button>
+            <button class="modal-btn modal-cancel" onclick="closeSettings()">Close</button>
+        </div>
+    </div>
+</div>
+
+<script>
+const STORAGE_KEY="ugs_custom_folders_v5";
+const FAVORITES_KEY="ugs_favorites_v5";
+const RECENT_KEY="ugs_recent_games_v5";
+const FLAGS_KEY="ugs_flagged_games_v5";
+const SETTINGS_KEY="ugs_settings_v5";
+
+let folders=loadStorage(STORAGE_KEY,{});
+let favorites=loadStorage(FAVORITES_KEY,[]);
+let recentGames=loadStorage(RECENT_KEY,[]);
+let flaggedGames=loadStorage(FLAGS_KEY,[]);
+let selectedGame=null;
+let currentView="all";
+let enhanceTimer=null;
+let lastGameButtonCount=0;
+
+let settings={
+    title:"UGS Games",
+    favicon:"",
+    hideUrl:"",
+    masked:false,
+    showFlagged:false,
+    ...loadStorage(SETTINGS_KEY,{})
+};
+
+function loadStorage(key,fallback){
+    try{
+        const value=JSON.parse(localStorage.getItem(key));
+        return value??fallback;
+    }catch{
+        return fallback;
+    }
+}
+
+function saveData(){
+    localStorage.setItem(STORAGE_KEY,JSON.stringify(folders));
+    localStorage.setItem(FAVORITES_KEY,JSON.stringify(favorites));
+    localStorage.setItem(RECENT_KEY,JSON.stringify(recentGames));
+    localStorage.setItem(FLAGS_KEY,JSON.stringify(flaggedGames));
+}
+
+function applySettings(){
+    document.title=settings.masked?settings.title:"UGS Games";
+    const icon=document.getElementById("siteIcon");
+
+    if(settings.favicon){
+        icon.href=settings.favicon;
+    }else{
+        icon.href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🎮%3C/text%3E%3C/svg%3E";
+    }
+}
+
+function openSettings(){
+    document.getElementById("maskTitleInput").value=settings.title||"UGS Games";
+    document.getElementById("faviconInput").value=settings.favicon||"";
+    document.getElementById("hideUrlInput").value=settings.hideUrl||"";
+    document.getElementById("showFlaggedInput").checked=!!settings.showFlagged;
+    document.getElementById("settingsModal").classList.add("show");
+}
+
+function closeSettings(){
+    document.getElementById("settingsModal").classList.remove("show");
+}
+
+function saveSettings(){
+    settings.title=document.getElementById("maskTitleInput").value.trim()||"UGS Games";
+    settings.favicon=document.getElementById("faviconInput").value.trim();
+    settings.hideUrl=document.getElementById("hideUrlInput").value.trim();
+    settings.showFlagged=document.getElementById("showFlaggedInput").checked;
+
+    settings.masked=!!(
+        settings.title!=="UGS Games"||
+        settings.favicon||
+        settings.hideUrl
+    );
+
+    localStorage.setItem(SETTINGS_KEY,JSON.stringify(settings));
+    applySettings();
+    closeSettings();
+    applyFlagVisibility();
+    renderTopSections();
+
+    if(currentView==="favorites")showFavorites();
+    else if(currentView==="flagged")showFlagged();
+    else if(currentView.startsWith("folder:"))showFolder(currentView.substring(7));
+}
+
+function resetSettings(){
+    settings={
+        title:"UGS Games",
+        favicon:"",
+        hideUrl:"",
+        masked:false,
+        showFlagged:false
+    };
+
+    localStorage.setItem(SETTINGS_KEY,JSON.stringify(settings));
+    applySettings();
+    openSettings();
+    applyFlagVisibility();
+}
+
+function addRecentGame(name){
+    if(!name)return;
+
+    recentGames=recentGames.filter(game=>game!==name);
+    recentGames.unshift(name);
+    recentGames=recentGames.slice(0,10);
+
+    saveData();
+    renderTopSections();
+}
+
+function clearRecentlyPlayed(){
+    if(!recentGames.length)return;
+    if(!confirm("Clear all recently played games?"))return;
+
+    recentGames=[];
+    saveData();
+    renderTopSections();
+}
+
+function isFavorite(name){
+    return favorites.includes(name);
+}
+
+function isFlagged(name){
+    return flaggedGames.includes(name);
+}
+
+function updateStarElement(star,name){
+    const favorite=isFavorite(name);
+    star.textContent=favorite?"★":"☆";
+    star.classList.toggle("starred",favorite);
+    star.title=favorite?"Remove favorite":"Favorite";
+}
+
+function updateFlagElement(flag,name){
+    const flagged=isFlagged(name);
+    flag.textContent=flagged?"⚑":"⚐";
+    flag.classList.toggle("flagged",flagged);
+    flag.title=flagged?"Remove broken-game flag":"Mark game as not working";
+}
+
+function updateAllIcons(){
+    document.querySelectorAll(".game-star,.top-star").forEach(star=>{
+        const name=star.dataset.gameName;
+        if(name)updateStarElement(star,name);
+    });
+
+    document.querySelectorAll(".game-flag,.top-flag").forEach(flag=>{
+        const name=flag.dataset.gameName;
+        if(name)updateFlagElement(flag,name);
+    });
+}
+
+function toggleFavorite(name){
+    if(isFavorite(name)){
+        favorites=favorites.filter(game=>game!==name);
+    }else{
+        favorites.push(name);
+    }
+
+    saveData();
+    updateAllIcons();
+    renderTopSections();
+
+    if(currentView==="favorites")showFavorites();
+    else if(currentView==="flagged")showFlagged();
+    else if(currentView.startsWith("folder:"))showFolder(currentView.substring(7));
+}
+
+function toggleFlag(name){
+    if(isFlagged(name)){
+        flaggedGames=flaggedGames.filter(game=>game!==name);
+    }else{
+        flaggedGames.push(name);
+    }
+
+    saveData();
+    updateAllIcons();
+    applyFlagVisibility();
+    renderTopSections();
+
+    if(currentView==="favorites")showFavorites();
+    else if(currentView==="flagged")showFlagged();
+    else if(currentView.startsWith("folder:"))showFolder(currentView.substring(7));
+}
+
+function renderTopSections(){
+    renderRecentGames();
+    renderTopFavorites();
+}
+
+function renderRecentGames(){
+    const container=document.getElementById("recentGames");
+    const section=document.getElementById("recentSection");
+
+    container.innerHTML="";
+
+    const validGames=recentGames.filter(name=>{
+        return findGameButton(name)&&(settings.showFlagged||!isFlagged(name));
+    });
+
+    if(!validGames.length){
+        section.style.display="none";
+        return;
+    }
+
+    section.style.display="";
+    document.getElementById("recentCount").textContent=
+        `${validGames.length} game${validGames.length===1?"":"s"}`;
+
+    validGames.forEach(name=>{
+        const original=findGameButton(name);
+        if(original)container.appendChild(createTopGame(original));
+    });
+}
+
+function renderTopFavorites(){
+    const container=document.getElementById("topFavorites");
+    const section=document.getElementById("favoritesSection");
+
+    container.innerHTML="";
+
+    const validGames=favorites.filter(name=>{
+        return findGameButton(name)&&(settings.showFlagged||!isFlagged(name));
+    });
+
+    if(!validGames.length){
+        section.style.display="none";
+        return;
+    }
+
+    section.style.display="";
+    document.getElementById("favoriteCount").textContent=
+        `${validGames.length} game${validGames.length===1?"":"s"}`;
+
+    validGames.forEach(name=>{
+        const original=findGameButton(name);
+        if(original)container.appendChild(createTopGame(original));
+    });
+}
+
+function createTopGame(original){
+    const name=getGameName(original);
+    const wrapper=document.createElement("div");
+    wrapper.className="top-game";
+
+    const play=document.createElement("button");
+    play.className="play-game";
+    play.textContent=name;
+
+    play.onclick=()=>{
+        addRecentGame(name);
+        original.click();
+    };
+
+    const star=document.createElement("button");
+    star.className="top-star";
+    star.dataset.gameName=name;
+    updateStarElement(star,name);
+
+    star.onclick=event=>{
+        event.preventDefault();
+        event.stopPropagation();
+        toggleFavorite(name);
+    };
+
+    const flag=document.createElement("button");
+    flag.className="top-flag";
+    flag.dataset.gameName=name;
+    updateFlagElement(flag,name);
+
+    flag.onclick=event=>{
+        event.preventDefault();
+        event.stopPropagation();
+        toggleFlag(name);
+    };
+
+    wrapper.appendChild(play);
+    wrapper.appendChild(star);
+    wrapper.appendChild(flag);
+
+    return wrapper;
+}
+
+function openCreateFolder(){
+    document.getElementById("folderNameInput").value="";
+    document.getElementById("createFolderModal").classList.add("show");
+
+    setTimeout(()=>{
+        document.getElementById("folderNameInput").focus();
+    },50);
+}
+
+function closeCreateFolder(){
+    document.getElementById("createFolderModal").classList.remove("show");
+}
+
+function createFolder(){
+    const name=document.getElementById("folderNameInput").value.trim();
+
+    if(!name){
+        alert("Please enter a folder name.");
+        return;
+    }
+
+    if(folders[name]){
+        alert("A folder with that name already exists.");
+        return;
+    }
+
+    folders[name]=[];
+
+    saveData();
+    renderFolders();
+    closeCreateFolder();
+    showFolder(name);
+}
+
+function deleteFolder(name){
+    if(!confirm(
+        `Are you sure you want to delete "${name}"?\n\nThe games themselves will NOT be deleted.`
+    ))return;
+
+    delete folders[name];
+
+    saveData();
+    renderFolders();
+
+    if(currentView==="folder:"+name)showAllGames();
+}
+
+function renderFolders(){
+    const container=document.getElementById("folder-buttons");
+    container.innerHTML="";
+
+    Object.keys(folders).forEach(name=>{
+        const wrapper=document.createElement("div");
+        wrapper.className="folder-sidebar";
+
+        const button=document.createElement("button");
+        button.className="sidebar-btn";
+        button.title=name;
+        button.textContent="📁";
+        button.onclick=()=>showFolder(name);
+
+        const deleteButton=document.createElement("button");
+        deleteButton.className="folder-delete";
+        deleteButton.textContent="×";
+        deleteButton.title="Delete folder";
+
+        deleteButton.onclick=event=>{
+            event.stopPropagation();
+            deleteFolder(name);
+        };
+
+        wrapper.appendChild(button);
+        wrapper.appendChild(deleteButton);
+        container.appendChild(wrapper);
+    });
+}
+
+function openFolderSelect(gameName){
+    selectedGame=gameName;
+
+    const list=document.getElementById("folderList");
+    list.innerHTML="";
+
+    const names=Object.keys(folders);
+
+    if(!names.length){
+        list.innerHTML=`
+            <div class="empty-message">
+                You don't have any folders yet.<br><br>
+                Create a folder first.
+            </div>
+        `;
+    }else{
+        names.forEach(folderName=>{
+            const added=folders[folderName].includes(gameName);
+
+            const button=document.createElement("button");
+            button.className="control-btn";
+            button.style.width="100%";
+            button.style.textAlign="left";
+            button.style.marginBottom="8px";
+            button.textContent=added
+                ?`✓ 📁 ${folderName}`
+                :`📁 ${folderName}`;
+
+            button.onclick=()=>{
+                if(added){
+                    removeGameFromFolder(gameName,folderName);
+                }else{
+                    addGameToFolder(gameName,folderName);
+                }
+
+                openFolderSelect(gameName);
+            };
+
+            list.appendChild(button);
+        });
+    }
+
+    document.getElementById("folderSelectModal").classList.add("show");
+}
+
+function closeFolderSelect(){
+    document.getElementById("folderSelectModal").classList.remove("show");
+}
+
+function addGameToFolder(gameName,folderName){
+    if(!folders[folderName])return;
+
+    if(!folders[folderName].includes(gameName)){
+        folders[folderName].push(gameName);
+        saveData();
+    }
+
+    if(currentView==="folder:"+folderName)showFolder(folderName);
+}
+
+function removeGameFromFolder(gameName,folderName){
+    if(!folders[folderName])return;
+
+    folders[folderName]=folders[folderName].filter(
+        game=>game!==gameName
+    );
+
+    saveData();
+
+    if(currentView==="folder:"+folderName)showFolder(folderName);
+}
+
+function getGameName(button){
+    return(
+        button.value||
+        button.innerText||
+        button.textContent||
+        "Unknown Game"
+    ).trim();
+}
+
+function applyFlagVisibility(){
+    const sections=document.querySelectorAll(
+        "#sections-container .letter-section"
+    );
+
+    sections.forEach(section=>{
+        let visible=0;
+
+        section.querySelectorAll("input[type='button']").forEach(button=>{
+            const name=getGameName(button);
+            const card=button.closest(".game-card");
+
+            const hide=!settings.showFlagged&&isFlagged(name);
+
+            if(card){
+                card.style.display=hide?"":"";
+                if(hide)card.style.display="none";
+                card.classList.toggle("flagged-game",isFlagged(name));
+            }else{
+                button.style.display=hide?"none":"";
+            }
+
+            if(!hide)visible++;
+        });
+
+        section.style.display=visible?"":"none";
+    });
+}
+
+function enhanceGames(){
+    const buttons=document.querySelectorAll(
+        "#sections-container input[type='button']"
+    );
+
+    buttons.forEach(button=>{
+        if(button.dataset.ugsEnhanced==="true")return;
+
+        const name=getGameName(button);
+        if(!name)return;
+
+        button.dataset.ugsEnhanced="true";
+
+        const card=document.createElement("div");
+        card.className="game-card";
+
+        button.parentNode.insertBefore(card,button);
+        card.appendChild(button);
+
+        const folderButton=document.createElement("button");
+        folderButton.className="folder-add";
+        folderButton.title="Add to folder";
+        folderButton.textContent="📁";
+
+        folderButton.onclick=event=>{
+            event.preventDefault();
+            event.stopPropagation();
+            openFolderSelect(name);
+        };
+
+        const flagButton=document.createElement("button");
+        flagButton.className="game-flag";
+        flagButton.dataset.gameName=name;
+        updateFlagElement(flagButton,name);
+
+        flagButton.onclick=event=>{
+            event.preventDefault();
+            event.stopPropagation();
+            toggleFlag(name);
+        };
+
+        const starButton=document.createElement("button");
+        starButton.className="game-star";
+        starButton.dataset.gameName=name;
+        updateStarElement(starButton,name);
+
+        starButton.onclick=event=>{
+            event.preventDefault();
+            event.stopPropagation();
+            toggleFavorite(name);
+        };
+
+        card.appendChild(folderButton);
+        card.appendChild(flagButton);
+        card.appendChild(starButton);
+    });
+
+    updateAllIcons();
+    applyFlagVisibility();
+    renderTopSections();
+}
+
+function findGameButton(gameName){
+    const buttons=document.querySelectorAll(
+        "#sections-container input[type='button']"
+    );
+
+    return[...buttons].find(
+        button=>getGameName(button)===gameName
+    );
+}
+
+function clearSpecialView(){
+    document.getElementById("special-view").innerHTML="";
+    document.getElementById("sections-container").style.display="";
+}
+
+function setSidebarActive(id){
+    document.querySelectorAll(".sidebar-btn").forEach(button=>{
+        button.classList.remove("active");
+    });
+
+    const button=document.getElementById(id);
+
+    if(button)button.classList.add("active");
+}
+
+function showAllGames(){
+    currentView="all";
+
+    clearSpecialView();
+    setSidebarActive("allSidebarButton");
+
+    enhanceGames();
+}
+
+function showFavorites(){
+    currentView="favorites";
+
+    document.getElementById("sections-container").style.display="none";
+    setSidebarActive("favoritesSidebarButton");
+
+    const container=document.getElementById("special-view");
+
+    container.innerHTML=`
+        <div class="folder-view">
+            <div class="folder-title">
+                <button class="back-button" onclick="showAllGames()">← Back</button>
+                <h2>⭐ Favorites</h2>
+                <span>${favorites.length} game${favorites.length===1?"":"s"}</span>
+            </div>
+            <div class="buttons-container" id="favorites-games"></div>
+        </div>
+    `;
+
+    const gamesContainer=document.getElementById("favorites-games");
+
+    const visibleFavorites=favorites.filter(name=>
+        settings.showFlagged||!isFlagged(name)
+    );
+
+    if(!visibleFavorites.length){
+        gamesContainer.innerHTML=`
+            <div class="empty-message">
+                ${
+                    favorites.length
+                    ?"Some favorites may be flagged as not working."
+                    :"Click ☆ on a game to add it here."
+                }
+            </div>
+        `;
+        return;
+    }
+
+    visibleFavorites.forEach(gameName=>{
+        const original=findGameButton(gameName);
+
+        if(original){
+            createSpecialGameCard(
+                gamesContainer,
+                original,
+                null
+            );
+        }
+    });
+}
+
+function showFlagged(){
+    currentView="flagged";
+
+    document.getElementById("sections-container").style.display="none";
+    setSidebarActive("flaggedSidebarButton");
+
+    const container=document.getElementById("special-view");
+
+    container.innerHTML=`
+        <div class="folder-view">
+            <div class="folder-title">
+                <button class="back-button" onclick="showAllGames()">← Back</button>
+                <h2>🚩 Flagged Games</h2>
+                <span id="flaggedViewCount"></span>
+            </div>
+
+            <div class="buttons-container" id="flagged-games"></div>
+        </div>
+    `;
+
+    const gamesContainer=document.getElementById("flagged-games");
+
+    if(!settings.showFlagged){
+        gamesContainer.innerHTML=`
+            <div class="empty-message">
+                Flagged games are hidden by your current settings.<br><br>
+                Open ⚙️ Settings and turn on <strong>Show flagged games</strong>
+                to view them.
+            </div>
+        `;
+        document.getElementById("flaggedViewCount").textContent=
+            `${flaggedGames.length} flagged`;
+        return;
+    }
+
+    const visibleFlagged=flaggedGames.filter(name=>findGameButton(name));
+
+    document.getElementById("flaggedViewCount").textContent=
+        `${visibleFlagged.length} game${visibleFlagged.length===1?"":"s"}`;
+
+    if(!visibleFlagged.length){
+        gamesContainer.innerHTML=`
+            <div class="empty-message">
+                No games have been flagged yet.<br><br>
+                Click ⚐ on a game to mark it as not working.
+            </div>
+        `;
+        return;
+    }
+
+    visibleFlagged.forEach(gameName=>{
+        const original=findGameButton(gameName);
+
+        if(original){
+            createSpecialGameCard(
+                gamesContainer,
+                original,
+                null
+            );
+        }
+    });
+}
+
+function showFolder(folderName){
+    currentView="folder:"+folderName;
+
+    document.getElementById("sections-container").style.display="none";
+    setSidebarActive(null);
+
+    const container=document.getElementById("special-view");
+    const games=folders[folderName]||[];
+
+    container.innerHTML=`
+        <div class="folder-view">
+            <div class="folder-title">
+                <button class="back-button" onclick="showAllGames()">← Back</button>
+                <h2>📁 ${escapeHTML(folderName)}</h2>
+                <span>${games.length} game${games.length===1?"":"s"}</span>
+            </div>
+            <div class="buttons-container" id="folder-games"></div>
+        </div>
+    `;
+
+    const gamesContainer=document.getElementById("folder-games");
+
+    const visibleGames=games.filter(name=>
+        settings.showFlagged||!isFlagged(name)
+    );
+
+    if(!visibleGames.length){
+        gamesContainer.innerHTML=`
+            <div class="empty-message">
+                ${
+                    games.length
+                    ?"All games in this folder are currently flagged."
+                    :"This folder is empty."
+                }
+            </div>
+        `;
+        return;
+    }
+
+    visibleGames.forEach(gameName=>{
+        const original=findGameButton(gameName);
+
+        if(original){
+            createSpecialGameCard(
+                gamesContainer,
+                original,
+                folderName
+            );
+        }
+    });
+}
+
+function createSpecialGameCard(container,original,folderName){
+    const card=document.createElement("div");
+    card.className="game-card";
+
+    const name=getGameName(original);
+
+    if(isFlagged(name)){
+        card.classList.add("flagged-game");
+    }
+
+    const button=original.cloneNode(true);
+
+    button.dataset.ugsEnhanced="special";
+
+    button.onclick=()=>{
+        addRecentGame(name);
+        original.click();
+    };
+
+    card.appendChild(button);
+
+    const folderOrRemove=document.createElement("button");
+
+    folderOrRemove.className="folder-add";
+    folderOrRemove.style.opacity="1";
+    folderOrRemove.title=folderName
+        ?"Remove from folder"
+        :"Add to folder";
+    folderOrRemove.textContent=folderName?"✕":"📁";
+
+    folderOrRemove.onclick=event=>{
+        event.preventDefault();
+        event.stopPropagation();
+
+        if(folderName){
+            removeGameFromFolder(name,folderName);
+        }else{
+            openFolderSelect(name);
+        }
+    };
+
+    card.appendChild(folderOrRemove);
+
+    const flag=document.createElement("button");
+    flag.className="game-flag";
+    flag.dataset.gameName=name;
+
+    updateFlagElement(flag,name);
+
+    flag.onclick=event=>{
+        event.preventDefault();
+        event.stopPropagation();
+        toggleFlag(name);
+    };
+
+    card.appendChild(flag);
+
+    const star=document.createElement("button");
+    star.className="game-star";
+    star.dataset.gameName=name;
+
+    updateStarElement(star,name);
+
+    star.onclick=event=>{
+        event.preventDefault();
+        event.stopPropagation();
+        toggleFavorite(name);
+    };
+
+    card.appendChild(star);
+
+    container.appendChild(card);
+}
+
+function escapeHTML(value){
+    return String(value).replace(/[&<>"']/g,char=>({
+        "&":"&amp;",
+        "<":"&lt;",
+        ">":"&gt;",
+        '"':"&quot;",
+        "'":"&#039;"
+    }[char]));
+}
+
+function loadGameScript(){
+    if(document.getElementById("ugsGameScript"))return;
+
+    const script=document.createElement("script");
+
+    script.id="ugsGameScript";
+    script.src=
+        "https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@latest/game.js";
+
+    document.body.appendChild(script);
+}
+
+function checkForNewGames(){
+    const buttons=document.querySelectorAll(
+        "#sections-container input[type='button']"
+    );
+
+    const count=buttons.length;
+
+    const hasUnenhanced=[...buttons].some(
+        button=>button.dataset.ugsEnhanced!=="true"
+    );
+
+    if(hasUnenhanced||count!==lastGameButtonCount){
+        lastGameButtonCount=count;
+
+        if(!enhanceTimer){
+            enhanceTimer=setTimeout(()=>{
+                enhanceTimer=null;
+                enhanceGames();
+            },100);
+        }
+    }
+}
+
+setInterval(checkForNewGames,1000);
+
+setTimeout(enhanceGames,500);
+setTimeout(enhanceGames,1500);
+setTimeout(enhanceGames,3000);
+
+document.addEventListener("click",event=>{
+    const button=event.target.closest(
+        "#sections-container input[type='button']"
+    );
+
+    if(!button)return;
+
+    const name=getGameName(button);
+
+    if(name)addRecentGame(name);
+},true);
+
+document.getElementById("searchInput").addEventListener("input",function(){
+    const query=this.value.trim().toLowerCase();
+
+    if(currentView!=="all"){
+        showAllGames();
+    }
+
+    const sections=document.querySelectorAll(
+        "#sections-container .letter-section"
+    );
+
+    sections.forEach(section=>{
+        let visible=0;
+
+        section.querySelectorAll(
+            "input[type='button']"
+        ).forEach(button=>{
+            const name=getGameName(button);
+            const matches=
+                (!query||name.toLowerCase().includes(query))&&
+                (settings.showFlagged||!isFlagged(name));
+
+            const card=button.closest(".game-card");
+
+            if(card){
+                card.style.display=matches?"":"none";
+            }else{
+                button.style.display=matches?"":"none";
+            }
+
+            if(matches)visible++;
+        });
+
+        section.style.display=visible?"":"none";
+    });
+
+    if(query){
+        document.getElementById("recentSection").style.display="none";
+        document.getElementById("favoritesSection").style.display="none";
+    }else{
+        renderTopSections();
+    }
+});
+
+document.addEventListener("keydown",event=>{
+    if(event.key==="Escape"){
+        closeCreateFolder();
+        closeFolderSelect();
+        closeSettings();
+    }
+
+    if(
+        event.key==="Enter"&&
+        document
+            .getElementById("createFolderModal")
+            .classList.contains("show")
+    ){
+        createFolder();
+    }
+});
+
+applySettings();
+renderFolders();
+renderTopSections();
+</script>
+
+<script src="https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@main/searchbut.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@main/games.js"></script>
+
+</body>
+</html>
+

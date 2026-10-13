@@ -1,0 +1,609 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#111318">
+<title>LacesOS</title>
+<link id="favicon" rel="icon" href="data:,">
+
+<style>
+@import url("https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap");
+:root{color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;font-family:"Geist",Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+body{overflow:hidden;background:var(--bg);color:var(--text)}
+button,input,select{font:inherit}
+button{transition:background .18s,border-color .18s,transform .18s,opacity .18s}
+#main{width:100%;height:100%;display:flex;flex-direction:column;position:relative}
+#top{height:72px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 34px;flex-shrink:0;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(14px)}
+#systemName{font-size:15px;font-weight:600;letter-spacing:-.01em;display:flex;align-items:center;gap:10px}
+#systemName:before{content:"";width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 18px color-mix(in srgb,var(--accent) 75%,transparent)}
+#settingsBtn{border:1px solid var(--border);background:transparent;color:var(--muted);padding:8px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:500}
+#settingsBtn:hover{background:var(--card);color:var(--text);border-color:var(--border2)}
+#content{flex:1;overflow:auto;padding:70px 34px 92px;color:var(--muted);scrollbar-width:thin}
+#content::-webkit-scrollbar{width:8px}
+#content::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px}
+.welcome{text-align:left;margin:0 auto 44px;max-width:1080px}
+.welcome h1{color:var(--text);margin:0 0 10px;font-size:42px;line-height:1;letter-spacing:-.045em;font-weight:600}
+.welcome>div{font-size:14px;color:var(--muted);letter-spacing:-.01em}
+#apps{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px;max-width:1080px;margin:0 auto}
+.app{border:1px solid var(--border);background:var(--card);color:var(--text);border-radius:12px;cursor:pointer;min-height:152px;padding:20px;display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-end;text-align:left;position:relative;overflow:hidden}
+.app:after{content:"";position:absolute;inset:0;background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 8%,transparent),transparent 42%);opacity:0;transition:opacity .2s}
+.app:hover{background:var(--hover);border-color:var(--border2);transform:translateY(-1px)}
+.app:hover:after{opacity:1}
+.icon{font-size:30px;line-height:1;margin-bottom:auto;position:relative;z-index:1}
+.name{font-weight:600;font-size:15px;letter-spacing:-.015em;position:relative;z-index:1}
+.sub{font-size:12px;color:var(--muted);margin-top:5px;line-height:1.4;position:relative;z-index:1}
+#posts{max-width:1080px;margin:0 auto 56px}
+#postsTitle,#sectionLabel{color:var(--text);font-family:"Geist",Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:13px;font-weight:600;line-height:20px;letter-spacing:-.01em;margin:0 0 12px;text-transform:none}
+.post{background:transparent;border:1px solid var(--border);border-radius:11px;padding:17px 18px;margin-bottom:8px}
+.post:hover{background:color-mix(in srgb,var(--card) 70%,transparent)}
+.post h3{margin:0 0 5px;color:var(--text);font-size:15px;font-weight:600;letter-spacing:-.015em}
+.post .date{font-family:"Geist Mono",ui-monospace,SFMono-Regular,Menlo,monospace;font-size:10px;color:var(--muted);margin-bottom:9px;text-transform:uppercase;letter-spacing:.08em}
+.post .body{color:var(--muted);line-height:1.55;font-size:13px;white-space:pre-wrap}
+.emptyPosts{color:var(--muted);font-size:13px}
+#sectionLabel{max-width:1080px;margin:0 auto 12px;scroll-margin-top:28px}
+#footer{position:fixed;left:0;right:0;bottom:0;height:62px;display:flex;align-items:center;justify-content:center;gap:13px;padding:0 24px;border-top:1px solid var(--border);background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(14px);z-index:20;font-family:"Geist Mono",ui-monospace,SFMono-Regular,Menlo,monospace;font-size:10px;letter-spacing:.055em;text-transform:uppercase;color:var(--muted)}
+.footer-dot{opacity:.45}
+.footer-item{white-space:nowrap;border:0;background:transparent;color:inherit;padding:8px 2px;cursor:pointer;font:inherit;letter-spacing:inherit;text-transform:inherit}
+.footer-item:hover{color:var(--text)}
+.footer-item.active{color:var(--text)}
+.footer-live{color:var(--text)}
+#error{max-width:1080px;margin:20px auto;padding:14px 16px;border:1px solid #7a3d3d;background:#321b1b;color:#ffb5b5;border-radius:10px;display:none;font-size:13px}
+#loading{position:fixed;inset:0;background:rgba(17,19,24,.9);display:flex;align-items:center;justify-content:center;z-index:100;backdrop-filter:blur(10px)}
+.spinner{width:28px;height:28px;border:2px solid rgba(255,255,255,.14);border-top-color:var(--accent);border-radius:50%;animation:spin .75s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+#modalBack,#nameBack{position:fixed;inset:0;background:rgba(0,0,0,.58);display:none;align-items:center;justify-content:center;padding:20px;z-index:90}
+#modal,#nameBox{width:min(460px,100%);background:var(--modal);border:1px solid var(--border);border-radius:16px;padding:24px;box-shadow:0 20px 70px rgba(0,0,0,.35)}
+#modal h2,#nameBox h2{margin:0 0 10px;color:var(--text)}
+.field{margin:15px 0}
+.field label{display:block;font-size:13px;font-weight:700;margin-bottom:7px;color:var(--muted)}
+.field input,.field select{width:100%;padding:11px 12px;border-radius:9px;border:1px solid var(--border);background:var(--input);color:var(--text)}
+.actions{display:flex;justify-content:flex-end;gap:10px;margin-top:22px}
+.actions button{border:1px solid var(--border);border-radius:9px;padding:10px 14px;background:var(--card);color:var(--text);cursor:pointer}
+.actions .save{background:var(--accent);border-color:var(--accent);color:#fff}
+.note{font-size:12px;color:var(--muted);margin-top:6px}
+.name-subtitle{color:var(--muted);line-height:1.5;margin:0 0 18px}
+.name-note{font-size:12px;color:var(--muted);margin-top:7px}
+
+#appWindowBack{position:fixed;inset:0;display:none;z-index:80;background:var(--bg);flex-direction:column}
+#appWindowBar{height:48px;flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:0 16px;border-bottom:1px solid var(--border);background:var(--card);color:var(--text);font-size:13px}
+#appWindowClose{border:1px solid var(--border);border-radius:8px;background:transparent;color:var(--text);padding:7px 11px;cursor:pointer}
+#appFrame{border:0;width:100%;height:calc(100% - 48px);background:white;flex:1}
+#terminalBack{position:fixed;inset:0;z-index:110;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(0,0,0,.66);backdrop-filter:blur(9px)}
+#terminal{width:min(680px,100%);min-height:260px;background:#080b0a;color:#b8ffca;border:1px solid #28583a;border-radius:13px;box-shadow:0 24px 80px #0009;overflow:hidden;font:13px/1.6 "Geist Mono",ui-monospace,monospace}
+#terminalHead{padding:10px 14px;border-bottom:1px solid #1d3d29;color:#76bd8a;display:flex;justify-content:space-between}
+#terminalOutput{padding:14px 16px;min-height:160px;max-height:45vh;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere}
+#terminalForm{display:flex;gap:9px;padding:0 16px 15px;align-items:center}
+#terminalPrompt{color:#69d98c}#terminalInput{flex:1;min-width:0;background:transparent;color:#d8ffe1;border:0;outline:0;font:inherit}
+#terminalHint{padding:0 16px 13px;color:#609a70;font-size:11px}
+
+</style>
+</head>
+
+<body>
+
+<div id="loading" aria-label="Loading">
+  <div class="spinner"></div>
+</div>
+
+<main id="main">
+  <header id="top">
+    <span id="systemName">LacesOS</span>
+    <button id="settingsBtn" type="button">⚙ Settings</button>
+  </header>
+
+  <section id="content">
+    <div class="welcome" id="homeSection">
+      <h1>Home</h1>
+      <div>A quiet place for your apps, posts, and LacesOS.</div>
+    </div>
+
+    <div id="posts" style="scroll-margin-top:28px">
+      <div id="postsTitle">Posts</div>
+      <div id="postsList"></div>
+    </div>
+
+    <div id="sectionLabel" style="scroll-margin-top:28px">Applications</div>
+    <div id="apps"></div>
+
+    <div id="error"></div>
+  </section>
+
+  <footer id="footer" aria-label="LacesOS navigation">
+    <button class="footer-item footer-live" data-target="homeSection" type="button">HOME</button>
+    <span class="footer-dot">/</span>
+    <button class="footer-item" data-target="posts" type="button">POSTS</button>
+    <span class="footer-dot">/</span>
+    <button class="footer-item" data-target="sectionLabel" type="button">APPS</button>
+  </footer>
+</main>
+
+<div id="appWindowBack" aria-hidden="true">
+  <div id="appWindowBar"><span id="appWindowTitle">App</span><button id="appWindowClose" type="button">Close ×</button></div>
+  <iframe id="appFrame" title="Application" allow="fullscreen; clipboard-read; clipboard-write"></iframe>
+</div>
+<div id="terminalBack" aria-hidden="true">
+  <section id="terminal" role="dialog" aria-modal="true" aria-label="System console">
+    <div id="terminalHead"><span>LacesOS Console</span><span>~ to toggle · exit to close</span></div>
+    <div id="terminalOutput">LacesOS console ready. Type help for commands.</div>
+    <form id="terminalForm"><span id="terminalPrompt">lacesos&gt;</span><input id="terminalInput" autocomplete="off" spellcheck="false" aria-label="Console command"></form>
+    <div id="terminalHint">Commands: help, status, flag NN, exit</div>
+  </section>
+</div>
+
+<div id="nameBack">
+  <div id="nameBox" role="dialog" aria-modal="true" aria-labelledby="nameTitle">
+    <h2 id="nameTitle">Welcome to LacesOS</h2>
+    <p class="name-subtitle">
+      Before you continue, choose a username.
+    </p>
+
+    <div class="field">
+      <label for="nameInput">Username</label>
+      <input id="nameInput" type="text" maxlength="80" autocomplete="name" autofocus>
+      <div class="name-note">Use your real name.</div>
+      <div class="name-note">This is used for verification.</div>
+    </div>
+
+    <div class="actions">
+      <button id="saveName" class="save" type="button">Continue</button>
+    </div>
+  </div>
+</div>
+
+<div id="modalBack">
+  <div id="modal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+    <h2 id="settingsTitle">Settings</h2>
+
+<div class="field"><label>Username</label><div id="settingsUsername" style="padding:11px 12px;border-radius:9px;border:1px solid var(--border);background:var(--input);color:var(--text)">Not set</div></div>
+
+<div class="field">
+      <label for="tabName">Tab name</label>
+      <input id="tabName" type="text" maxlength="80" placeholder="LacesOS">
+    </div>
+
+    <div class="field">
+      <label for="iconUrl">Tab icon URL</label>
+      <input id="iconUrl" type="url" placeholder="https://example.com/icon.png">
+      <div class="note">Use a direct image URL.</div>
+    </div>
+
+    <div class="field">
+      <label for="theme">Theme</label>
+      <select id="theme">
+        <option value="dark">Dark</option>
+        <option value="light">Light</option>
+        <option value="system">System default</option>
+      </select>
+    </div>
+
+    <div class="actions">
+      <button id="cancelSettings" type="button">Cancel</button>
+      <button id="saveSettings" class="save" type="button">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const SUPABASE_URL =
+  "https://fqdesfgtsgsydkxiadax.supabase.co";
+
+const SUPABASE_PUBLISHABLE_KEY =
+  "sb_publishable_92ZS9KlK1WVR9Vr0fCYAHA_vkZ9jRTc";
+
+async function supabaseRequest(path, options={}){
+  const controller=new AbortController();
+  const timer=setTimeout(()=>controller.abort(),8000);
+
+  try{
+    const headers={
+      apikey:SUPABASE_PUBLISHABLE_KEY,
+      Authorization:"Bearer "+SUPABASE_PUBLISHABLE_KEY,
+      ...(options.headers||{})
+    };
+
+    const response=await fetch(SUPABASE_URL+path,{
+      ...options,
+      headers,
+      signal:controller.signal,
+      cache:"no-store"
+    });
+
+    const text=await response.text();
+    let data=null;
+    try{data=text?JSON.parse(text):null;}catch{}
+
+    if(!response.ok){
+      throw new Error(
+        data?.message || data?.hint || text ||
+        ("Supabase request failed ("+response.status+")")
+      );
+    }
+
+    return data;
+  }catch(error){
+    if(error.name==="AbortError")
+      throw new Error("Supabase request timed out.");
+    throw error;
+  }finally{
+    clearTimeout(timer);
+  }
+}
+
+const REPO =
+  "https://raw.githubusercontent.com/sashabolton0-ux/chat/main/";
+
+const SETTINGS_KEY = "lacesos_settings_v2";
+const DEVICE_KEY = "lacesos_device_id_v1";
+const USERNAME_KEY = "lacesos_username_v1";
+
+const themes = {
+  dark:{
+    bg:"#111318",text:"#fff",muted:"#8d94a3",border:"#2b2f38",
+    border2:"#414856",card:"#181b22",hover:"#222731",
+    modal:"#181b22",input:"#111318",accent:"#5865f2"
+  },
+  light:{
+    bg:"#f4f5f7",text:"#17191d",muted:"#68707d",border:"#d9dde4",
+    border2:"#b9c0cb",card:"#fff",hover:"#e9ecf1",
+    modal:"#fff",input:"#f4f5f7",accent:"#4f5bd5"
+  }
+};
+
+function getSettings(){
+  try{
+    return JSON.parse(localStorage.getItem(SETTINGS_KEY)||"{}");
+  }catch{
+    return {};
+  }
+}
+
+function saveSettings(s){
+  localStorage.setItem(SETTINGS_KEY,JSON.stringify(s));
+}
+
+function resolvedTheme(mode){
+  return mode==="system"
+    ? (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
+    : (mode==="light" ? "light" : "dark");
+}
+
+function applySettings(){
+  const s=getSettings();
+  const t=themes[resolvedTheme(s.theme||"dark")];
+
+  for(const [k,v] of Object.entries(t)){
+    document.documentElement.style.setProperty("--"+k,v);
+  }
+
+  document.title=s.tabName?.trim()||"LacesOS";
+  document.getElementById("systemName").textContent="LacesOS";
+  document.querySelector('meta[name="theme-color"]').content=t.bg;
+  document.getElementById("favicon").href=s.iconUrl?.trim()||"data:,";
+}
+
+applySettings();
+
+matchMedia("(prefers-color-scheme: dark)")
+  .addEventListener?.("change",()=>{
+    if((getSettings().theme||"dark")==="system") applySettings();
+  });
+
+function getDeviceId(){
+  let id=localStorage.getItem(DEVICE_KEY);
+
+  if(!id){
+    if(window.crypto && crypto.randomUUID){
+      id="dev_"+crypto.randomUUID();
+    }else{
+      id="dev_"+Date.now().toString(36)+"_"+Math.random().toString(36).slice(2,12);
+    }
+
+    localStorage.setItem(DEVICE_KEY,id);
+  }
+
+  return id;
+}
+
+
+async function isAiChatAllowedOnThisDevice(){
+  try{
+    const result = await supabaseRequest("/functions/v1/ai-gateway", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({
+        action: "status",
+        device_id: getDeviceId(),
+        username: localStorage.getItem(USERNAME_KEY) || ""
+      })
+    });
+
+    return result?.allowed === true;
+  }catch(error){
+    console.warn("AI Chat access check failed; keeping the app hidden.", error);
+    return false;
+  }
+}
+
+async function registerDevice(username){
+  try{
+    await supabaseRequest("/rest/v1/rpc/ensure_device",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({p_device_id:getDeviceId(),p_username:username})
+    });
+  }catch(error){
+    console.warn("Device registration failed:",error);
+  }
+}
+
+function showNamePrompt(){
+  const saved=localStorage.getItem(USERNAME_KEY);
+
+  if(saved && saved.trim()){
+    registerDevice(saved.trim());
+    return;
+  }
+
+  const back=document.getElementById("nameBack");
+  const input=document.getElementById("nameInput");
+
+  back.style.display="flex";
+  setTimeout(()=>input.focus(),50);
+
+  document.getElementById("saveName").onclick=async()=>{
+    const name=input.value.trim();
+
+    if(!name){
+      input.focus();
+      return;
+    }
+
+    localStorage.setItem(USERNAME_KEY,name);
+    back.style.display="none";
+
+    registerDevice(name);
+  };
+}
+
+const modalBack=document.getElementById("modalBack");
+const tabName=document.getElementById("tabName");
+const iconUrl=document.getElementById("iconUrl");
+const theme=document.getElementById("theme");
+
+document.getElementById("settingsBtn").onclick=()=>{
+  const s=getSettings();
+  tabName.value=s.tabName||"LacesOS";
+  iconUrl.value=s.iconUrl||"";
+  document.getElementById("settingsUsername").textContent = localStorage.getItem(USERNAME_KEY) || "Not set";
+  theme.value=s.theme||"dark";
+  modalBack.style.display="flex";
+  tabName.focus();
+};
+
+document.getElementById("cancelSettings").onclick=()=>{
+  modalBack.style.display="none";
+};
+
+modalBack.onclick=e=>{
+  if(e.target===modalBack) modalBack.style.display="none";
+};
+
+document.getElementById("saveSettings").onclick=()=>{
+  saveSettings({
+    tabName:tabName.value.trim()||"LacesOS",
+    iconUrl:iconUrl.value.trim(),
+    theme:theme.value
+  });
+
+  applySettings();
+  modalBack.style.display="none";
+};
+
+let activeAppLoad=0;
+async function openApp(app){
+  const thisLoad=++activeAppLoad;
+  if(!app.file)return;
+  const status=String(app.status||"on").trim().toLowerCase();
+  if(status==="hidden")return;
+  if(status==="maintenance"){
+    alert(app.warning?.trim()||"This app is currently under maintenance.");
+    return;
+  }
+  const warning=String(app.warning||"").trim();
+  if(status==="on" && warning && !confirm(warning+"\n\nContinue?"))return;
+
+  const back=document.getElementById("appWindowBack");
+  const frame=document.getElementById("appFrame");
+  document.getElementById("appWindowTitle").textContent=String(app.name||"App");
+  back.style.display="flex";
+  back.setAttribute("aria-hidden","false");
+  frame.srcdoc='<!doctype html><html><body style="font:14px system-ui;padding:24px">Loading app…</body></html>';
+  try{
+    const response=await fetch(REPO+app.file.split("?")[0]+"?t="+Date.now(),{cache:"no-store"});
+    if(!response.ok)throw new Error("App could not be loaded ("+response.status+").");
+    let html=await response.text();
+    const cleanFile=String(app.file).split("?")[0].split("#")[0];
+    const slash=cleanFile.lastIndexOf("/");
+    const baseURL=REPO+(slash>=0?cleanFile.slice(0,slash+1):"");
+    const safeBase=baseURL.replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+    html=html.replace(/<base\b[^>]*>/gi,"");
+    if(/<head\b[^>]*>/i.test(html))html=html.replace(/<head\b([^>]*)>/i,'<head$1><base href="'+safeBase+'">');
+    else html='<head><base href="'+safeBase+'"></head>'+html;
+    if(!back.isConnected||thisLoad!==activeAppLoad)return;
+    frame.srcdoc=html;
+  }catch(error){
+    frame.srcdoc='<!doctype html><html><body style="font:14px system-ui;padding:24px"><h2>App could not be loaded</h2><p></p></body></html>';
+    frame.addEventListener("load",()=>{try{frame.contentDocument.querySelector("p").textContent=String(error.message||error)}catch(_){}},{once:true});
+  }
+}
+
+document.getElementById("appWindowClose").onclick=()=>{
+  activeAppLoad++;
+  const back=document.getElementById("appWindowBack");
+  document.getElementById("appFrame").srcdoc="";
+  back.style.display="none";back.setAttribute("aria-hidden","true");
+};
+
+async function loadPosts(){
+  const list=document.getElementById("postsList");
+
+  try{
+    const posts=await supabaseRequest(
+      "/rest/v1/posts?select=id,title,date,body&order=date.desc"
+    );
+
+    if(!posts.length){
+      list.innerHTML='<div class="emptyPosts">No posts yet.</div>';
+      return;
+    }
+
+    list.innerHTML="";
+
+    for(const p of posts){
+      const el=document.createElement("article");
+      el.className="post";
+
+      const title=document.createElement("h3");
+      title.textContent=p.title||"Post";
+
+      const date=document.createElement("div");
+      date.className="date";
+      date.textContent=p.date||"";
+
+      const body=document.createElement("div");
+      body.className="body";
+      body.textContent=p.body||"";
+
+      el.append(title,date,body);
+      list.appendChild(el);
+    }
+  }catch(error){
+    list.innerHTML=
+      '<div class="emptyPosts">Posts are unavailable right now.</div>';
+    console.warn(error);
+  }
+}
+
+async function loadApps(){
+  const box=document.getElementById("apps");
+  const err=document.getElementById("error");
+
+  try{
+    const apps=await supabaseRequest(
+      "/rest/v1/apps?select=id,name,description,icon,file,status,warning&order=sort_order.asc"
+    );
+
+    box.innerHTML="";
+
+    
+    for(const app of (apps||[])){
+      const status=String(app.status||"on").trim().toLowerCase();
+
+      if(String(app.id||"")==="ai-chat"){
+        const allowed=await isAiChatAllowedOnThisDevice();
+        if(!allowed)continue;
+      }
+
+      if(status==="hidden")continue;
+
+      const b=document.createElement("button");
+      b.className="app";
+      b.dataset.appId=String(app.id||"");
+      b.dataset.appName=String(app.name||"App");
+
+      const icon=document.createElement("span");
+      icon.className="icon";
+      icon.textContent=app.icon||"◼";
+
+      const wrap=document.createElement("span");
+
+      const name=document.createElement("div");
+      name.className="name";
+      name.textContent=app.name||"App";
+
+      const sub=document.createElement("div");
+      sub.className="sub";
+      sub.textContent=
+        status==="maintenance"
+          ? "Maintenance"
+          : (app.description||"");
+
+      wrap.append(name,sub);
+      b.append(icon,wrap);
+
+      b.onclick=()=>openApp(app);
+      box.appendChild(b);
+    }
+  }catch(error){
+    err.textContent=error.message;
+    err.style.display="block";
+    console.warn(error);
+  }
+}
+
+const terminalBack=document.getElementById("terminalBack");
+const terminalInput=document.getElementById("terminalInput");
+const terminalOutput=document.getElementById("terminalOutput");
+function terminalPrint(message){terminalOutput.textContent+="\n"+message;terminalOutput.scrollTop=terminalOutput.scrollHeight;}
+function terminalOpen(){terminalBack.style.display="flex";terminalBack.setAttribute("aria-hidden","false");terminalInput.focus();}
+function terminalClose(){terminalBack.style.display="none";terminalBack.setAttribute("aria-hidden","true");}
+window.addEventListener("keydown",event=>{
+  if(event.key==="Escape"&&terminalBack.style.display==="flex"){terminalClose();return;}
+  if(event.key==="Escape"&&document.getElementById("appWindowBack").style.display==="flex"){document.getElementById("appWindowClose").click();return;}
+  if(event.key==="~"&&!event.ctrlKey&&!event.metaKey&&!event.altKey&&document.getElementById("nameBack").style.display!=="flex"){
+    event.preventDefault();terminalBack.style.display==="flex"?terminalClose():terminalOpen();
+  }
+});
+terminalBack.addEventListener("click",event=>{if(event.target===terminalBack)terminalClose();});
+document.getElementById("terminalForm").addEventListener("submit",async event=>{
+  event.preventDefault();const raw=terminalInput.value.trim();terminalInput.value="";if(!raw)return;
+  terminalPrint("lacesos> "+raw);
+  const parts=raw.split(/\s+/);const command=parts[0].toLowerCase();
+  if(command==="exit"||command==="quit"){terminalClose();return;}
+  if(command==="help"){terminalPrint("help — show commands\nstatus — show this device's local status\nflag NN — submit a two-digit verification reference\nexit — close the console");return;}
+  if(command==="status"){
+    terminalPrint("Username: "+(localStorage.getItem(USERNAME_KEY)||"not set")+"\nDevice ID: "+getDeviceId()+"\nAI access: checked by the server when the AI app is opened.");return;
+  }
+  if(command==="flag"){
+    const code=parts[1]||"";
+    if(!/^\d{2}$/.test(code)){terminalPrint("Usage: flag NN (NN must be exactly two digits).");return;}
+    const username=(localStorage.getItem(USERNAME_KEY)||"").trim();
+    if(!username){terminalPrint("Choose a username first, then try again.");return;}
+    try{
+      const result=await supabaseRequest("/rest/v1/rpc/submit_verification_request",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({p_device_id:getDeviceId(),p_username:username,p_reference_code:code})});
+      terminalPrint(result?.ok?"Verification request submitted. The two-digit code is only a reference and does not grant access.":(result?.message||"Request not submitted."));
+    }catch(error){terminalPrint("Could not submit request: "+String(error.message||error));}
+    return;
+  }
+  terminalPrint("Unknown command. Type help.");
+});
+
+const footerButtons=document.querySelectorAll("#footer [data-target]");
+footerButtons.forEach(button=>{
+  button.addEventListener("click",()=>{
+    const target=document.getElementById(button.dataset.target);
+    if(!target)return;
+    target.scrollIntoView({behavior:"smooth",block:"start"});
+    footerButtons.forEach(b=>b.classList.remove("active"));
+    button.classList.add("active");
+  });
+});
+
+async function startHome(){
+  showNamePrompt();
+
+  // Posts and the app catalog load independently; analytics collection is removed.
+  await Promise.allSettled([loadPosts(),loadApps()]);
+
+  document.getElementById("loading").style.display="none";
+}
+
+startHome();
+</script>
+
+</body>
+</html>

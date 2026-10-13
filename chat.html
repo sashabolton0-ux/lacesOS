@@ -1,0 +1,1340 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Chat</title>
+  <style>
+*{box-sizing:border-box}
+:root{color-scheme:dark;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+body{margin:0;background:#111318;color:#eef0f4}
+button,input,textarea{font:inherit}
+button{cursor:pointer}
+.hidden{display:none!important}
+.muted{color:#9da3af}
+.small{font-size:.82rem}
+.auth-view{min-height:100vh;display:grid;place-items:center;padding:24px;background:radial-gradient(circle at top,#242a38,#111318 60%)}
+.auth-card{width:min(430px,100%);background:#1b1f27;border:1px solid #303641;border-radius:16px;padding:28px;box-shadow:0 24px 70px #0008}
+.brand{font-size:28px;font-weight:800}.auth-card>p{margin-top:2px}
+.tabs{display:flex;gap:8px;margin:24px 0 18px}.tab,.secondary,.icon-btn{background:#252a33;color:#e9edf3;border:1px solid #3a414d;border-radius:8px;padding:9px 13px}.tab{flex:1}.tab.active{background:#3b4350}
+.auth-form,.stack{display:grid;gap:13px}
+label{display:grid;gap:6px;color:#cbd0d9;font-size:.9rem}
+input,textarea{width:100%;background:#11141a;color:#f4f5f7;border:1px solid #3a414d;border-radius:8px;padding:10px;outline:none}
+input:focus,textarea:focus{border-color:#7281ff}
+.primary{background:#5865f2;color:#fff;border:0;border-radius:8px;padding:10px 15px;font-weight:700}.danger{background:#d94b4b;color:#fff;border:0;border-radius:8px;padding:8px 11px}
+.full{width:100%}.notice{background:#222a3a;border:1px solid #3b4c73;padding:10px;border-radius:8px;margin:12px 0}
+.app{height:100vh;display:grid;grid-template-columns:250px 1fr}.sidebar{background:#181b21;border-right:1px solid #2b3039;display:flex;flex-direction:column;min-width:0}.sidebar-top{padding:18px;border-bottom:1px solid #2b3039;display:flex;justify-content:space-between}.sidebar-section{padding:15px 10px;overflow:auto}.section-title{text-transform:uppercase;font-size:.7rem;font-weight:800;color:#8f96a3;padding:5px 8px 8px}.channel{width:100%;text-align:left;background:transparent;border:0;color:#aeb4bf;padding:9px 10px;border-radius:6px}.channel:hover,.channel.active{background:#292e38;color:#fff}.sidebar-bottom{margin-top:auto;padding:12px;display:grid;gap:8px}
+.chat{display:grid;grid-template-rows:auto 1fr auto;min-width:0}.chat-header{padding:15px 20px;border-bottom:1px solid #2b3039;display:flex;align-items:center;justify-content:space-between}.chat-header h1{font-size:18px;margin:0 0 2px}.messages{overflow:auto;padding:18px 24px}.message{padding:6px 0 12px}.message-meta{display:flex;gap:7px;align-items:baseline}.message-username{font-weight:800}.profile-tag{font-size:.82em;color:#aeb4bf}.message-meta time{font-size:.72rem;color:#747b87}.message-content{margin-top:3px;line-height:1.45;overflow-wrap:anywhere}.message-content code{background:#0c0e12;border:1px solid #30343d;border-radius:4px;padding:1px 4px}.message-content blockquote{border-left:3px solid #666f80;padding-left:10px;color:#b9bfca;margin:4px 0}.message-content a{color:#7ea5ff}.empty{height:100%;display:grid;place-items:center;color:#7e8591}
+.composer{padding:14px 18px;background:#181b21;border-top:1px solid #2b3039;display:grid;grid-template-columns:1fr auto;gap:10px}.chat-input{resize:vertical;min-height:46px;max-height:180px}
+dialog{border:0;border-radius:14px;background:#1b1f27;color:#eef0f4;box-shadow:0 30px 100px #000b;width:min(700px,calc(100% - 24px));padding:0}dialog::backdrop{background:#0009}.modal{padding:24px;position:relative}.modal h2{margin-top:0}.modal-close{position:absolute;right:14px;top:10px;border:0;background:transparent;color:#aab0ba;font-size:28px}.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:20px}.profile-preview{padding:14px;background:#11141a;border-radius:8px;margin-bottom:15px;font-weight:800}.admin-grid{display:grid;gap:14px}.panel{background:#15181e;border:1px solid #2e343e;border-radius:10px;padding:15px}.panel h3{margin:0 0 12px}.device-list{display:grid;gap:8px;max-height:300px;overflow:auto}.device-row{display:flex;gap:10px;align-items:center;justify-content:space-between;border:1px solid #2f3540;border-radius:8px;padding:10px}.device-actions{display:flex;gap:5px;align-items:center}.device-limit{width:90px}.toast{position:fixed;right:18px;bottom:18px;z-index:99;opacity:0;transform:translateY(8px);pointer-events:none;background:#272d37;border:1px solid #424a58;border-radius:9px;padding:11px 14px;transition:.2s}.toast.show{opacity:1;transform:none}.toast.error{border-color:#a44a4a;background:#352022}
+@media(max-width:760px){.app{grid-template-columns:1fr}.sidebar{height:auto;max-height:210px}.sidebar-bottom{display:none}.app{height:100dvh}.device-row{align-items:flex-start;flex-direction:column}.device-actions{width:100%}}
+
+.login-news{margin-top:24px;border-top:1px solid #303641;padding-top:16px}.login-news .section-title{padding-left:0}.login-news-item{border:1px solid #303641;background:#15181e;border-radius:8px;padding:9px;margin-top:7px}.login-news-item strong{display:block;margin:2px 0}.login-news-item a{font-size:.8rem;color:#7ea5ff}
+
+.auth-layout{width:min(900px,100%);display:grid;grid-template-columns:minmax(320px,430px) minmax(280px,1fr);gap:18px;align-items:stretch}.auth-left{display:flex;flex-direction:column;gap:10px;min-width:0}.auth-gate-actions{display:flex;justify-content:center}.auth-gate-link{display:inline-flex;align-items:center;justify-content:center;background:#5865f2;color:#fff;text-decoration:none;border-radius:8px;padding:10px 15px;font-weight:700;min-width:210px}.auth-gate-link:hover{background:#4752c4}.auth-card.auth-blank{min-height:310px;padding:0}
+.auth-layout .auth-card{width:100%}
+.login-news{background:#1b1f27;border:1px solid #303641;border-radius:16px;padding:22px;box-shadow:0 24px 70px #0006;min-height:100%}
+.login-news-header{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #303641;padding-bottom:12px;margin-bottom:10px}
+.login-news-header h2{font-size:18px;margin:0}
+@media(max-width:760px){.auth-layout{grid-template-columns:1fr}.login-news{min-height:auto}}
+
+.app{grid-template-columns:250px minmax(0,1fr) 230px}
+.users-sidebar{background:#181b21;border-left:1px solid #2b3039;padding:15px 10px;overflow:auto;min-width:0}
+.user-list{display:grid;gap:3px}
+.user-row{width:100%;display:grid;grid-template-columns:9px minmax(0,1fr) auto;gap:7px;align-items:center;text-align:left;background:transparent;border:0;color:#cbd0d9;border-radius:6px;padding:7px 8px}
+.user-row:hover{background:#292e38;color:#fff}
+.user-name{font-weight:700;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.user-state{font-size:.68rem;color:#747b87}
+.status-dot{width:8px;height:8px;border-radius:50%;display:block}
+.status-dot.online{background:#3ccf78}.status-dot.offline{background:#69717e}
+.message{padding:5px 0 8px}.message-continued{padding:1px 0 1px}.message-continued .message-content{margin-top:0}.message-divider{display:flex;align-items:center;gap:12px;margin:18px 0 12px;color:#949ba4;font-size:.75rem;font-weight:700}.message-divider::before,.message-divider::after{content:"";height:1px;background:#4a4d55;flex:1}.message-divider span{white-space:nowrap}
+@media(max-width:900px){.app{grid-template-columns:220px minmax(0,1fr)}.users-sidebar{display:none}}
+
+.auth-layout{width:min(940px,100%);display:grid;grid-template-columns:minmax(320px,430px) minmax(300px,1fr);gap:18px;align-items:stretch}
+.login-news{background:#1b1f27;border:1px solid #303641;border-radius:16px;padding:22px;box-shadow:0 24px 70px #0006}
+.login-news-header{border-bottom:1px solid #303641;padding-bottom:12px;margin-bottom:10px}
+.login-news-header h2{margin:0;font-size:19px}
+.login-news-item{border:1px solid #303641;background:#15181e;border-radius:9px;padding:11px;margin-top:8px}
+.login-news-item strong{display:block;margin:3px 0}
+.login-news-item a{color:#7ea5ff;font-size:.8rem}
+.sidebar-scroll{overflow:auto;min-height:0}
+.section-heading-row{display:flex;align-items:center;justify-content:space-between}
+.small-icon-btn{border:0;background:#252a33;color:#cbd0d9;border-radius:6px;width:24px;height:24px;font-size:17px;line-height:1}
+.channel{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.channel.has-unread{color:#fff;font-weight:800}
+.notification-badge{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:#5865f2;color:#fff;font-size:.7rem;font-weight:800}
+.dm-row{color:#aeb4bf}
+.dm-empty{padding:4px 8px 8px}
+.user-row-wrap{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:3px;align-items:center}
+.dm-action-btn{border:1px solid #3a414d;background:#252a33;color:#cbd0d9;border-radius:6px;padding:4px 6px;font-size:.68rem;opacity:.75}
+.dm-action-btn:hover{opacity:1;background:#3b4350;color:#fff}
+.people-heading{padding:12px 8px 5px;font-size:.7rem;font-weight:900;color:#8f96a3}
+.dm-picker{display:grid;gap:5px;max-height:60vh;overflow:auto}
+.dm-picker-row{width:100%;display:grid;grid-template-columns:9px minmax(0,1fr) auto auto;gap:8px;align-items:center;text-align:left;background:transparent;border:0;border-radius:7px;color:#e8ebf0;padding:9px}
+.dm-picker-row:hover{background:#292e38}
+.dm-picker-name{font-weight:700}
+.dm-picker-action{font-size:.7rem;color:#9da3af}
+.ping-mention{font-weight:800;color:#f0b44d}
+.ping-me{background:#5a461e;border-radius:4px;padding:0 3px}
+.mention-highlight{background:rgba(250,166,26,.08);border-left:3px solid #f0b44d;padding-left:9px;border-radius:4px}
+.invite-button{border:0;background:#5865f2;color:#fff;border-radius:7px;padding:7px 12px;font-weight:800;cursor:pointer;margin:0 4px}
+@media(max-width:760px){.auth-layout{grid-template-columns:1fr}.login-news{min-height:auto}}
+
+/* Discord-style theme refresh */
+:root{
+  --discord-bg:#313338;
+  --discord-sidebar:#2b2d31;
+  --discord-darker:#1e1f22;
+  --discord-input:#383a40;
+  --discord-hover:#35373c;
+  --discord-active:#404249;
+  --discord-text:#dbdee1;
+  --discord-muted:#949ba4;
+  --discord-brand:#5865f2;
+  --discord-green:#23a559;
+  --discord-red:#ed4245;
+}
+body{background:var(--discord-bg);color:var(--discord-text)}
+.app{background:var(--discord-bg)}
+.sidebar{background:var(--discord-sidebar);border-right:1px solid #1f2023}
+.sidebar-top{background:var(--discord-sidebar);border-bottom:1px solid #202225}
+.sidebar-bottom{background:var(--discord-sidebar);border-top:1px solid #202225}
+.section-title,.people-heading{color:var(--discord-muted);letter-spacing:.02em}
+.channel{background:transparent;color:#b5bac1;border-radius:4px;margin:1px 6px;width:calc(100% - 12px)}
+.channel:hover{background:var(--discord-hover);color:#dbdee1}
+.channel.active{background:var(--discord-active);color:#fff}
+.chat{background:var(--discord-bg)}
+.chat-header{background:var(--discord-bg);border-bottom:1px solid #232428}
+.message:hover{background:rgba(0,0,0,.06)}
+.message-continued{padding-top:2px}
+.message-meta{gap:7px}
+.message-username{font-weight:700}
+.message-content{color:#dbdee1}
+.message-content code{background:var(--discord-darker);border-radius:4px;padding:2px 4px}
+.profile-tag{background:#1e1f22;border-radius:4px;padding:1px 5px;color:#b5bac1;font-size:.7rem;font-weight:700}
+.message-form,.composer{background:var(--discord-bg)}
+.message-input,textarea,input{background:var(--discord-input);border-color:transparent;color:#dbdee1}
+.message-input:focus,textarea:focus,input:focus{outline:none;border-color:var(--discord-brand);box-shadow:none}
+.primary{background:var(--discord-brand);border-color:var(--discord-brand)}
+.primary:hover{background:#4752c4}
+.secondary,.icon-btn,.small-icon-btn{background:var(--discord-input);border-color:transparent;color:#dbdee1}
+.secondary:hover,.icon-btn:hover,.small-icon-btn:hover{background:#404249}
+.danger{background:#da373c;border-color:#da373c}
+.user-row{background:transparent;color:#b5bac1}
+.user-row:hover{background:var(--discord-hover);color:#dbdee1}
+.dm-action-btn{background:#1e1f22;border-color:transparent}
+.status-dot.online{background:var(--discord-green)}
+.status-dot.offline{background:#80848e}
+.notification-badge{background:var(--discord-red)}
+.login-news,.auth-card{background:var(--discord-sidebar);border-color:#1f2023;box-shadow:0 16px 40px rgba(0,0,0,.25)}
+.login-news-item{background:var(--discord-darker);border-color:#202225}
+.invite-button{background:var(--discord-brand)}
+.modal,.modal-close,.dm-picker-row:hover{background:var(--discord-sidebar)}
+.dialog-backdrop{background:rgba(0,0,0,.7)}
+.command-picker{background:var(--discord-sidebar);border:1px solid #1f2023;box-shadow:0 12px 30px rgba(0,0,0,.35);border-radius:8px}
+.command-picker button{background:transparent;color:#dbdee1;border:0}
+.command-picker button:hover{background:var(--discord-hover)}
+
+/* V6 Discord build: keep the viewport fixed; only the message pane scrolls. */
+html,body{height:100%;overflow:hidden}
+.app{height:100dvh;min-height:0;overflow:hidden}
+.sidebar,.users-sidebar,.chat{min-height:0}
+.sidebar{overflow:hidden}
+.sidebar-scroll{min-height:0;overflow-y:auto;overflow-x:hidden}
+.chat{min-height:0;overflow:hidden;grid-template-rows:auto minmax(0,1fr) auto}
+.messages{min-height:0;overflow-y:auto;overflow-x:hidden}
+.users-sidebar{overflow-y:auto;overflow-x:hidden}
+@media(max-width:760px){html,body{overflow:hidden}.app{height:100dvh;overflow:hidden}.sidebar{min-height:0;overflow-y:auto;max-height:none}}
+
+.auth-layout{align-items:start}.auth-card,.login-news{min-height:0}
+
+/* Ping notifications */
+.notification-stack{position:fixed;right:18px;bottom:82px;z-index:1000;display:flex;flex-direction:column;gap:10px;pointer-events:none;max-width:min(380px,calc(100vw - 36px))}
+.ping-notification{pointer-events:auto;background:#232428;border:1px solid #3f4147;border-radius:8px;box-shadow:0 10px 30px rgba(0,0,0,.35);padding:12px 14px;color:#dbdee1;animation:pingIn .18s ease-out}
+.ping-notification strong{display:block;color:#fff;margin-bottom:3px}
+.ping-notification .small{color:#b5bac1}
+@keyframes pingIn{from{transform:translateY(8px);opacity:0}to{transform:translateY(0);opacity:1}}
+.notification-btn{position:relative}
+
+
+
+/* Message stability fixes — preserve the LacesOS UI and use normal document flow. */
+.messages{display:block!important;min-height:0!important;overflow-y:auto!important;overflow-x:hidden!important;padding:28px 30px!important;}
+.message{display:block!important;position:relative!important;width:100%!important;box-sizing:border-box!important;margin:0 0 2px!important;padding:7px 10px 9px!important;min-height:0!important;height:auto!important;line-height:1.4!important;}
+.message-continued{padding:1px 10px 3px!important;margin-bottom:0!important;}
+.message-content{display:block!important;margin:2px 0 0!important;padding:0!important;line-height:1.45!important;white-space:normal!important;overflow-wrap:anywhere!important;word-break:break-word!important;}
+.message-continued .message-content{margin-top:0!important;}
+.message-content br{display:block!important;content:""!important;height:0!important;line-height:1.45!important;}
+.message-meta{display:flex!important;align-items:baseline!important;margin:0!important;padding:0!important;line-height:1.15!important;min-height:1.15em!important;}
+.message-divider{display:flex!important;align-items:center!important;gap:12px!important;margin:18px 10px 10px!important;padding:0!important;min-height:18px!important;line-height:1!important;}
+.message-divider::before,.message-divider::after{content:"";display:block!important;flex:1!important;height:1px!important;background:var(--lace-border)!important;}
+.message-divider span{white-space:nowrap!important;line-height:1!important;}
+
+/* LacesOS / Geist visual refresh */
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;500&display=swap');
+
+:root{
+  --lace-bg:#050505;
+  --lace-panel:#0a0a0a;
+  --lace-panel-2:#0f0f0f;
+  --lace-panel-3:#141414;
+  --lace-border:#262626;
+  --lace-border-soft:#1b1b1b;
+  --lace-text:#ededed;
+  --lace-muted:#8b8b8b;
+  --lace-faint:#5f5f5f;
+  --lace-hover:#111111;
+  --lace-active:#171717;
+  --lace-white:#ffffff;
+  --lace-green:#46d369;
+  --lace-red:#ff5f56;
+  --lace-blue:#8ab4ff;
+  font-family:'Geist',Inter,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+}
+
+html,body{background:var(--lace-bg);color:var(--lace-text)}
+body{font-family:'Geist',Inter,system-ui,sans-serif;letter-spacing:-.012em}
+button,input,textarea{font-family:inherit}
+button{transition:background-color .16s ease,border-color .16s ease,color .16s ease,transform .16s ease}
+
+/* Auth */
+.auth-view{
+  background:
+    radial-gradient(circle at 50% -20%,#171717 0,transparent 42%),
+    var(--lace-bg);
+  padding:32px;
+}
+.auth-layout{width:min(980px,100%);gap:1px;background:var(--lace-border);border:1px solid var(--lace-border);border-radius:14px;overflow:hidden;box-shadow:0 30px 100px rgba(0,0,0,.45)}
+.auth-card,.login-news{
+  background:var(--lace-panel)!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+}
+.auth-card{padding:34px}
+.brand{font-size:25px;font-weight:600;letter-spacing:-.04em}
+.auth-card>p{color:var(--lace-muted)}
+.tabs{gap:0;border-bottom:1px solid var(--lace-border);margin:26px 0 20px}
+.tab{background:transparent!important;border:0!important;border-bottom:1px solid transparent!important;border-radius:0!important;color:var(--lace-muted);padding:11px 4px;margin-right:22px;font-weight:500}
+.tab:hover{color:var(--lace-text)}
+.tab.active{color:var(--lace-white)!important;border-bottom-color:var(--lace-white)!important}
+label{color:#bdbdbd;font-family:'Geist Mono',monospace;font-size:.72rem;letter-spacing:.02em;text-transform:uppercase}
+input,textarea{background:#0b0b0b!important;border:1px solid var(--lace-border)!important;border-radius:8px!important;color:var(--lace-text)!important;box-shadow:none!important}
+input:focus,textarea:focus{border-color:#555!important;outline:none!important}
+.primary{background:var(--lace-white)!important;color:#050505!important;border:1px solid var(--lace-white)!important;border-radius:8px!important;font-weight:600}
+.primary:hover{background:#dcdcdc!important;border-color:#dcdcdc!important}
+.secondary,.icon-btn,.small-icon-btn{background:transparent!important;border:1px solid var(--lace-border)!important;color:#bdbdbd!important;border-radius:8px!important}
+.secondary:hover,.icon-btn:hover,.small-icon-btn:hover{background:var(--lace-hover)!important;border-color:#3a3a3a!important;color:#fff!important}
+.notice{background:#101010!important;border:1px solid var(--lace-border)!important;border-radius:8px!important}
+.login-news{padding:34px!important;border-left:1px solid var(--lace-border)!important}
+.login-news-header{border-color:var(--lace-border)!important}
+.login-news-header h2{font-size:15px!important;font-weight:600;letter-spacing:-.02em}
+.login-news-item{background:transparent!important;border:0!important;border-bottom:1px solid var(--lace-border-soft)!important;border-radius:0!important;padding:14px 0!important}
+.login-news-item strong{font-weight:600}
+.login-news-item a{color:var(--lace-blue)}
+.section-title,.people-heading{font-family:'Geist Mono',monospace!important;font-size:.67rem!important;font-weight:500!important;letter-spacing:.08em!important;color:var(--lace-faint)!important}
+
+/* Main application */
+.app{background:var(--lace-bg)!important;grid-template-columns:245px minmax(0,1fr) 225px!important}
+.sidebar,.users-sidebar{background:var(--lace-panel)!important;border-color:var(--lace-border)!important}
+.sidebar-top{padding:17px 16px!important;background:var(--lace-panel)!important;border-color:var(--lace-border)!important}
+.sidebar-top strong{font-size:15px;font-weight:600;letter-spacing:-.025em}
+.sidebar-scroll{padding:8px 8px 0}
+.sidebar-section{padding:14px 0!important}
+.channel{color:#929292!important;border-radius:6px!important;margin:1px 0!important;width:100%!important;padding:8px 9px!important;font-size:14px}
+.channel:hover{background:var(--lace-hover)!important;color:#eee!important}
+.channel.active{background:var(--lace-active)!important;color:#fff!important}
+.channel.has-unread{font-weight:600!important}
+.notification-badge{background:#fff!important;color:#050505!important;border-radius:999px!important;font-family:'Geist Mono',monospace;font-size:.62rem!important}
+.sidebar-bottom{padding:12px!important;background:var(--lace-panel)!important;border-color:var(--lace-border)!important}
+
+.chat{background:var(--lace-bg)!important}
+.chat-header{height:64px;padding:13px 20px!important;background:rgba(5,5,5,.94)!important;border-bottom:1px solid var(--lace-border)!important;backdrop-filter:blur(14px)}
+.chat-header h1{font-size:15px!important;font-weight:600!important;letter-spacing:-.025em}
+.chat-header .muted{font-family:'Geist Mono',monospace;font-size:.66rem!important;color:var(--lace-faint)!important;text-transform:uppercase;letter-spacing:.05em}
+.chat-header-actions{display:flex;gap:7px}
+.chat-header-actions .secondary{font-family:'Geist Mono',monospace;font-size:.68rem;text-transform:uppercase;letter-spacing:.04em;padding:7px 10px}
+.messages{padding:28px 30px!important;background:var(--lace-bg)!important}
+.message{padding:7px 10px 10px!important;margin:0 -10px;border-radius:7px}
+.message:hover{background:#090909!important}
+.message-meta{gap:8px!important}
+.message-username{font-weight:600!important;letter-spacing:-.015em}
+.message-meta time{font-family:'Geist Mono',monospace;font-size:.63rem!important;color:var(--lace-faint)!important}
+.profile-tag{background:#171717!important;border:1px solid #292929!important;border-radius:4px!important;color:#a6a6a6!important;font-family:'Geist Mono',monospace;font-size:.62rem!important;font-weight:500!important}
+.message-content{color:#d8d8d8!important;line-height:1.55!important;font-size:14px}
+.message-content code{background:#0c0c0c!important;border:1px solid #292929!important}
+.message-content blockquote{border-color:#4a4a4a!important;color:#9c9c9c!important}
+.message-content a{color:var(--lace-blue)!important}
+.message-divider{font-family:'Geist Mono',monospace!important;font-size:.63rem!important;font-weight:500!important;color:var(--lace-faint)!important;letter-spacing:.03em}
+.message-divider::before,.message-divider::after{background:var(--lace-border)!important}
+
+.composer{padding:12px 18px!important;background:var(--lace-panel)!important;border-top:1px solid var(--lace-border)!important}
+.chat-input{background:#0b0b0b!important;border:1px solid var(--lace-border)!important;border-radius:8px!important;min-height:46px!important}
+.chat-input::placeholder{color:#5f5f5f}
+.send{min-width:68px}
+
+.users-sidebar{padding:15px 10px!important}
+.user-list{gap:2px!important}
+.user-row{color:#969696!important;border-radius:6px!important;padding:7px 8px!important}
+.user-row:hover{background:var(--lace-hover)!important;color:#eee!important}
+.user-name{font-weight:500!important}
+.user-state{font-family:'Geist Mono',monospace!important;color:#5f5f5f!important}
+.status-dot.online{background:var(--lace-green)!important;box-shadow:0 0 7px rgba(70,211,105,.35)}
+.status-dot.offline{background:#444!important}
+.dm-action-btn{background:transparent!important;border-color:#252525!important;color:#777!important}
+.dm-action-btn:hover{background:#151515!important;color:#ddd!important}
+
+/* Dialogs */
+dialog{background:var(--lace-panel)!important;border:1px solid var(--lace-border)!important;border-radius:12px!important;box-shadow:0 30px 100px rgba(0,0,0,.7)!important}
+dialog::backdrop{background:rgba(0,0,0,.72)!important;backdrop-filter:blur(5px)}
+.modal{padding:25px!important}
+.modal h2{font-size:19px;font-weight:600;letter-spacing:-.025em}
+.modal-close{color:#777!important}
+.modal-close:hover{color:#fff!important}
+.panel{background:#0b0b0b!important;border-color:var(--lace-border)!important;border-radius:8px!important}
+.device-row{border-color:var(--lace-border)!important;border-radius:8px!important;background:#090909}
+.dm-picker-row:hover{background:#111!important}
+.toast{background:#101010!important;border:1px solid #303030!important;border-radius:8px!important}
+
+/* Tiny system-like labels */
+.small{font-size:.78rem}
+.muted{color:var(--lace-muted)!important}
+
+@media(max-width:900px){.app{grid-template-columns:220px minmax(0,1fr)!important}}
+@media(max-width:760px){
+  .auth-view{padding:14px}
+  .auth-layout{border-radius:10px}
+  .auth-card,.login-news{padding:24px!important}
+  .app{grid-template-columns:1fr!important}
+  .sidebar{max-height:none}
+  .messages{padding:20px 15px!important}
+}
+
+</style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <div id="toast" class="toast"></div>
+  <div id="notificationStack" class="notification-stack" aria-live="polite"></div>
+
+  <section id="deviceBlockedView" class="auth-view hidden">
+    <div class="auth-card">
+      <div class="brand">Chat</div>
+      <h2>Access unavailable</h2>
+      <p class="muted">This device is not allowed to access Chat.</p>
+    </div>
+  </section>
+
+  <section id="authView" class="auth-view">
+    <div class="auth-layout">
+      <div class="auth-left">
+        <div id="authCard" class="auth-card">
+          <div class="brand">Chat</div>
+          <p class="muted">Sign in or create an account.</p>
+          <div id="authNotice" class="notice hidden"></div>
+          <div class="tabs">
+            <button type="button" class="tab active" data-auth-tab="login">Log in</button>
+            <button type="button" class="tab" data-auth-tab="signup">Create account</button>
+          </div>
+          <form id="loginForm" class="auth-form">
+            <label>Username<input id="loginUsername" autocomplete="username"></label>
+            <label>Password<input id="loginPassword" type="password" autocomplete="current-password"></label>
+            <button class="primary" type="submit">Log in</button>
+          </form>
+          <form id="signupForm" class="auth-form hidden">
+            <label>Username<input id="signupUsername" autocomplete="username"></label>
+            <label>Password<input id="signupPassword" type="password" autocomplete="new-password"></label>
+            <button class="primary" type="submit">Create account</button>
+          </form>
+        </div>
+        <div id="authGateActions" class="auth-gate-actions hidden"></div>
+      </div>
+      <aside class="login-news">
+        <header class="login-news-header"><h2>Updates</h2></header>
+        <div id="loginNews" class="login-news-feed"><div class="small muted">Loading updates...</div></div>
+      </aside>
+    </div>
+  </section>
+
+  <section id="appView" class="app hidden">
+    <aside class="sidebar">
+      <div class="sidebar-top">
+        <div><strong>Chat</strong><div id="currentUserLabel" class="small muted"></div></div>
+        <button id="logoutBtn" class="icon-btn" title="Log out">↪</button>
+      </div>
+      <div class="sidebar-scroll">
+        <div class="sidebar-section">
+          <div class="section-title">Channels</div>
+          <div id="channelList"></div>
+        </div>
+        <div class="sidebar-section">
+          <div class="section-title">Private channels</div>
+          <div id="privateChannelList"></div>
+        </div>
+        <div class="sidebar-section dm-section">
+          <div class="section-heading-row"><div class="section-title">Direct messages</div><button id="newDmBtn" class="small-icon-btn" type="button" title="New direct message">+</button></div>
+          <div id="dmList"></div>
+        </div>
+      </div>
+      <div class="sidebar-bottom">
+        <button id="profileBtn" class="secondary full">Profile</button>
+        <button id="adminBtn" class="secondary full hidden">Server Settings</button>
+      </div>
+    </aside>
+
+    <main class="chat">
+      <header class="chat-header">
+        <div>
+          <h1 id="roomTitle"># general</h1>
+          <div id="roomSubtitle" class="muted small">Text channel</div>
+        </div>
+        <div class="chat-header-actions"><button id="notificationBtn" class="secondary notification-btn" type="button" title="Enable notifications">🔔</button><button id="refreshBtn" class="secondary">Refresh</button></div>
+      </header>
+
+      <div id="messages" class="messages"></div>
+
+      <form id="messageForm" class="composer">
+        <textarea id="messageInput" class="chat-input" rows="1" maxlength="4000"
+          placeholder="Message #general..."></textarea>
+        <button class="primary send" type="submit">Send</button>
+      </form>
+    </main>
+
+    <aside class="users-sidebar">
+      <div class="section-title">People</div>
+      <div id="userList" class="user-list"></div>
+    </aside>
+  </section>
+
+  <dialog id="dmDialog">
+    <div class="modal">
+      <button class="modal-close" id="closeDmBtn" type="button">×</button>
+      <h2>New direct message</h2>
+      <p class="muted small">Choose someone to start a conversation with.</p>
+      <div id="dmUserPicker" class="dm-picker"></div>
+    </div>
+  </dialog>
+
+  <dialog id="profileDialog">
+    <form method="dialog" class="modal">
+      <button class="modal-close" value="cancel">×</button>
+      <h2>Profile</h2>
+      <div id="profileTagPreview" class="profile-preview"></div>
+      <label>Username color<input id="profileColor" type="color"></label>
+      <div class="modal-actions"><button class="secondary" value="cancel">Cancel</button><button id="saveProfileBtn" type="button" class="primary">Save</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="commandDialog">
+    <div class="modal">
+      <button class="modal-close" id="closeCommandBtn" type="button">×</button>
+      <h2 id="commandDialogTitle">Choose a user</h2>
+      <p id="commandDialogSubtitle" class="muted small"></p>
+      <div id="commandUserPicker" class="dm-picker"></div>
+    </div>
+  </dialog>
+
+  <dialog id="adminDialog">
+    <div class="modal modal-wide">
+      <button class="modal-close" value="cancel">×</button>
+      <h2>Server Settings</h2>
+      <div class="admin-grid">
+        <section class="panel">
+          <h3>Account limit</h3>
+          <label>Global accounts per device<input id="globalLimit" type="number" min="1" max="100"></label>
+          <button id="saveGlobalBtn" type="button" class="primary">Save limit</button>
+        </section>
+        <section class="panel">
+          <h3>Device management</h3>
+          <div id="deviceList" class="device-list"></div>
+        </section>
+        <section class="panel">
+          <h3>Client access</h3>
+          <div class="stack">
+            <label>Minimum client version<input id="requiredVersion" value="6"></label>
+            <label>Download URL<input id="downloadUrl" placeholder="https://example.com/Chat-V6.html"></label>
+            <label class="inline-check"><input id="maintenanceMode" type="checkbox"> Force maintenance mode</label>
+            <input id="maintenanceReason" placeholder="Maintenance message">
+            <button id="saveClientAccessBtn" type="button" class="primary">Save client access</button>
+          </div>
+        </section>
+        <section class="panel">
+          <h3>Announcements</h3>
+          <form id="newsForm" class="stack">
+            <input id="newsTitle" placeholder="Title" maxlength="120">
+            <textarea id="newsSummary" placeholder="Summary" maxlength="500"></textarea>
+            <input id="newsUrl" placeholder="Optional URL">
+            <button class="primary" type="submit">Post update</button>
+          </form>
+        </section>
+      </div>
+      <div class="modal-actions"><button id="closeAdminBtn" type="button" class="secondary">Close</button></div>
+    </div>
+  </dialog>
+
+  
+  
+  
+  
+  
+
+
+
+<script>
+window.CONFIG = {
+  SUPABASE_URL: "https://chggbyitontubbujqcik.supabase.co",
+  SUPABASE_KEY: "sb_publishable_8MZFFE_cBxzQIzFEMxu0_g_Zt25p64b",
+  APP_VERSION: "7"
+};
+// Client version: 6 — keep this equal to server_settings.min_required_version.
+
+const CONFIG = window.CONFIG;
+let db = null;
+let clientBlocked = false;
+
+function makeDbClient() {
+  const username = sessionStorage.getItem("chat_username") || "";
+  if (!CONFIG.SUPABASE_URL || !CONFIG.SUPABASE_KEY) return null;
+  return window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_KEY, {
+    global: { headers: username ? { "x-chat-username": username } : {} }
+  });
+}
+
+function clearAuthCard() {
+  const card = document.getElementById("authCard");
+  if (!card) return;
+  card.innerHTML = "";
+  card.classList.add("auth-blank");
+}
+
+function restoreAuthCard() {
+  location.reload();
+}
+
+function normalizeExternalUrl(value) {
+  const raw = String(value || "").trim();
+  if (!raw) return "";
+  const candidate = /^[a-z][a-z0-9+.-]*:\/\//i.test(raw) ? raw : "https://" + raw;
+  try {
+    const url = new URL(candidate);
+    if (url.protocol !== "http:" && url.protocol !== "https:") return "";
+    return url.href;
+  } catch (_) {
+    return "";
+  }
+}
+
+function showLockout(title, message, downloadUrl = "") {
+  clientBlocked = true;
+  // Keep the left auth card itself empty so there is no login/create-account UI.
+  clearAuthCard();
+  const actions = document.getElementById("authGateActions");
+  if (actions) {
+    actions.classList.remove("hidden");
+    actions.innerHTML = "";
+    const heading = document.createElement("div");
+    heading.className = "notice error";
+    heading.style.marginBottom = "10px";
+    heading.innerHTML = `<strong>${escapeHtml(title)}</strong><br>${escapeHtml(message)}`;
+    actions.appendChild(heading);
+    const safeUrl = normalizeExternalUrl(downloadUrl);
+    if (safeUrl) {
+      const a = document.createElement("a");
+      a.className = "auth-gate-link";
+      a.href = safeUrl;
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      a.textContent = "Download New Version";
+      actions.appendChild(a);
+    }
+  }
+  document.getElementById("authView")?.classList.remove("hidden");
+  document.getElementById("appView")?.classList.add("hidden");
+  document.getElementById("deviceBlockedView")?.classList.add("hidden");
+}
+
+async function runServerCompliance() {
+  if (!db) return true;
+  try {
+    const { data: settings, error } = await db.from("server_settings")
+      .select("maintenance_mode,maintenance_reason,min_required_version,download_url")
+      .order("id").limit(1).single();
+
+    if (error) {
+      showLockout("Chat setup is unavailable", "The server settings could not be verified.");
+      return false;
+    }
+
+    if (settings?.maintenance_mode) {
+      showLockout("Chat is temporarily unavailable, but maybe make sure you are on the right one, your version number is: 6.1", settings.maintenance_reason || "Down for updates, no need to download the new version, because you are on the right one.", settings.download_url || "");
+      return false;
+    }
+
+    if (settings?.min_required_version && String(settings.min_required_version) !== String(CONFIG.APP_VERSION)) {
+      showLockout("This version is out of date", "Please use the current version of Chat.", settings.download_url || "");
+      return false;
+    }
+
+    if (await checkDeviceAccess()) {
+      showDeviceBlocked();
+      return false;
+    }
+
+    clientBlocked = false;
+    return true;
+  } catch (e) {
+    console.error("Compliance check failed", e);
+    showLockout("Chat setup is unavailable", "The server could not verify this client.");
+    return false;
+  }
+}
+
+db = makeDbClient();
+window.db = db;
+
+function refreshDbClient() {
+  db = makeDbClient();
+  window.db = db;
+  return db;
+}
+
+window.state = {
+  user: null, profile: null, channel: null, realtime: null,
+  channels: [], messages: [], isAdmin: false,
+  messageLoadGeneration: 0, messageRenderGeneration: 0, channelSwitchGeneration: 0,
+  dmThreads: [], unread: {}, people: []
+};
+const CHAT_SESSION_KEY = "chat_app_session_v7";
+
+function readChatSession(){
+  try{
+    const raw = localStorage.getItem(CHAT_SESSION_KEY);
+    return raw ? JSON.parse(raw) : null;
+  }catch(_){ return null; }
+}
+function writeChatSession(username){
+  try{ localStorage.setItem(CHAT_SESSION_KEY, JSON.stringify({username})); sessionStorage.setItem("chat_username", String(username)); }catch(_){}
+}
+function clearChatSession(){
+  try{ localStorage.removeItem(CHAT_SESSION_KEY); sessionStorage.removeItem("chat_username"); }catch(_){}
+}
+async function ensureLoggedIn(){
+  if(!state.user?.username){
+    const saved = readChatSession();
+    if(saved?.username) state.user = {username:String(saved.username)};
+  }
+  if(!state.user?.username) throw new Error("Must be logged in.");
+  refreshDbClient();
+  if(state.profile?.username === state.user.username) return state.profile;
+  const profile = await loadProfile();
+  if(!profile) throw new Error("Must be logged in.");
+  return profile;
+}
+
+
+window.deviceId = (() => {
+  const key = "chat_app_device_id_v6";
+  let id = localStorage.getItem(key);
+  if (!id || !id.startsWith("dev_")) {
+    const raw = (crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2))
+      .replace(/[^a-zA-Z0-9]/g, "");
+    id = "dev_" + raw.slice(0, 20);
+    localStorage.setItem(key, id);
+  }
+  return id;
+})();
+
+function toast(message, isError = false) {
+  const el = document.getElementById("toast");
+  el.textContent = message;
+  el.className = "toast show " + (isError ? "error" : "");
+  clearTimeout(window.__toastTimer);
+  window.__toastTimer = setTimeout(() => el.className = "toast", 3500);
+}
+
+function escapeHtml(value) {
+  return String(value ?? "").replace(/[&<>"']/g, c => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+  }[c]));
+}
+
+
+async function checkDeviceAccess() {
+  if (!db) return false;
+  const { data, error } = await db.rpc("check_device_status", { p_device_id: window.deviceId });
+  if (error) throw error;
+  return data === true || data?.is_banned === true;
+}
+
+function showDeviceBlocked() {
+  document.getElementById("authView")?.classList.add("hidden");
+  document.getElementById("appView")?.classList.add("hidden");
+  document.getElementById("deviceBlockedView")?.classList.remove("hidden");
+}
+
+async function loadProfile() {
+  const username = state.user?.username;
+  if (!username) { state.profile = null; return null; }
+
+  const { data, error } = await db.from("profiles")
+    .select("username,device_id,username_color,profile_tag,is_banned,ban_reason,last_seen_at")
+    .eq("username", username).single();
+
+  if (error || !data) {
+    state.user = null; state.profile = null;
+    return null;
+  }
+
+  state.user = { username: data.username };
+  state.profile = data;
+  return data;
+}
+
+async function signUp(username, password) {
+  const clean = username.trim();
+
+  const { data: existing } = await db.from("profiles")
+    .select("username").ilike("username", clean).maybeSingle();
+  if (existing) throw new Error("That username is already taken.");
+
+  const { data, error } = await db.rpc("create_profile_legacy", {
+    p_username: clean,
+    p_password: password ?? "",
+    p_device_id: window.deviceId,
+    p_client_version: CONFIG.APP_VERSION
+  });
+  if (error) throw error;
+
+  state.user = { username: clean };
+  writeChatSession(clean);
+  refreshDbClient();
+  return data;
+}
+
+async function signIn(username, password) {
+  const clean = username.trim();
+  const { data, error } = await db.rpc("login_profile", {
+    p_username: clean,
+    p_password: password ?? "",
+    p_client_version: CONFIG.APP_VERSION,
+    p_device_id: window.deviceId
+  });
+  if (error) throw error;
+  if (!data) throw new Error("Incorrect username or password.");
+
+  state.user = { username: data.username };
+  writeChatSession(data.username);
+  refreshDbClient();
+  return data;
+}
+
+async function signOut() {
+  if (state.realtime) await db.removeChannel(state.realtime);
+  state.user = null;
+  state.profile = null;
+  clearChatSession();
+  location.reload();
+}
+
+window.signIn = signIn;
+window.signUp = signUp;
+
+const loginUsername = document.getElementById("loginUsername");
+const loginPassword = document.getElementById("loginPassword");
+const signupUsername = document.getElementById("signupUsername");
+const signupPassword = document.getElementById("signupPassword");
+const messageInput = document.getElementById("messageInput");
+const messageForm = document.getElementById("messageForm");
+const roomTitle = document.getElementById("roomTitle");
+const roomSubtitle = document.getElementById("roomSubtitle");
+const currentUserLabel = document.getElementById("currentUserLabel");
+const adminBtn = document.getElementById("adminBtn");
+const adminDialog = document.getElementById("adminDialog");
+const deviceList = document.getElementById("deviceList");
+const globalLimit = document.getElementById("globalLimit");
+const saveGlobalBtn = document.getElementById("saveGlobalBtn");
+const newsForm = document.getElementById("newsForm");
+const newsTitle = document.getElementById("newsTitle");
+const newsSummary = document.getElementById("newsSummary");
+const newsUrl = document.getElementById("newsUrl");
+const requiredVersion = document.getElementById("requiredVersion");
+const downloadUrl = document.getElementById("downloadUrl");
+const maintenanceMode = document.getElementById("maintenanceMode");
+const maintenanceReason = document.getElementById("maintenanceReason");
+const saveClientAccessBtn = document.getElementById("saveClientAccessBtn");
+const logoutBtn = document.getElementById("logoutBtn");
+const refreshBtn = document.getElementById("refreshBtn");
+const profileBtn = document.getElementById("profileBtn");
+const saveProfileBtn = document.getElementById("saveProfileBtn");
+const newDmBtn = document.getElementById("newDmBtn");
+const closeDmBtn = document.getElementById("closeDmBtn");
+const closeCommandBtn = document.getElementById("closeCommandBtn");
+const closeAdminBtn = document.getElementById("closeAdminBtn");
+function showAuthTab(tab) {
+  document.querySelectorAll(".tab").forEach(b => b.classList.toggle("active", b.dataset.authTab === tab));
+  document.getElementById("loginForm").classList.toggle("hidden", tab !== "login");
+  document.getElementById("signupForm").classList.toggle("hidden", tab !== "signup");
+}
+function showAuthError(message) {
+  const box = document.getElementById("authNotice");
+  if (!box) return;
+  box.textContent = message;
+  box.className = "notice error";
+}
+function setupAuth() {
+  document.querySelectorAll("[data-auth-tab]").forEach(b => b.onclick = () => showAuthTab(b.dataset.authTab));
+  document.getElementById("loginForm").onsubmit = async e => {
+    e.preventDefault();
+    try {
+      if (!(await runServerCompliance())) return;
+      await signIn(loginUsername.value.trim(), loginPassword.value);
+      await startApp();
+    } catch (err) { showAuthError(err.message); }
+  };
+  document.getElementById("signupForm").onsubmit = async e => {
+    e.preventDefault();
+    try {
+      if (!(await runServerCompliance())) return;
+      await signUp(signupUsername.value.trim(), signupPassword.value);
+      await startApp();
+    } catch (err) { showAuthError(err.message); }
+  };
+}
+async function loadLoginNews(){
+  const box=document.getElementById("loginNews");
+  if(!box)return;
+  if(!db){box.innerHTML='<div class="small muted">Connect this build to a Supabase project to load updates.</div>';return;}
+  box.innerHTML='<div class="small muted">Loading updates...</div>';
+  const controller=new AbortController();
+  const timer=setTimeout(()=>controller.abort(),5000);
+  try{
+    const {data,error}=await db.from("news").select("id,title,summary,url,created_at").order("created_at",{ascending:false}).limit(5).abortSignal(controller.signal);
+    if(error)throw error;
+    box.innerHTML=(data||[]).length?data.map(n=>`<article class="login-news-item"><div class="small muted">${new Date(n.created_at).toLocaleDateString()}</div><strong>${escapeHtml(n.title)}</strong><div class="small">${escapeHtml(n.summary)}</div>${normalizeExternalUrl(n.url)?`<a href="${escapeHtml(normalizeExternalUrl(n.url))}" target="_blank" rel="noopener noreferrer">Read more</a>`:""}</article>`).join(""):'<div class="small muted">No updates right now.</div>';
+  }catch(e){box.innerHTML='<div class="small muted">Updates are unavailable right now.</div>'}
+  finally{clearTimeout(timer)}
+}
+
+async function loadChannels() {
+  const { data, error } = await db.from("channels").select("id,name,is_private,invite_code,whitelist,banned_users").order("id").limit(100);
+  if (error) throw error;
+  const username = state.profile.username.toLowerCase();
+  state.channels = (data || []).filter(c => {
+    const banned = (c.banned_users || "").split(",").map(x => x.trim().toLowerCase()).filter(Boolean);
+    if (banned.includes(username)) return false;
+    if (!c.is_private) return true;
+    const allowed = (c.whitelist || "").split(",").map(x => x.trim().toLowerCase()).filter(Boolean);
+    return allowed.includes(username);
+  });
+  renderChannels();
+  if (!state.channel || state.channel.is_dm || !state.channels.some(c => c.id === state.channel.id)) {
+    const general = state.channels.find(c => c.name.toLowerCase() === "general") || state.channels[0];
+    if (general) await selectChannel(general);
+  }
+}
+function renderChannels() {
+  const publicBox = document.getElementById("channelList"), privateBox = document.getElementById("privateChannelList");
+  publicBox.innerHTML = ""; privateBox.innerHTML = "";
+  state.channels.forEach(c => {
+    const unread = state.unread["channel:" + c.id] || 0;
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "channel " + (!state.channel?.is_dm && state.channel?.id === c.id ? "active " : "") + (unread ? "has-unread" : "");
+    b.innerHTML = `<span>${c.is_private ? "🔒" : "#"} ${escapeHtml(c.name)}</span>`;
+    if (unread) b.insertAdjacentHTML("beforeend", `<span class="notification-badge">${unread}</span>`);
+    b.onclick = () => selectChannel(c);
+    (c.is_private ? privateBox : publicBox).appendChild(b);
+  });
+}
+async function selectChannel(channel) {
+  if (!channel) return;
+  const switchGeneration = ++state.channelSwitchGeneration;
+  state.channel = channel;
+  if (document.visibilityState === "visible" && document.hasFocus()) {
+    state.unread["channel:" + channel.id] = 0;
+  }
+  updateTabTitle(); renderChannels(); renderDMList();
+  roomTitle.textContent = (channel.is_private ? "🔒 " : "# ") + channel.name;
+  roomSubtitle.textContent = channel.is_private ? "Private channel" : "Text channel";
+  messageInput.placeholder = "Message " + (channel.is_private ? "" : "#") + channel.name + "...";
+
+  // Subscribe before fetching so an INSERT during the fetch cannot fall into a gap.
+  await subscribeToChannel(channel, switchGeneration);
+  if (switchGeneration !== state.channelSwitchGeneration || state.channel !== channel) return;
+  await loadMessages();
+  if (switchGeneration !== state.channelSwitchGeneration || state.channel !== channel) return;
+  await loadMessages();
+}
+function dmRoom(username) {
+  return "dm:" + [state.profile.username, username].sort((a,b) => a.localeCompare(b, undefined, {sensitivity:"base"})).join(":");
+}
+async function selectDM(username) {
+  const name = username.trim();
+  if (!name || name.toLowerCase() === state.profile.username.toLowerCase()) return;
+  const channel = {id:null,name,is_private:true,is_dm:true,dm_username:name};
+  const switchGeneration = ++state.channelSwitchGeneration;
+  state.channel = channel;
+  if (document.visibilityState === "visible" && document.hasFocus()) {
+    state.unread["dm:" + name.toLowerCase()] = 0;
+  }
+  updateTabTitle(); renderChannels(); renderDMList();
+  roomTitle.textContent = "@ " + name;
+  roomSubtitle.textContent = "Direct message";
+  messageInput.placeholder = "Message @" + name + "...";
+  await subscribeToChannel(channel, switchGeneration);
+  if (switchGeneration !== state.channelSwitchGeneration || state.channel !== channel) return;
+  await loadMessages();
+  if (switchGeneration !== state.channelSwitchGeneration || state.channel !== channel) return;
+  await loadMessages();
+}
+async function loadDMThreads() {
+  const me = state.profile.username;
+  const {data,error} = await db.from("messages").select("sender_username,recipient_username,created_at").eq("is_dm",true).or(`sender_username.eq.${encodeURIComponent(me)},recipient_username.eq.${encodeURIComponent(me)}`).order("created_at",{ascending:false}).limit(200);
+  if (error) return;
+  const seen = new Set(); state.dmThreads = [];
+  for (const m of data || []) {
+    const other = m.sender_username === me ? m.recipient_username : m.sender_username;
+    if (other && other !== me && !seen.has(other.toLowerCase())) { seen.add(other.toLowerCase()); state.dmThreads.push(other); }
+  }
+  renderDMList();
+}
+function renderDMList() {
+  const box = document.getElementById("dmList"); if (!box) return;
+  box.innerHTML = "";
+  if (!state.dmThreads.length) { box.innerHTML = '<div class="small muted dm-empty">No conversations yet.</div>'; return; }
+  state.dmThreads.forEach(username => {
+    const row = document.createElement("button"); row.type="button";
+    row.className = "channel dm-row " + (state.channel?.is_dm && state.channel.dm_username === username ? "active " : "");
+    const unread = state.unread["dm:" + username.toLowerCase()] || 0;
+    row.innerHTML = `<span>👤 ${escapeHtml(username)}</span>`;
+    if (unread) row.insertAdjacentHTML("beforeend", `<span class="notification-badge">${unread}</span>`);
+    row.onclick = () => selectDM(username); box.appendChild(row);
+  });
+}
+async function openNewDM() {
+  const {data,error} = await db.from("profiles").select("username,username_color,profile_tag,last_seen_at,is_banned").eq("is_banned",false).order("username").limit(200);
+  if (error) return toast(error.message,true);
+  const box = document.getElementById("dmUserPicker"); box.innerHTML = "";
+  (data || []).filter(p => p.username.toLowerCase() !== state.profile.username.toLowerCase()).forEach(p => {
+    const row = document.createElement("button"); row.type="button"; row.className="dm-picker-row";
+    row.innerHTML = `<span class="status-dot ${isOnlineProfile(p) ? "online" : "offline"}"></span><span class="dm-picker-name" style="color:${safeColor(p.username_color)}">${escapeHtml(p.username)}</span>${p.profile_tag ? `<span class="profile-tag">${escapeHtml(p.profile_tag)}</span>` : ""}<span class="dm-picker-action">Message</span>`;
+    row.onclick = async () => { document.getElementById("dmDialog").close(); await selectDM(p.username); };
+    box.appendChild(row);
+  });
+  if (!box.children.length) box.innerHTML='<div class="small muted">No other users.</div>';
+  document.getElementById("dmDialog").showModal();
+}
+function safeColor(c){return /^#[0-9a-fA-F]{6}$/.test(c||"")?c:"#ffffff"}
+function isOnlineProfile(p){return p.last_seen_at && (Date.now()-new Date(p.last_seen_at).getTime()<45000)}
+async function loadPeople() {
+  const {data,error} = await db.from("profiles").select("username,username_color,profile_tag,last_seen_at,is_banned").eq("is_banned",false).order("username").limit(200);
+  if (error) { console.error("loadPeople", error); throw error; }
+  state.people=data||[]; const box=document.getElementById("userList"); if(!box)return; box.innerHTML="";
+  const online=state.people.filter(isOnlineProfile), offline=state.people.filter(p=>!isOnlineProfile(p));
+  const renderGroup=(title,people,isOnline)=>{
+    if(!people.length)return;
+    const h=document.createElement("div"); h.className="people-heading"; h.textContent=`${title} — ${people.length}`; box.appendChild(h);
+    people.forEach(p=>{
+      const row=document.createElement("div"); row.className="user-row-wrap";
+      const info=document.createElement("button"); info.type="button"; info.className="user-row"; info.innerHTML=`<span class="status-dot ${isOnline?"online":"offline"}"></span><span class="user-name" style="color:${isOnline?safeColor(p.username_color):"#747b87"}">${escapeHtml(p.username)}</span>${p.profile_tag?`<span class="profile-tag">${escapeHtml(p.profile_tag)}</span>`:""}`; info.onclick=()=>selectDM(p.username);
+      const dm=document.createElement("button"); dm.type="button"; dm.className="dm-action-btn"; dm.title="Send direct message"; dm.textContent="DM"; dm.onclick=()=>selectDM(p.username);
+      row.append(info,dm); box.appendChild(row);
+    });
+  };
+  renderGroup("ONLINE",online,true); renderGroup("OFFLINE",offline,false);
+}
+async function heartbeat(){if(!state.profile?.username)return; await db.from("profiles").update({last_seen_at:new Date().toISOString()}).eq("username",state.profile.username)}
+function updateTabTitle(){const total=Object.values(state.unread||{}).reduce((s,n)=>s+(Number(n)||0),0);document.title=total>0?`(${total}) Chat`:"Chat"}
+function addUnread(key){state.unread[key]=(state.unread[key]||0)+1;updateTabTitle();renderChannels();renderDMList()}
+async function openProfile(){
+  if(!state.profile)return;
+  const dlg=document.getElementById("profileDialog");
+  if(!dlg)return;
+  const color=document.getElementById("profileColor");
+  const preview=document.getElementById("profileTagPreview");
+  if(color) color.value=safeColor(state.profile.username_color);
+  if(preview) preview.innerHTML=`<span style="color:${safeColor(state.profile.username_color)}">${escapeHtml(state.profile.username)}</span>${state.profile.profile_tag?` <span class="profile-tag">${escapeHtml(state.profile.profile_tag)}</span>`:""}`;
+  dlg.showModal();
+}
+
+async function saveProfile(){
+  if(!state.profile?.username) throw new Error("You are not signed in.");
+  const color=safeColor(document.getElementById("profileColor")?.value);
+  const {data,error}=await db.from("profiles").update({username_color:color}).eq("username",state.profile.username).select("username,device_id,username_color,profile_tag,is_banned,ban_reason,last_seen_at").single();
+  if(error) throw error;
+  state.profile=data;
+  document.getElementById("profileDialog")?.close();
+  await loadPeople();
+  await loadMessages();
+  toast("Profile saved.");
+}
+async function openAdmin(){if(!state.isAdmin)return;const {data:settings,error}=await db.from("server_settings").select("id,admins,maintenance_mode,maintenance_reason,min_required_version,download_url,global_max_accounts_per_device").limit(1).single();if(error)throw error;globalLimit.value=settings.global_max_accounts_per_device;requiredVersion.value=settings.min_required_version||"6";downloadUrl.value=settings.download_url||"";maintenanceMode.checked=!!settings.maintenance_mode;maintenanceReason.value=settings.maintenance_reason||"Down for updates.";await loadDevices();adminDialog.showModal()}
+async function loadDevices(){const {data,error}=await db.rpc("admin_list_devices");if(error)throw error;deviceList.innerHTML=(data||[]).map(d=>`<div class="device-row"><div><strong>${escapeHtml(d.device_id)}</strong><div class="small muted">${escapeHtml(d.profile_usernames||"No profiles")} · ${d.account_count} account(s)</div></div><div class="device-actions"><input class="device-limit" data-device="${escapeHtml(d.device_id)}" type="number" min="0" max="100" value="${d.custom_account_limit??""}" placeholder="global"><button type="button" class="secondary device-limit-btn" data-device="${escapeHtml(d.device_id)}">Set</button><button type="button" class="${d.is_banned?"primary":"danger"} device-ban-btn" data-device="${escapeHtml(d.device_id)}">${d.is_banned?"Unban":"Ban"}</button></div></div>`).join("")||'<div class="empty">No devices.</div>';document.querySelectorAll(".device-limit-btn").forEach(btn=>btn.onclick=async()=>{const input=document.querySelector(`.device-limit[data-device="${CSS.escape(btn.dataset.device)}"]`);const value=input.value===""?null:Number(input.value);try{const {error}=await db.rpc("admin_set_device_limit",{p_device_id:btn.dataset.device,p_custom_limit:value});if(error)throw error;toast("Device limit saved.")}catch(e){toast(e.message,true)}});document.querySelectorAll(".device-ban-btn").forEach(btn=>btn.onclick=async()=>{const ban=btn.textContent.trim()!=="Unban";try{const {error}=await db.rpc("admin_set_device_ban",{p_device_id:btn.dataset.device,p_is_banned:ban,p_ban_reason:ban?"Banned by administrator":null});if(error)throw error;await loadDevices();toast(ban?"Device banned.":"Device unbanned.")}catch(e){toast(e.message,true)}})}
+async function startApp(){
+  if(!state.user?.username){
+    const saved=readChatSession();
+    if(saved?.username) state.user={username:String(saved.username)};
+  }
+  if(state.user?.username) refreshDbClient();
+  await loadProfile();if(!state.profile){document.getElementById("appView").classList.add("hidden");document.getElementById("authView").classList.remove("hidden");return}if(state.profile.is_banned)throw new Error(state.profile.ban_reason||"Your account is banned.");const {data:admin,error:adminError}=await db.rpc("is_admin",{p_username:state.profile.username});if(adminError)throw adminError;state.isAdmin=!!admin;document.getElementById("authView").classList.add("hidden");document.getElementById("appView").classList.remove("hidden");currentUserLabel.textContent="@"+state.profile.username;adminBtn.classList.toggle("hidden",!state.isAdmin);await heartbeat();await loadChannels();try{await loadDMThreads()}catch(e){console.error(e)}try{await loadPeople()}catch(e){console.error(e)}try{await subscribeBackgroundMessages()}catch(e){console.error(e)}clearInterval(window.__presenceTimer);window.__presenceTimer=setInterval(async()=>{await heartbeat();await loadPeople();await loadDMThreads()},15000);clearInterval(window.__complianceTimer);window.__complianceTimer=setInterval(async()=>{await runServerCompliance()},60000)}
+document.addEventListener("DOMContentLoaded",async()=>{setupAuth();installComposer();await loadLoginNews();if(!(await runServerCompliance()))return;logoutBtn.onclick=signOut;refreshBtn.onclick=safeManualRefresh;profileBtn.onclick=openProfile;saveProfileBtn.onclick=async e=>{e.preventDefault();try{await saveProfile()}catch(err){toast(err.message,true)}};adminBtn.onclick=async()=>{try{await openAdmin()}catch(e){toast(e.message,true)}};newDmBtn.onclick=openNewDM;saveClientAccessBtn.onclick=async()=>{try{const version=(requiredVersion.value||"6").trim();const url=(downloadUrl.value||"").trim()||null;const reason=(maintenanceReason.value||"Down for updates.").trim();const {error}=await db.rpc("admin_set_client_access",{p_min_version:version,p_download_url:url,p_maintenance_mode:maintenanceMode.checked,p_maintenance_reason:reason});if(error)throw error;toast("Client access settings saved.")}catch(e){toast(e.message,true)}};closeDmBtn.onclick=()=>document.getElementById("dmDialog").close();closeCommandBtn.onclick=()=>document.getElementById("commandDialog").close();closeAdminBtn.onclick=()=>adminDialog.close();saveGlobalBtn.onclick=async()=>{const value=Number(globalLimit.value);if(!Number.isInteger(value)||value<1||value>100)return toast("Enter a limit from 1 to 100.",true);try{const {error}=await db.rpc("admin_set_global_limit",{p_limit:value});if(error)throw error;toast("Global account limit saved.")}catch(e){toast(e.message,true)}};newsForm.onsubmit=async e=>{e.preventDefault();try{const {error}=await db.rpc("admin_create_news",{p_title:newsTitle.value.trim(),p_summary:newsSummary.value.trim(),p_url:newsUrl.value.trim()||null});if(error)throw error;newsForm.reset();await loadLoginNews();toast("Update posted.")}catch(e){toast(e.message,true)}};/* Deliberately do not restore a previous login on page load. Each page load starts at the login screen. */});
+let __lastManualRefresh = 0;
+let __refreshBusy = false;
+const REFRESH_COOLDOWN_MS = 15000;
+
+async function safeManualRefresh() {
+  const now = Date.now();
+  if (__refreshBusy) return toast("Refresh is already running.", true);
+  if (now - __lastManualRefresh < REFRESH_COOLDOWN_MS) {
+    const left = Math.ceil((REFRESH_COOLDOWN_MS - (now - __lastManualRefresh))/1000);
+    return toast(`Please wait ${left}s before refreshing again.`, true);
+  }
+  __lastManualRefresh = now;
+  __refreshBusy = true;
+  try {
+    await Promise.all([loadMessages(), loadPeople(), loadDMThreads()]);
+  } catch(e) {
+    toast(e.message, true);
+  } finally {
+    __refreshBusy = false;
+  }
+}
+
+function commandMessage(text) {
+  const parts = text.trim().split(/\s+/);
+  return {command:(parts[0]||"").toLowerCase(), username:parts.slice(1).join(" ").trim()};
+}
+
+async function showUserPicker(title, subtitle, users, actionLabel, action) {
+  const dlg=document.getElementById("commandDialog");
+  const box=document.getElementById("commandUserPicker");
+  document.getElementById("commandDialogTitle").textContent=title;
+  document.getElementById("commandDialogSubtitle").textContent=subtitle||"";
+  box.innerHTML="";
+  (users||[]).forEach(p=>{
+    const row=document.createElement("button");
+    row.type="button"; row.className="dm-picker-row";
+    row.innerHTML=`<span class="status-dot ${isOnlineProfile(p)?"online":"offline"}"></span><span class="dm-picker-name" style="color:${safeColor(p.username_color)}">${escapeHtml(p.username)}</span>${p.profile_tag?`<span class="profile-tag">${escapeHtml(p.profile_tag)}</span>`:""}<span class="dm-picker-action">${escapeHtml(actionLabel)}</span>`;
+    row.onclick=async()=>{try{await action(p);dlg.close()}catch(e){toast(e.message,true)}};
+    box.appendChild(row);
+  });
+  if(!box.children.length) box.innerHTML='<div class="small muted">No users available.</div>';
+  dlg.showModal();
+}
+
+async function adminUserCommand(command, username) {
+  await ensureLoggedIn();
+  if (!state.isAdmin) throw new Error("Only administrators can use that command.");
+  const normalized=String(username||"").trim();
+  if (!normalized) {
+    const {data,error}=await db.from("profiles").select("username,username_color,profile_tag,last_seen_at,is_banned").order("username").limit(200);
+    if(error) throw error;
+    const candidates=(data||[]).filter(p=>command==="ban" ? !p.is_banned : p.is_banned);
+    return showUserPicker(
+      command==="ban" ? "Ban a user" : "Unban a user",
+      command==="ban" ? "Choose a user to ban." : "Choose a banned user to restore.",
+      candidates, command==="ban" ? "Ban" : "Unban",
+      async p=>{
+        const {error}=await db.rpc(command==="ban"?"admin_ban_user":"admin_unban_user",{p_username:p.username});
+        if(error) throw error;
+        toast(command==="ban"?`${p.username} was banned.`:`${p.username} was unbanned.`);
+        await loadPeople();
+      }
+    );
+  }
+  const fn=command==="ban"?"admin_ban_user":"admin_unban_user";
+  const {error}=await db.rpc(fn,{p_username:normalized});
+  if(error) throw error;
+  toast(command==="ban"?`${normalized} was banned.`:`${normalized} was unbanned.`);
+  await loadPeople();
+}
+
+async function showInvitePicker() {
+  if(!state.channel?.is_private || state.channel?.is_dm) throw new Error("Use /invite inside a private channel.");
+  const {data,error}=await db.from("profiles").select("username,username_color,profile_tag,last_seen_at,is_banned").eq("is_banned",false).order("username").limit(200);
+  if(error) throw error;
+  const whitelist=(state.channel.whitelist||"").split(",").map(x=>x.trim().toLowerCase()).filter(Boolean);
+  const candidates=(data||[]).filter(p=>p.username.toLowerCase()!==state.profile.username.toLowerCase()&&!whitelist.includes(p.username.toLowerCase()));
+  await showUserPicker("Invite someone",`Invite a user to #${state.channel.name}. They'll receive a DM invitation.`,candidates,"Invite",async p=>{
+    const {error}=await db.rpc("send_channel_invite",{p_channel_id:state.channel.id,p_invited_username:p.username,p_requester_username:state.profile.username});
+    if(error) throw error;
+    toast(`Invite sent to ${p.username}.`);
+  });
+}
+
+// Explicit DOM references: do not rely on browser-created globals from element IDs.
+
+/* Read-state handling: being inside a channel is not enough to mark pings read.
+   The user must actually have Chat visible and focused. */
+function chatIsVisibleAndFocused(){
+  return document.visibilityState === "visible" && document.hasFocus();
+}
+
+function markActiveRoomRead(){
+  if(!chatIsVisibleAndFocused() || !state.channel) return;
+  if(state.channel.is_dm){
+    const key="dm:"+String(state.channel.dm_username||"").toLowerCase();
+    if(state.unread[key]) state.unread[key]=0;
+  }else if(state.channel.id!=null){
+    const key="channel:"+state.channel.id;
+    if(state.unread[key]) state.unread[key]=0;
+  }
+  updateTabTitle(); renderChannels(); renderDMList();
+}
+
+document.addEventListener("visibilitychange", ()=>{
+  if(document.visibilityState === "visible") markActiveRoomRead();
+});
+window.addEventListener("focus", markActiveRoomRead);
+
+/* Ping notifications */
+const notificationBtn = document.getElementById("notificationBtn");
+
+function pingNotificationText(sender, roomName) {
+  return `${sender} mentioned you${roomName ? ` in ${roomName}` : ""}`;
+}
+
+function showPingNotification({sender, roomName, messageId}) {
+  const stack = document.getElementById("notificationStack");
+  if (!stack || !sender || sender === state.profile?.username) return;
+  if (messageId && window.__shownPingNotifications?.has(messageId)) return;
+  window.__shownPingNotifications ||= new Set();
+  if (messageId) window.__shownPingNotifications.add(messageId);
+  if (window.__shownPingNotifications.size > 200) {
+    const first = window.__shownPingNotifications.values().next().value;
+    window.__shownPingNotifications.delete(first);
+  }
+
+  const item = document.createElement("div");
+  item.className = "ping-notification";
+  item.innerHTML = `<strong>🔔 ${escapeHtml(sender)} pinged you</strong><div class="small">${escapeHtml(roomName || "Chat")}</div>`;
+  item.onclick = () => item.remove();
+  stack.appendChild(item);
+  setTimeout(() => item.remove(), 6000);
+
+  // Browser notifications are only requested after the user explicitly clicks
+  // the bell, so opening Chat never causes a permission prompt by itself.
+  if (document.hidden && "Notification" in window && Notification.permission === "granted") {
+    try { new Notification("Chat ping", {body: pingNotificationText(sender, roomName), tag: messageId ? `ping-${messageId}` : undefined}); } catch (_) {}
+  }
+}
+
+async function enableNotifications() {
+  if (!("Notification" in window)) return toast("Browser notifications are not supported here.", true);
+  if (Notification.permission === "granted") return toast("Notifications are already enabled.");
+  if (Notification.permission === "denied") return toast("Notifications are blocked by your browser.", true);
+  try {
+    const permission = await Notification.requestPermission();
+    toast(permission === "granted" ? "Notifications enabled." : "Notifications were not enabled.", permission !== "granted");
+  } catch (e) { toast(e.message, true); }
+}
+
+if (notificationBtn) notificationBtn.onclick = enableNotifications;
+
+function renderMarkup(text,currentUsername){let s=escapeHtml(text);s=s.replace(/`([^`\n]+)`/g,"<code>$1</code>");s=s.replace(/\*\*([^*\n]+)\*\*/g,"<strong>$1</strong>");s=s.replace(/__([^_\n]+)__/g,"<u>$1</u>");s=s.replace(/~~([^~\n]+)~~/g,"<s>$1</s>");s=s.replace(/\*([^*\n]+)\*/g,"<em>$1</em>");s=s.replace(/^&gt;\s?(.*)$/gm,"<blockquote>$1</blockquote>");s=s.replace(/(^|[\s>])(@[A-Za-z0-9_]+)/g,(m,pre,mention)=>`${pre}<span class="${currentUsername&&mention.slice(1).toLowerCase()===currentUsername.toLowerCase()?"ping-mention ping-me":"ping-mention"}">${mention}</span>`);s=s.replace(/(^|[\s>])(https?:\/\/[^\s<]+)/g,'$1<a href="$2" target="_blank" rel="noopener noreferrer">$2</a>');return s.replace(/\n/g,"<br>")}
+async function loadMessages(){
+  if(!state.channel)return;
+  const requestedRoom=state.channel.is_dm?dmRoom(state.channel.dm_username):"channel:"+state.channel.id;
+  const requestGeneration=++state.messageLoadGeneration;
+  const {data,error}=await db.from("messages")
+    .select("id,sender_username,message_text,created_at,recipient_username,is_dm,channel_id,room_id")
+    .eq("room_id",requestedRoom)
+    // Get the newest 100, not the oldest 100.
+    .order("created_at",{ascending:false})
+    .limit(100);
+  if(error){
+    console.error("Failed to load messages for",requestedRoom,error);
+    throw error;
+  }
+
+  const currentRoom=state.channel?.is_dm?dmRoom(state.channel.dm_username):"channel:"+state.channel?.id;
+  if(requestGeneration!==state.messageLoadGeneration || currentRoom!==requestedRoom)return;
+
+  const incoming=(data||[]).slice().reverse();
+  const byId=new Map(incoming.map(m=>[m.id,m]));
+  for(const existing of state.messages){
+    if(existing && existing.room_id===requestedRoom && !byId.has(existing.id))byId.set(existing.id,existing);
+  }
+  state.messages=[...byId.values()]
+    .filter(m=>m.room_id===requestedRoom)
+    .sort((a,b)=>new Date(a.created_at)-new Date(b.created_at))
+    .slice(-100);
+  await renderMessages();
+}
+async function sendMessage(text){if(!state.profile||state.profile.is_banned)throw new Error("Your account is unavailable.");if(!state.channel)return;const isDM=!!state.channel.is_dm;const room=isDM?dmRoom(state.channel.dm_username):"channel:"+state.channel.id;const {error}=await db.from("messages").insert({sender_username:state.profile.username,recipient_username:isDM?state.channel.dm_username:null,channel_id:isDM?null:state.channel.id,message_text:text,is_dm:isDM,room_id:room});if(error)throw error}
+window.sendMessage = sendMessage;
+async function renderMessages(){
+  const renderGeneration=++state.messageRenderGeneration;
+  const requestedRoom=state.channel?.is_dm?dmRoom(state.channel.dm_username):"channel:"+state.channel?.id;
+  const box=document.getElementById("messages");
+  if(!state.messages.length){
+    box.innerHTML='<div class="empty">No messages yet. Start the conversation.</div>';
+    return;
+  }
+
+  const wasNearBottom=(box.scrollHeight-box.scrollTop-box.clientHeight)<120;
+  const oldScrollHeight=box.scrollHeight;
+  const oldScrollTop=box.scrollTop;
+
+  const names=[...new Set(state.messages.map(m=>m.sender_username))];
+  const {data:profiles,error:profileError}=await db.from("profiles")
+    .select("username,username_color,profile_tag")
+    .in("username",names);
+  if(profileError)console.warn("Profile lookup failed while rendering messages:",profileError);
+  if(renderGeneration!==state.messageRenderGeneration)return;
+  const currentRoom=state.channel?.is_dm?dmRoom(state.channel.dm_username):"channel:"+state.channel?.id;
+  if(currentRoom!==requestedRoom)return;
+  const map=Object.fromEntries((profiles||[]).map(p=>[p.username,p]));
+
+  let previousSender=null, previousTime=0;
+  let html="";
+
+  for(const m of state.messages){
+    const p=map[m.sender_username]||{};
+    const color=safeColor(p.username_color);
+    const tag=p.profile_tag?`<span class="profile-tag">${escapeHtml(p.profile_tag)}</span>`:"";
+    const time=new Date(m.created_at);
+    const gap=time.getTime()-previousTime;
+
+    // A long inactivity gap gets a prominent date/time divider.
+    // Six hours is the inactivity threshold; this is independent of calendar day.
+    if(previousTime && gap>=6*60*60*1000){
+      const label=time.toLocaleString([],{
+        weekday:"long",
+        month:"long",
+        day:"numeric",
+        year:"numeric",
+        hour:"numeric",
+        minute:"2-digit"
+      });
+      html+=`<div class="message-divider"><span>${escapeHtml(label)}</span></div>`;
+    }
+
+    // Messages from the same sender stay grouped when they are close together.
+    const continued=previousSender===m.sender_username && gap<600000;
+
+    const pingMe=new RegExp(
+      "@"+String(state.profile.username).replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+"\\b","i"
+    ).test(m.message_text);
+
+    const invite=m.message_text.match(/invite\/([A-Za-z0-9_-]+)/);
+    let content;
+
+    if(invite){
+      const pos=m.message_text.indexOf(invite[0]);
+      content=
+        `${renderMarkup(m.message_text.slice(0,pos),state.profile.username)}`+
+        `<button type="button" class="invite-button" data-invite="${escapeHtml(invite[1])}">Join channel</button>`+
+        `${renderMarkup(m.message_text.slice(pos+invite[0].length),state.profile.username)}`;
+    }else{
+      content=renderMarkup(m.message_text,state.profile.username);
+    }
+
+    html+=`<article class="message ${continued?"message-continued":""} ${pingMe?"mention-highlight":""}">`+
+      `${continued?"":`<div class="message-meta"><span class="message-username" style="color:${color}">${escapeHtml(m.sender_username)}</span>${tag}<time>${time.toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"})}</time></div>`}`+
+      `<div class="message-content">${content}</div>`+
+      `</article>`;
+
+    previousSender=m.sender_username;
+    previousTime=time.getTime();
+  }
+
+  if(renderGeneration!==state.messageRenderGeneration)return;
+  const finalRoom=state.channel?.is_dm?dmRoom(state.channel.dm_username):"channel:"+state.channel?.id;
+  if(finalRoom!==requestedRoom)return;
+  box.innerHTML=html;
+
+  box.querySelectorAll("[data-invite]").forEach(btn=>{
+    btn.onclick=()=>acceptInvite(btn.dataset.invite);
+  });
+
+  if(wasNearBottom){
+    box.scrollTop=box.scrollHeight;
+  }else{
+    // Keep the user's exact viewport when new messages arrive while they are reading history.
+    const heightDelta=box.scrollHeight-oldScrollHeight;
+    box.scrollTop=oldScrollTop+heightDelta;
+  }
+}
+async function acceptInvite(code){
+  try{
+    const {data,error}=await db.rpc("accept_channel_invite",{p_invite_code:code});
+    if(error)throw error;
+    await loadChannels();
+    const fresh=state.channels.find(c=>c.id===data);
+    if(fresh) await selectChannel(fresh);
+    toast("Joined #"+((fresh&&fresh.name)||"channel"));
+  }catch(e){toast(e.message||String(e),true)}
+}
+function installComposer(){messageForm.onsubmit=async e=>{e.preventDefault();const raw=messageInput.value;const text=raw.trim();if(!text)return;const parts=text.split(/\s+/);const cmd=(parts[0]||"").toLowerCase();const arg=parts.slice(1).join(" ").trim();try{await ensureLoggedIn();if(cmd==="/ban"||cmd==="/unban"){if(!state.isAdmin)throw new Error("Only administrators can use that command.");messageInput.value="";await adminUserCommand(cmd.slice(1),arg);messageInput.focus();return}if(cmd==="/invite"){messageInput.value="";await showInvitePicker();messageInput.focus();return}await sendMessage(raw.trimEnd());messageInput.value="";messageInput.focus()}catch(err){toast(err?.message||String(err),true)}};messageInput.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();messageForm.requestSubmit()}})}
+
+async function subscribeToChannel(channel, switchGeneration){
+  if(switchGeneration != null && switchGeneration !== state.channelSwitchGeneration)return;
+  if(state.realtime){
+    await db.removeChannel(state.realtime);
+    state.realtime=null;
+  }
+  if(switchGeneration != null && switchGeneration !== state.channelSwitchGeneration)return;
+  const room=channel.is_dm?dmRoom(channel.dm_username):"channel:"+channel.id;
+  const realtime=db.channel("chat:"+room);
+  state.realtime=realtime;
+  realtime.on("postgres_changes",{event:"INSERT",schema:"public",table:"messages",filter:"room_id=eq."+room},async payload=>{
+    if(switchGeneration != null && state.channelSwitchGeneration !== switchGeneration)return;
+    if(state.messages.some(m=>m.id===payload.new.id))return;
+    const mine=payload.new.sender_username===state.profile.username;
+    const active=state.channel?.is_dm?dmRoom(state.channel.dm_username)===room:"channel:"+state.channel.id===room;
+    if(!active)return;
+    state.messages.push(payload.new);
+    state.messages=state.messages.sort((a,b)=>new Date(a.created_at)-new Date(b.created_at)).slice(-100);
+    if(!mine){
+      const visibleFocused = document.visibilityState === "visible" && document.hasFocus();
+      if(payload.new.is_dm){
+        if(!(active && visibleFocused))addUnread("dm:"+String(payload.new.sender_username).toLowerCase());
+      }else{
+        const ping=new RegExp("@"+String(state.profile.username).replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+"\b","i").test(payload.new.message_text||"");
+        if(ping){
+          if(!(active && visibleFocused))addUnread("channel:"+payload.new.channel_id);
+          const c=state.channels.find(x=>x.id===payload.new.channel_id);
+          if(document.visibilityState !== "visible")showPingNotification({sender:payload.new.sender_username,roomName:c?"# "+c.name:"Channel",messageId:payload.new.id});
+        }
+      }
+    }
+    if(payload.new.is_dm&&payload.new.sender_username!==state.profile.username&&!state.dmThreads.some(x=>x.toLowerCase()===String(payload.new.sender_username).toLowerCase())){
+      state.dmThreads.unshift(payload.new.sender_username);renderDMList();
+    }
+    await renderMessages();
+  });
+  await new Promise((resolve,reject)=>{
+    let settled=false;
+    realtime.subscribe((status,error)=>{
+      if(status==="SUBSCRIBED"&&!settled){settled=true;resolve();}
+      else if((status==="CHANNEL_ERROR"||status==="TIMED_OUT")&&!settled){settled=true;reject(error||new Error("Realtime channel failed: "+status));}
+    });
+  });
+  if(switchGeneration != null && switchGeneration !== state.channelSwitchGeneration){
+    await db.removeChannel(realtime);
+    if(state.realtime===realtime)state.realtime=null;
+  }
+}
+async function subscribeBackgroundMessages(){
+  if(state.backgroundRealtime)await db.removeChannel(state.backgroundRealtime);
+  state.backgroundRealtime=db.channel("chat-background").on("postgres_changes",{event:"INSERT",schema:"public",table:"messages"},async payload=>{
+    if(payload.new.sender_username===state.profile.username)return;
+    const activeRoom=state.channel?.is_dm?dmRoom(state.channel.dm_username):(state.channel?"channel:"+state.channel.id:"");
+    if(payload.new.room_id===activeRoom)return;
+    if(payload.new.is_dm&&(payload.new.recipient_username||"").toLowerCase()===state.profile.username.toLowerCase()){
+      addUnread("dm:"+String(payload.new.sender_username).toLowerCase());
+    }else if(!payload.new.is_dm){
+      const ping=new RegExp("@"+String(state.profile.username).replace(/[.*+?^${}()|[\\]\\]/g,"\\$&")+"\\b","i").test(payload.new.message_text||"");
+      if(ping){
+        addUnread("channel:"+payload.new.channel_id);
+        const c=state.channels.find(x=>x.id===payload.new.channel_id);
+        showPingNotification({sender:payload.new.sender_username,roomName:c?"# "+c.name:"Channel",messageId:payload.new.id});
+      }
+    }
+  }).subscribe();
+}
+
+</script>
+</body>
+</html>

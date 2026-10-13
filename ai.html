@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI Chat — LacesOS</title>
+<style>
+*{box-sizing:border-box}body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:linear-gradient(120deg,#ece9e6,#fff);margin:0;display:flex;flex-direction:column;height:100dvh;color:#30343b}
+#topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 18px;background:#fff;border-bottom:1px solid #ddd}#brand{font-weight:700;font-size:1.05rem}button{font:inherit;cursor:pointer}#settings-toggle{border:1px solid #bbb;background:#fff;border-radius:16px;padding:8px 12px;color:#333}
+#settings{display:none;background:#fff;padding:14px 18px;border-bottom:1px solid #ddd;gap:9px;align-items:center;flex-wrap:wrap}#settings.open{display:flex}#activation-code{flex:1;min-width:200px;padding:10px 12px;border:1px solid #bbb;border-radius:12px;font-size:1rem}#activate{padding:10px 14px;border:0;border-radius:12px;background:#1468d5;color:#fff}#activation-status{font-size:.9rem;color:#555;width:100%}.small{font-size:.82rem;color:#666;width:100%}
+#chat{flex:1;padding:20px;max-width:800px;width:100%;margin:0 auto;overflow-y:auto;display:flex;flex-direction:column}#notice{background:#fff3cd;color:#856404;border:1px solid #ffeeba;padding:12px 16px;border-radius:10px;margin-bottom:20px;font-size:.95em}.message{margin:10px 0;padding:12px 16px;border-radius:18px;max-width:88%;overflow-wrap:anywhere;animation:fadeIn .2s ease;line-height:1.55}.user{align-self:flex-end;background:#d0ebff;color:#004085}.bot{align-self:flex-start;background:#e2f5e6;color:#164d27}.error{align-self:center;max-width:100%;background:#fff0f0;color:#8a1c1c;border:1px solid #e8baba}.message p:first-child{margin-top:0}.message p:last-child{margin-bottom:0}pre{padding:12px;border-radius:10px;overflow-x:auto;background:#20242a;color:#f4f4f4;font-family:ui-monospace,monospace}code{overflow-wrap:anywhere}pre code{white-space:pre;overflow-wrap:normal}a{color:#0056b3}.message table{border-collapse:collapse;display:block;overflow-x:auto}.message th,.message td{border:1px solid #b9c2cc;padding:6px 9px}blockquote{border-left:3px solid #94a3b8;margin-left:0;padding-left:12px;color:#526070}
+#form{display:flex;gap:10px;padding:15px;border-top:1px solid #ccc;background:#fff}#input{flex:1;min-width:0;padding:12px 16px;font-size:1em;border:1px solid #ccc;border-radius:20px;outline:none}#input:focus{border-color:#66afe9}#send{padding:12px 20px;background:#007bff;color:white;border:0;border-radius:20px}#send:disabled{opacity:.55;cursor:wait}#quota{font-size:.8rem;color:#666;padding:4px 18px;background:#fff;text-align:center}@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}@media(max-width:520px){#chat{padding:12px}.message{max-width:96%}#form{padding:10px}#send{padding:12px 16px}#settings{padding:12px}}
+</style>
+<script>
+window.MathJax={tex:{inlineMath:[['\\(','\\)'],['$','$']],displayMath:[['\\[','\\]'],['$$','$$']],processEscapes:true},options:{skipHtmlTags:['script','noscript','style','textarea','pre','code']},startup:{typeset:false}};
+</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/highlight.min.js"></script>
+</head>
+<body>
+<header id="topbar"><div id="brand">LacesOS · AI Chat</div><button id="settings-toggle" type="button">Activation / settings ⚙</button></header>
+<section id="settings" aria-label="AI activation">
+  <input id="activation-code" type="password" placeholder="Enter your one-time AI activation code" autocomplete="off" aria-label="Activation code">
+  <button id="activate" type="button">Activate</button>
+  <div id="activation-status" role="status">Checking access…</div>
+  <div class="small">Your code is assigned to your LacesOS device. The Gemini API key is kept on the server and is never stored in this page.</div>
+</section>
+<div id="chat"><div id="notice"><strong>Welcome.</strong> Messages are processed by Gemini. Please use your access responsibly.</div></div>
+<div id="quota">Checking AI access…</div>
+<form id="form"><input id="input" autocomplete="off" placeholder="Ask something…" aria-label="Message"><button id="send" type="submit">Send</button></form>
+<script>
+(() => {
+  'use strict';
+  const SUPABASE_URL='https://fqdesfgtsgsydkxiadax.supabase.co';
+  const SUPABASE_PUBLISHABLE_KEY='sb_publishable_92ZS9KlK1WVR9Vr0fCYAHA_vkZ9jRTc';
+  const EDGE_URL=SUPABASE_URL+'/functions/v1/ai-gateway';
+  const DEVICE_KEY='lacesos_device_id_v1';
+  const USERNAME_KEY='lacesos_username_v1';
+  const TOKEN_KEY='lacesos_ai_device_token_v1';
+  const chat=document.getElementById('chat'), form=document.getElementById('form'), input=document.getElementById('input'), send=document.getElementById('send');
+  const settings=document.getElementById('settings'), codeInput=document.getElementById('activation-code'), activationStatus=document.getElementById('activation-status'), quota=document.getElementById('quota');
+  let history=[], deviceId='', username='', token='', dailyLimit=null, usedToday=null, allowed=false;
+  try { deviceId=localStorage.getItem(DEVICE_KEY)||''; username=localStorage.getItem(USERNAME_KEY)||''; token=localStorage.getItem(TOKEN_KEY)||''; } catch (_) {}
+  document.getElementById('settings-toggle').addEventListener('click',()=>settings.classList.toggle('open'));
+
+  async function api(action, extra={}, includeToken=false) {
+    const headers={'Content-Type':'application/json','apikey':SUPABASE_PUBLISHABLE_KEY,'Authorization':'Bearer '+SUPABASE_PUBLISHABLE_KEY};
+    if(includeToken && token) headers['x-ai-device-token']=token;
+    const response=await fetch(EDGE_URL,{method:'POST',headers,body:JSON.stringify({action,device_id:deviceId,username,...extra})});
+    const data=await response.json().catch(()=>({}));
+    if(!response.ok) throw new Error(data.error||('Request failed ('+response.status+').'));
+    return data;
+  }
+  function addMessage(role,text,isError=false){
+    const div=document.createElement('div');div.className='message '+(isError?'error':role);
+    if(!isError && role==='bot' && window.marked){
+      div.innerHTML=marked.parse(text,{breaks:true,gfm:true});
+      if(window.hljs)div.querySelectorAll('pre code').forEach(block=>{try{hljs.highlightElement(block)}catch(_){}});
+      if(window.MathJax&&typeof MathJax.typesetPromise==='function')MathJax.typesetPromise([div]).catch(()=>{});
+    }else div.textContent=text;
+    chat.appendChild(div);chat.scrollTop=chat.scrollHeight;return div;
+  }
+  function setChatEnabled(value){input.disabled=!value;send.disabled=!value;}
+  async function refreshAccess(){
+    if(!deviceId){allowed=false;setChatEnabled(false);settings.classList.add('open');activationStatus.textContent='No LacesOS device ID found. Close this tab and open AI Chat from inside your LacesOS hub.';quota.textContent='Open this app from LacesOS.';return;}
+    try{
+      const result=await api('status');allowed=result.allowed===true;
+      if(!allowed){token='';try{localStorage.removeItem(TOKEN_KEY)}catch(_){};setChatEnabled(false);settings.classList.add('open');activationStatus.textContent='AI access is not enabled for this device. Ask the hub owner to approve it and assign you a code.';quota.textContent='AI access is not enabled for this device.';return;}
+      if(token){setChatEnabled(true);settings.classList.remove('open');activationStatus.textContent='This browser has an activation token. If it stops working, ask the owner for a replacement code.';quota.textContent='AI access enabled. Daily usage is enforced by the server.';}
+      else{setChatEnabled(false);settings.classList.add('open');activationStatus.textContent='This device is approved. Enter your one-time activation code to begin.';quota.textContent='Activation required.';}
+    }catch(error){setChatEnabled(false);settings.classList.add('open');activationStatus.textContent='Could not check access: '+error.message;quota.textContent='AI access check failed.';}
+  }
+  document.getElementById('activate').addEventListener('click',async()=>{
+    const code=codeInput.value.trim();if(!code){activationStatus.textContent='Enter the code you received from the hub owner.';return;}
+    const button=document.getElementById('activate');button.disabled=true;activationStatus.textContent='Checking code…';
+    try{
+      const result=await api('redeem',{code});token=result.token;dailyLimit=result.daily_limit;
+      try{localStorage.setItem(TOKEN_KEY,token)}catch(_){}
+      codeInput.value='';settings.classList.remove('open');activationStatus.textContent='Activation successful.';quota.textContent='Daily limit: '+dailyLimit+' requests. The server tracks your usage.';setChatEnabled(true);
+      addMessage('bot','You’re activated! Ask me a question to get started.');
+    }catch(error){activationStatus.textContent=error.message;settings.classList.add('open');}
+    finally{button.disabled=false;}
+  });
+  form.addEventListener('submit',async(event)=>{
+    event.preventDefault();const prompt=input.value.trim();if(!prompt||send.disabled)return;
+    if(!token){settings.classList.add('open');activationStatus.textContent='Activate this device before chatting.';return;}
+    addMessage('user',prompt);input.value='';setChatEnabled(false);send.textContent='Thinking…';const thinking=addMessage('bot','Thinking…');
+    const contents=[...history,{role:'user',parts:[{text:prompt}]}];
+    try{
+      const result=await api('chat',{contents},true);const answer=String(result.answer||'').trim();if(!answer)throw new Error('Gemini returned an empty response.');
+      thinking.remove();addMessage('bot',answer);history.push({role:'user',parts:[{text:prompt}]},{role:'model',parts:[{text:answer}]});if(history.length>24)history=history.slice(-24);
+      if(result.usage){usedToday=result.usage.used;dailyLimit=result.usage.daily_limit;quota.textContent='Requests used today: '+usedToday+' / '+dailyLimit+' · resets at midnight UTC';}
+    }catch(error){thinking.remove();addMessage('bot',error.message||'Could not get a response. Please try again.',true);if(/activation session|invalid or revoked/i.test(error.message||'')){token='';try{localStorage.removeItem(TOKEN_KEY)}catch(_){};settings.classList.add('open');activationStatus.textContent='Your activation token is no longer valid. Ask the owner for a new code.';}}
+    finally{setChatEnabled(allowed&&!!token);send.textContent='Send';input.focus();}
+  });
+  refreshAccess();
+})();
+</script>
+</body>
+</html>
