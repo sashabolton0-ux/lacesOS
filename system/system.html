@@ -79,6 +79,14 @@ button{transition:background .18s,border-color .18s,transform .18s,opacity .18s}
 #terminalForm{display:flex;gap:9px;padding:0 16px 15px;align-items:center}
 #terminalPrompt{color:#69d98c}#terminalInput{flex:1;min-width:0;background:transparent;color:#d8ffe1;border:0;outline:0;font:inherit}
 #terminalHint{padding:0 16px 13px;color:#609a70;font-size:11px}
+#adminBack{position:fixed;inset:0;z-index:105;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(0,0,0,.68);backdrop-filter:blur(9px)}
+#adminPanel{width:min(900px,100%);max-height:min(86vh,850px);overflow:auto;background:var(--modal);color:var(--text);border:1px solid var(--border);border-radius:16px;padding:22px;box-shadow:0 24px 90px #0008}
+#adminPanel h2{margin:0 0 8px;font-size:21px}#adminPanel p{color:var(--muted);font-size:13px;line-height:1.5}
+.adminRow{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin:10px 0;padding:12px;border:1px solid var(--border);border-radius:10px}
+.adminRow .deviceMeta{flex:1;min-width:200px}.adminRow small{display:block;color:var(--muted);margin-top:4px;overflow-wrap:anywhere}
+.adminRow button,#adminPanel button{border:1px solid var(--border);border-radius:8px;padding:8px 10px;background:var(--card);color:var(--text);cursor:pointer}
+#adminPanel input,#adminPanel select{min-width:0;padding:10px;border:1px solid var(--border);border-radius:8px;background:var(--input);color:var(--text)}
+#adminStatus{white-space:pre-wrap;font-size:13px;color:var(--muted);margin:10px 0}#adminDevices{margin-top:14px}#adminTools{display:flex;gap:8px;flex-wrap:wrap}
 
 </style>
 </head>
@@ -180,19 +188,38 @@ button{transition:background .18s,border-color .18s,transform .18s,opacity .18s}
       </select>
     </div>
 
-    <div class="actions">
-      <button id="cancelSettings" type="button">Cancel</button>
-      <button id="saveSettings" class="save" type="button">Save</button>
+    <div class="actions" style="justify-content:space-between;flex-wrap:wrap">
+      <button id="openAdmin" type="button">Device management</button>
+      <span style="display:flex;gap:10px"><button id="cancelSettings" type="button">Cancel</button>
+      <button id="saveSettings" class="save" type="button">Save</button></span>
     </div>
   </div>
 </div>
 
+<div id="adminBack" aria-hidden="true">
+  <section id="adminPanel" role="dialog" aria-modal="true" aria-labelledby="adminTitle">
+    <h2 id="adminTitle">Device management</h2>
+    <p>Manage AI access and system administrators. Actions are verified by the server.</p>
+    <div id="adminLogin">
+      <div class="field"><label for="ownerKey">Owner setup key</label><input id="ownerKey" type="password" autocomplete="off" placeholder="Only needed to set up the first administrator"></div>
+      <div class="field"><label for="adminCode">Existing administrator access code</label><input id="adminCode" type="password" autocomplete="off" placeholder="Paste a code granted to this device"></div>
+      <div id="adminTools"><button id="adminBootstrap" type="button">Set up this device as admin</button><button id="adminUnlock" type="button">Unlock with access code</button></div>
+    </div>
+    <div id="adminManage" style="display:none">
+      <div id="adminTools"><button id="refreshDevices" type="button">Refresh devices</button><button id="adminLock" type="button">Lock admin panel</button></div>
+      <div id="adminDevices"></div>
+    </div>
+    <div id="adminStatus" role="status"></div>
+    <div class="actions"><button id="closeAdmin" type="button">Close</button></div>
+  </section>
+</div>
+
 <script>
 const SUPABASE_URL =
-  "https://exsvwwxomovjstlhgjjy.supabase.co";
+  "https://YOUR-NEW-LACESOS-PROJECT.supabase.co";
 
 const SUPABASE_PUBLISHABLE_KEY =
-  "sb_publishable_UWbW4pD0R5et-sbuiAAcbw_ORYuwTPB";
+  "YOUR_NEW_LACESOS_PUBLISHABLE_KEY";
 
 async function supabaseRequest(path, options={}){
   const controller=new AbortController();
@@ -236,9 +263,11 @@ async function supabaseRequest(path, options={}){
 const REPO =
   "https://raw.githubusercontent.com/sashabolton0-ux/chat/main/";
 
-const SETTINGS_KEY = "lacesos_settings_v2";
-const DEVICE_KEY = "lacesos_device_id_v1";
-const USERNAME_KEY = "lacesos_username_v1";
+const PROJECT_SCOPE = btoa(SUPABASE_URL).replace(/[^a-zA-Z0-9]/g, "").slice(-18);
+const SETTINGS_KEY = "lacesos_settings_v2:" + PROJECT_SCOPE;
+const DEVICE_KEY = "lacesos_device_id_v1:" + PROJECT_SCOPE;
+const USERNAME_KEY = "lacesos_username_v1:" + PROJECT_SCOPE;
+const ADMIN_TOKEN_KEY = "lacesos_admin_token_v1:" + PROJECT_SCOPE;
 
 const themes = {
   dark:{
@@ -340,32 +369,45 @@ async function registerDevice(username){
   }
 }
 
+async function verifyStoredIdentity(){
+  const savedId=localStorage.getItem(DEVICE_KEY);
+  if(!savedId)return true;
+  try{
+    const result=await supabaseRequest("/rest/v1/rpc/device_exists",{
+      method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({p_device_id:savedId})
+    });
+    if(result===true)return true;
+    // A deleted device record must not be silently recreated from stale browser data.
+    localStorage.removeItem(DEVICE_KEY);
+    localStorage.removeItem(USERNAME_KEY);
+    localStorage.removeItem(ADMIN_TOKEN_KEY);
+    return true;
+  }catch(error){
+    document.getElementById("error").textContent="Could not verify this device with the new LacesOS project. Check the connection and reload; saved identity was not re-registered.";
+    document.getElementById("error").style.display="block";
+    console.warn("Device identity check failed; not registering stale identity.",error);
+    return false;
+  }
+}
+
 function showNamePrompt(){
   const saved=localStorage.getItem(USERNAME_KEY);
-
   if(saved && saved.trim()){
     registerDevice(saved.trim());
     return;
   }
-
   const back=document.getElementById("nameBack");
   const input=document.getElementById("nameInput");
-
   back.style.display="flex";
   setTimeout(()=>input.focus(),50);
-
   document.getElementById("saveName").onclick=async()=>{
     const name=input.value.trim();
-
-    if(!name){
-      input.focus();
-      return;
-    }
-
+    if(!name){input.focus();return;}
     localStorage.setItem(USERNAME_KEY,name);
     back.style.display="none";
-
-    registerDevice(name);
+    await registerDevice(name);
+    await loadApps();
   };
 }
 
@@ -554,7 +596,7 @@ function terminalClose(){terminalBack.style.display="none";terminalBack.setAttri
 window.addEventListener("keydown",event=>{
   if(event.key==="Escape"&&terminalBack.style.display==="flex"){terminalClose();return;}
   if(event.key==="Escape"&&document.getElementById("appWindowBack").style.display==="flex"){document.getElementById("appWindowClose").click();return;}
-  if(event.key==="~"&&!event.ctrlKey&&!event.metaKey&&!event.altKey&&document.getElementById("nameBack").style.display!=="flex"){
+  if(event.key==="~"&&!event.ctrlKey&&!event.metaKey&&!event.altKey){
     event.preventDefault();terminalBack.style.display==="flex"?terminalClose():terminalOpen();
   }
 });
@@ -582,6 +624,122 @@ document.getElementById("terminalForm").addEventListener("submit",async event=>{
   terminalPrint("Unknown command. Type help.");
 });
 
+
+// Server-verified device administration. The owner setup key is only sent to the gateway;
+// it is never saved in browser storage. Per-device admin codes are saved only on that device.
+const adminBack=document.getElementById("adminBack");
+const adminStatus=document.getElementById("adminStatus");
+function adminMessage(message){adminStatus.textContent=message;}
+function adminToken(){return localStorage.getItem(ADMIN_TOKEN_KEY)||"";}
+function adminRequest(action,extra={}){
+  return supabaseRequest("/functions/v1/ai-gateway",{
+    method:"POST",headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({action,device_id:getDeviceId(),username:localStorage.getItem(USERNAME_KEY)||"",admin_token:adminToken(),...extra})
+  });
+}
+function openAdminPanel(){
+  document.getElementById("modalBack").style.display="none";
+  adminBack.style.display="flex";adminBack.setAttribute("aria-hidden","false");
+  const unlocked=!!adminToken();
+  document.getElementById("adminLogin").style.display=unlocked?"none":"block";
+  document.getElementById("adminManage").style.display=unlocked?"block":"none";
+  adminMessage(unlocked?"Checking administrator access…":"Use the owner setup key for the first admin, or enter an admin access code granted to this device.");
+  if(unlocked)refreshAdminDevices();
+}
+function closeAdminPanel(){adminBack.style.display="none";adminBack.setAttribute("aria-hidden","true");}
+document.getElementById("openAdmin").onclick=openAdminPanel;
+document.getElementById("closeAdmin").onclick=closeAdminPanel;
+adminBack.addEventListener("click",e=>{if(e.target===adminBack)closeAdminPanel();});
+document.getElementById("adminBootstrap").onclick=async()=>{
+  const ownerKey=document.getElementById("ownerKey").value;
+  if(!ownerKey){adminMessage("Enter the owner setup key configured in the ai-gateway function secrets.");return;}
+  adminMessage("Verifying owner key…");
+  try{
+    const result=await adminRequest("admin_bootstrap",{owner_key:ownerKey});
+    if(!result?.ok||!result?.admin_token)throw new Error(result?.error||"Admin setup failed.");
+    localStorage.setItem(ADMIN_TOKEN_KEY,result.admin_token);
+    document.getElementById("ownerKey").value="";
+    document.getElementById("adminLogin").style.display="none";document.getElementById("adminManage").style.display="block";
+    adminMessage("This device now has administrator access.");await refreshAdminDevices();
+  }catch(error){adminMessage(error.message||String(error));}
+};
+document.getElementById("adminUnlock").onclick=async()=>{
+  const token=document.getElementById("adminCode").value.trim();
+  if(!token){adminMessage("Paste the administrator access code for this device.");return;}
+  localStorage.setItem(ADMIN_TOKEN_KEY,token);adminMessage("Checking administrator access…");
+  try{await refreshAdminDevices();document.getElementById("adminCode").value="";document.getElementById("adminLogin").style.display="none";document.getElementById("adminManage").style.display="block";}
+  catch(error){localStorage.removeItem(ADMIN_TOKEN_KEY);adminMessage(error.message||String(error));}
+};
+document.getElementById("adminLock").onclick=()=>{localStorage.removeItem(ADMIN_TOKEN_KEY);document.getElementById("adminManage").style.display="none";document.getElementById("adminLogin").style.display="block";document.getElementById("adminDevices").innerHTML="";adminMessage("Administrator panel locked on this device.");};
+document.getElementById("refreshDevices").onclick=()=>refreshAdminDevices();
+async function refreshAdminDevices(){
+  const box=document.getElementById("adminDevices");box.textContent="Loading devices…";
+  const result=await adminRequest("admin_list_devices");
+  if(!result?.ok)throw new Error(result?.error||"Could not load devices.");
+  box.innerHTML="";
+  if(!result.devices?.length){box.textContent="No registered devices yet.";return;}
+  for(const d of result.devices){
+    const row=document.createElement("div");row.className="adminRow";
+    const meta=document.createElement("div");meta.className="deviceMeta";
+    const title=document.createElement("strong");title.textContent=(d.username||"Unnamed device");
+    const detail=document.createElement("small");detail.textContent=d.device_id+" · AI: "+(d.ai_enabled?"enabled":"off")+" · daily limit: "+(d.daily_limit??"—")+" · Admin: "+(d.is_admin?"yes":"no");
+    meta.append(title,detail);row.append(meta);
+    const ai=document.createElement("button");ai.textContent=d.ai_enabled?"Revoke AI":"Grant AI";ai.onclick=()=>manageDevice(d,ai);row.append(ai);
+    if(d.ai_enabled){const code=document.createElement("button");code.textContent="New AI code";code.onclick=()=>createAiCode(d,code);row.append(code);}
+    const limit=document.createElement("button");limit.textContent="Set limit";limit.onclick=()=>setDeviceLimit(d);row.append(limit);
+    const admin=document.createElement("button");admin.textContent=d.is_admin?"Remove admin":"Grant admin";admin.onclick=()=>manageDeviceAdmin(d,admin);row.append(admin);
+    box.append(row);
+  }
+}
+async function manageDevice(d,button){
+  button.disabled=true;
+  try{
+    if(d.ai_enabled){await adminRequest("admin_revoke_ai",{target_device_id:d.device_id});adminMessage("AI access revoked for "+d.username+".");}
+    else{
+      const raw=prompt("Daily AI request limit for "+d.username+"?","30");if(raw===null)return;
+      const daily_limit=Number(raw);if(!Number.isInteger(daily_limit)||daily_limit<0||daily_limit>10000){adminMessage("Enter a whole number from 0 to 10000.");return;}
+      const result=await adminRequest("admin_grant_ai",{target_device_id:d.device_id,daily_limit});
+      if(!result?.ok)throw new Error(result?.error||"Could not grant AI access.");
+      prompt("AI access enabled. Copy this one-time activation code and give it to the device owner:",result.activation_code);
+      adminMessage("AI access enabled. The activation code is shown only once; generate another if it was lost.");
+    }
+    await refreshAdminDevices();
+  }catch(error){adminMessage(error.message||String(error));}
+  finally{button.disabled=false;}
+}
+async function createAiCode(d,button){
+  const raw=prompt("Daily AI request limit for "+d.username+"?",String(d.daily_limit??30));if(raw===null)return;
+  const daily_limit=Number(raw);if(!Number.isInteger(daily_limit)||daily_limit<0||daily_limit>10000){adminMessage("Enter a whole number from 0 to 10000.");return;}
+  button.disabled=true;
+  try{
+    const result=await adminRequest("admin_grant_ai",{target_device_id:d.device_id,daily_limit});
+    if(!result?.ok)throw new Error(result?.error||"Could not create an activation code.");
+    prompt("Copy this one-time AI activation code and give it to the device owner:",result.activation_code);
+    adminMessage("A new one-time activation code was created.");await refreshAdminDevices();
+  }catch(error){adminMessage(error.message||String(error));}
+  finally{button.disabled=false;}
+}
+
+async function setDeviceLimit(d){
+  const raw=prompt("Daily AI request limit for "+d.username+"?",String(d.daily_limit??30));if(raw===null)return;
+  const daily_limit=Number(raw);if(!Number.isInteger(daily_limit)||daily_limit<0||daily_limit>10000){adminMessage("Enter a whole number from 0 to 10000.");return;}
+  try{await adminRequest("admin_set_limit",{target_device_id:d.device_id,daily_limit});adminMessage("AI daily limit updated.");await refreshAdminDevices();}catch(error){adminMessage(error.message||String(error));}
+}
+async function manageDeviceAdmin(d,button){
+  button.disabled=true;
+  try{
+    if(d.is_admin){await adminRequest("admin_set_device_admin",{target_device_id:d.device_id,enabled:false});adminMessage("Administrator access removed.");}
+    else{
+      const result=await adminRequest("admin_set_device_admin",{target_device_id:d.device_id,enabled:true});
+      if(!result?.admin_code)throw new Error(result?.error||"Could not grant administrator access.");
+      prompt("Copy this admin access code and enter it on that device in Settings → Device management → Existing administrator access code:",result.admin_code);
+      adminMessage("Administrator access granted. The access code is shown only once.");
+    }
+    await refreshAdminDevices();
+  }catch(error){adminMessage(error.message||String(error));}
+  finally{button.disabled=false;}
+}
+
 const footerButtons=document.querySelectorAll("#footer [data-target]");
 footerButtons.forEach(button=>{
   button.addEventListener("click",()=>{
@@ -594,11 +752,10 @@ footerButtons.forEach(button=>{
 });
 
 async function startHome(){
-  showNamePrompt();
-
+  const identityOk=await verifyStoredIdentity();
+  if(identityOk)showNamePrompt();
   // Posts and the app catalog load independently; analytics collection is removed.
   await Promise.allSettled([loadPosts(),loadApps()]);
-
   document.getElementById("loading").style.display="none";
 }
 
