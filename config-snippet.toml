@@ -1,0 +1,4 @@
+# Add this to your project's supabase/config.toml.
+# This is needed if the gateway uses its own device-token checks rather than Supabase Auth JWTs.
+[functions.ai-gateway]
+verify_jwt = false
