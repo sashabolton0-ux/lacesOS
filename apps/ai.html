@@ -31,12 +31,14 @@ window.MathJax={tex:{inlineMath:[['\\(','\\)'],['$','$']],displayMath:[['\\[','\
 <script>
 (() => {
   'use strict';
-  const SUPABASE_URL='https://fqdesfgtsgsydkxiadax.supabase.co';
-  const SUPABASE_PUBLISHABLE_KEY='sb_publishable_92ZS9KlK1WVR9Vr0fCYAHA_vkZ9jRTc';
-  const EDGE_URL=SUPABASE_URL+'/functions/v1/ai-gateway';
-  const DEVICE_KEY='lacesos_device_id_v1';
-  const USERNAME_KEY='lacesos_username_v1';
-  const TOKEN_KEY='lacesos_ai_device_token_v1';
+const SUPABASE_URL = 'https://exsvwwxomovjstlhgjjy.supabase.co';
+const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_UWbW4pD0R5et-sbuiAAcbw_ORYuwTPB';
+const EDGE_URL = SUPABASE_URL + '/functions/v1/ai-gateway';
+
+const DEVICE_KEY = 'lacesos_device_id_v1';
+const USERNAME_KEY = 'lacesos_username_v1';
+const TOKEN_KEY = 'lacesos_ai_device_token_v1';
+```
   const chat=document.getElementById('chat'), form=document.getElementById('form'), input=document.getElementById('input'), send=document.getElementById('send');
   const settings=document.getElementById('settings'), codeInput=document.getElementById('activation-code'), activationStatus=document.getElementById('activation-status'), quota=document.getElementById('quota');
   let history=[], deviceId='', username='', token='', dailyLimit=null, usedToday=null, allowed=false;
