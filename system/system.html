@@ -17,6 +17,19 @@ body{overflow:hidden;background:var(--bg);color:var(--text)}
 button,input,select{font:inherit}
 button{transition:background .18s,border-color .18s,transform .18s,opacity .18s}
 #main{width:100%;height:100%;display:flex;flex-direction:column;position:relative}
+#main.os-hidden{display:none}
+#landing{position:fixed;inset:0;z-index:95;display:none;align-items:center;justify-content:center;padding:24px;background:var(--bg);color:var(--text)}
+#landingCard{width:min(620px,100%);padding:clamp(28px,6vw,60px);border:1px solid var(--border);border-radius:22px;background:linear-gradient(145deg,color-mix(in srgb,var(--card) 92%,var(--accent) 8%),var(--card));box-shadow:0 28px 100px #0003}
+#landingEyebrow{font:11px/1.4 "Geist Mono",ui-monospace,monospace;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:26px}
+#landingTitle{font-size:clamp(38px,8vw,64px);line-height:1;letter-spacing:-.06em;font-weight:600;margin:0 0 14px}
+#landingCopy{font-size:15px;line-height:1.6;color:var(--muted);margin:0 0 26px}
+#landingUsername{font-size:14px;color:var(--text);padding:12px 14px;border:1px solid var(--border);border-radius:10px;background:color-mix(in srgb,var(--bg) 60%,transparent);margin-bottom:22px;overflow-wrap:anywhere}
+#landingActions{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+#landingContinue{border:1px solid var(--accent);border-radius:10px;padding:12px 18px;background:var(--accent);color:white;font-weight:600;cursor:pointer}
+#landingContinue:hover{filter:brightness(1.08);transform:translateY(-1px)}
+#landingHint{font-size:12px;color:var(--muted)}
+#landingHint kbd{font:12px "Geist Mono",ui-monospace,monospace;border:1px solid var(--border2);border-radius:5px;padding:3px 6px;color:var(--text)}
+@media(max-width:520px){#landingCard{padding:28px 22px}#landingTitle{font-size:42px}}
 #top{height:72px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 34px;flex-shrink:0;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(14px)}
 #systemName{font-size:15px;font-weight:600;letter-spacing:-.01em;display:flex;align-items:center;gap:10px}
 #systemName:before{content:"";width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 18px color-mix(in srgb,var(--accent) 75%,transparent)}
@@ -97,10 +110,23 @@ button{transition:background .18s,border-color .18s,transform .18s,opacity .18s}
   <div class="spinner"></div>
 </div>
 
-<main id="main">
+<section id="landing" aria-label="Welcome to LacesOS">
+  <div id="landingCard">
+    <div id="landingEyebrow">LacesOS · Personal system</div>
+    <h1 id="landingTitle">Welcome.</h1>
+    <p id="landingCopy">Everything is ready when you are.</p>
+    <div id="landingUsername">Loading your username…</div>
+    <div id="landingActions">
+      <button id="landingContinue" type="button">Continue <span aria-hidden="true">→</span></button>
+      <span id="landingHint">Press <kbd>~</kbd> to open the command prompt</span>
+    </div>
+  </div>
+</section>
+
+<main id="main" class="os-hidden">
   <header id="top">
     <span id="systemName">LacesOS</span>
-    <button id="settingsBtn" type="button">⚙ SettingsSSS</button>
+    <button id="settingsBtn" type="button">⚙ Settings</button>
   </header>
 
   <section id="content">
@@ -391,9 +417,38 @@ async function verifyStoredIdentity(){
   }
 }
 
+let identityCheckPassed=true;
+function enterDesktop(){
+  document.getElementById("landing").style.display="none";
+  document.getElementById("main").classList.remove("os-hidden");
+}
+function updateLandingUsername(){
+  const name=(localStorage.getItem(USERNAME_KEY)||"").trim();
+  document.getElementById("landingUsername").textContent=name ? "Signed in as  "+name : "No username set yet";
+}
+function showLanding(){
+  updateLandingUsername();
+  document.getElementById("main").classList.add("os-hidden");
+  document.getElementById("landing").style.display="flex";
+}
+document.getElementById("landingContinue").addEventListener("click",async()=>{
+  if(!identityCheckPassed){
+    alert("LacesOS couldn't verify this device with the server. Check your connection and reload before continuing.");
+    return;
+  }
+  const saved=(localStorage.getItem(USERNAME_KEY)||"").trim();
+  if(saved){
+    enterDesktop();
+    await registerDevice(saved);
+    return;
+  }
+  document.getElementById("landing").style.display="none";
+  showNamePrompt();
+});
 function showNamePrompt(){
   const saved=localStorage.getItem(USERNAME_KEY);
   if(saved && saved.trim()){
+    enterDesktop();
     registerDevice(saved.trim());
     return;
   }
@@ -406,6 +461,8 @@ function showNamePrompt(){
     if(!name){input.focus();return;}
     localStorage.setItem(USERNAME_KEY,name);
     back.style.display="none";
+    updateLandingUsername();
+    enterDesktop();
     await registerDevice(name);
     await loadApps();
   };
@@ -752,11 +809,16 @@ footerButtons.forEach(button=>{
 });
 
 async function startHome(){
-  const identityOk=await verifyStoredIdentity();
-  if(identityOk)showNamePrompt();
-  // Posts and the app catalog load independently; analytics collection is removed.
+  identityCheckPassed=await verifyStoredIdentity();
+  // Load data while the welcome screen is visible. The desktop itself stays hidden
+  // until Continue is pressed, and the terminal shortcut remains available meanwhile.
   await Promise.allSettled([loadPosts(),loadApps()]);
   document.getElementById("loading").style.display="none";
+  showLanding();
+  if(!identityCheckPassed){
+    document.getElementById("landingCopy").textContent="Your saved device could not be verified. Check the connection and reload before continuing.";
+    document.getElementById("landingContinue").textContent="Retry after reload";
+  }
 }
 
 startHome();
