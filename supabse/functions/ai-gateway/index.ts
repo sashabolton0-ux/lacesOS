@@ -4,7 +4,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 // Deploy as the Supabase Edge Function named `ai-gateway`.
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, apikey, x-client-info, content-type",
+  "Access-Control-Allow-Headers": "authorization, apikey, x-client-info, content-type, x-admin-token",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
   "Access-Control-Max-Age": "86400",
   "Vary": "Origin",
@@ -14,6 +14,7 @@ const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
 const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
 const geminiApiKey = Deno.env.get("GEMINI_API_KEY") ?? "";
 const geminiModel = Deno.env.get("GEMINI_MODEL") ?? "gemini-3.5-flash-lite";
+const adminBootstrapKey = Deno.env.get("LACESOS_ADMIN_BOOTSTRAP_KEY") ?? "";
 const db = supabaseUrl && serviceRoleKey
   ? createClient(supabaseUrl, serviceRoleKey, { auth: { persistSession: false, autoRefreshToken: false } })
   : null;
@@ -35,6 +36,33 @@ async function verifyRegisteredDevice(deviceId: string) {
   return !!data;
 }
 
+
+async function sha256Hex(value: string): Promise<string> {
+  const bytes = new TextEncoder().encode(value);
+  const digest = await crypto.subtle.digest("SHA-256", bytes);
+  return Array.from(new Uint8Array(digest)).map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+function createAdminToken(): string {
+  const bytes = new Uint8Array(32);
+  crypto.getRandomValues(bytes);
+  return Array.from(bytes).map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+async function isDesignatedAdmin(deviceId: string) {
+  if (!db) throw new Error("Supabase server configuration is missing.");
+  const { data, error } = await db.from("system_admin_devices")
+    .select("device_id,token_hash,revoked_at")
+    .eq("device_id", deviceId).is("revoked_at", null).maybeSingle();
+  if (error) throw new Error("Could not verify administrator designation. Apply the admin SQL migration.");
+  return data;
+}
+async function verifyAdminSession(req: Request, deviceId: string) {
+  const row = await isDesignatedAdmin(deviceId);
+  const token = cleanString(req.headers.get("x-admin-token"), 256);
+  if (!row || !row.token_hash || !token) return false;
+  const presentedHash = await sha256Hex(token);
+  return presentedHash === row.token_hash;
+}
+
 Deno.serve(async (req: Request) => {
   // Local-file/about:blank clients send Origin: null; CORS must still answer preflight.
   if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: corsHeaders });
@@ -54,6 +82,101 @@ Deno.serve(async (req: Request) => {
   const deviceId = cleanString(body.device_id, 160);
   const username = cleanString(body.username, 80);
   if (!isDeviceId(deviceId)) return reply(400, { error: "Open this app from your LacesOS hub; a valid device ID was not found." });
+
+  // Admin designation lives in Supabase. Privileged panel actions additionally require
+  // a random per-device token whose SHA-256 hash is stored server-side.
+  if (action === "admin_status") {
+    try {
+      const row = await isDesignatedAdmin(deviceId);
+      return reply(200, { is_admin: !!row, activated: !!row?.token_hash });
+    } catch (error) {
+      return reply(500, { error: error instanceof Error ? error.message : "Could not check admin status." });
+    }
+  }
+
+  if (action === "admin_activate") {
+    try {
+      if (!adminBootstrapKey || adminBootstrapKey.length < 24) {
+        return reply(503, { error: "Admin activation is not configured. Set a strong LACESOS_ADMIN_BOOTSTRAP_KEY secret on the ai-gateway function." });
+      }
+      if (cleanString(body.bootstrap_key, 256) !== adminBootstrapKey) {
+        return reply(403, { error: "That activation key is incorrect." });
+      }
+      if (!await verifyRegisteredDevice(deviceId)) return reply(403, { error: "This device is not registered in LacesOS." });
+      const row = await isDesignatedAdmin(deviceId);
+      if (!row) return reply(403, { error: "This device has not been designated as an administrator in Supabase." });
+      const token = createAdminToken();
+      const tokenHash = await sha256Hex(token);
+      // Re-activation rotates the old session token, so a lost browser token is recoverable
+      // by a designated admin who knows the bootstrap key.
+      const { data: updated, error } = await db.from("system_admin_devices")
+        .update({ token_hash: tokenHash })
+        .eq("device_id", deviceId).is("revoked_at", null)
+        .select("device_id").maybeSingle();
+      if (error) return reply(500, { error: "Could not save the administrator session. Check the admin table permissions." });
+      if (!updated) return reply(409, { error: "Admin activation was already used. Refresh the page and try again." });
+      return reply(200, { ok: true, token });
+    } catch (error) {
+      return reply(500, { error: error instanceof Error ? error.message : "Could not activate admin access." });
+    }
+  }
+
+  if (action === "admin_dashboard" || action === "admin_set_ai" || action === "admin_review_request") {
+    try {
+      if (!await verifyRegisteredDevice(deviceId)) return reply(403, { error: "This LacesOS device is not registered." });
+      if (!await verifyAdminSession(req, deviceId)) return reply(403, { error: "Administrator session is missing or invalid. Re-activate this admin device." });
+
+      if (action === "admin_dashboard") {
+        const [devicesResult, requestsResult, accessResult] = await Promise.all([
+          db.from("devices").select("device_id,username,first_seen,last_seen").order("last_seen", { ascending: false }).limit(500),
+          db.from("verification_requests").select("id,device_id,username,reference_code,status,created_at,reviewed_at,review_note").order("created_at", { ascending: false }).limit(500),
+          db.from("ai_device_access").select("device_id,username,enabled,daily_limit,blocked_at,created_at,updated_at").order("updated_at", { ascending: false }).limit(500),
+        ]);
+        if (devicesResult.error || requestsResult.error || accessResult.error) {
+          return reply(500, { error: "Could not load admin data. Verify the devices, verification_requests, and ai_device_access tables exist and service_role has access." });
+        }
+        return reply(200, { ok: true, devices: devicesResult.data ?? [], requests: requestsResult.data ?? [], ai_access: accessResult.data ?? [] });
+      }
+
+      if (action === "admin_set_ai") {
+        const targetDeviceId = cleanString(body.target_device_id, 160);
+        const enabled = body.enabled === true;
+        const dailyLimit = Number(body.daily_limit);
+        if (!isDeviceId(targetDeviceId)) return reply(400, { error: "Choose a valid device." });
+        if (!Number.isInteger(dailyLimit) || dailyLimit < 0 || dailyLimit > 500) return reply(400, { error: "Daily limit must be a whole number from 0 to 500." });
+        const { data: target, error: targetError } = await db.from("devices").select("device_id,username").eq("device_id", targetDeviceId).maybeSingle();
+        if (targetError || !target) return reply(404, { error: "That device is not registered." });
+        const now = new Date().toISOString();
+        const { error } = await db.from("ai_device_access").upsert({
+          device_id: target.device_id,
+          username: target.username,
+          enabled,
+          daily_limit: dailyLimit,
+          blocked_at: enabled ? null : now,
+          updated_at: now,
+        }, { onConflict: "device_id" });
+        if (error) return reply(500, { error: "Could not update AI access. Check ai_device_access table columns and permissions." });
+        return reply(200, { ok: true, device_id: target.device_id, username: target.username, enabled, daily_limit: dailyLimit });
+      }
+
+      if (action === "admin_review_request") {
+        const requestId = Number(body.request_id);
+        const status = cleanString(body.status, 16);
+        if (!Number.isSafeInteger(requestId) || requestId < 1) return reply(400, { error: "Invalid verification request." });
+        if (!["approved", "denied", "closed"].includes(status)) return reply(400, { error: "Status must be approved, denied, or closed." });
+        const { data, error } = await db.from("verification_requests").update({
+          status,
+          reviewed_at: new Date().toISOString(),
+          review_note: cleanString(body.review_note, 500) || null,
+        }).eq("id", requestId).select("id,status").maybeSingle();
+        if (error) return reply(500, { error: "Could not update the verification request." });
+        if (!data) return reply(404, { error: "Verification request not found." });
+        return reply(200, { ok: true, request: data });
+      }
+    } catch (error) {
+      return reply(500, { error: error instanceof Error ? error.message : "Admin request failed." });
+    }
+  }
 
   if (action === "save_private_name") {
     const realName = cleanString(body.real_name, 100);
