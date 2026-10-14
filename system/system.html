@@ -121,7 +121,7 @@ button{transition:background .18s,border-color .18s,transform .18s,opacity .18s}
 #adminPanelHead h2{font-size:18px;margin:0;font-weight:650;letter-spacing:-.03em}
 #adminPanelHead p{font-size:12px;color:var(--muted);margin:5px 0 0}
 #adminPanelClose{border:1px solid var(--border);border-radius:9px;padding:8px 11px;background:transparent;color:var(--text);cursor:pointer}
-#adminPanelBody{overflow:auto;padding:20px 22px 26px}
+#adminPanelBody{flex:1;min-height:0;overflow:auto;padding:20px 22px 26px}
 .admin-section{margin-bottom:26px}
 .admin-section h3{font-size:14px;margin:0 0 10px;font-weight:650}
 .admin-muted{font-size:12px;line-height:1.5;color:var(--muted)}
@@ -789,11 +789,16 @@ async function adminGateway(action, extra={}, token=localStorage.getItem(ADMIN_T
 }
 function adminShowPanel(){
   const back=document.getElementById("adminPanelBack");
+  const activation=document.getElementById("adminActivation");
+  const dashboard=document.getElementById("adminDashboard");
   back.style.display="flex";back.setAttribute("aria-hidden","false");
-  if(adminActivated) loadAdminDashboard();
-  else {
-    document.getElementById("adminActivation").style.display="block";
-    document.getElementById("adminDashboard").style.display="none";
+  if(adminActivated){
+    activation.style.display="none";
+    dashboard.style.display="block";
+    loadAdminDashboard();
+  }else{
+    dashboard.style.display="none";
+    activation.style.display="block";
     document.getElementById("adminBootstrapInput").focus();
   }
 }
