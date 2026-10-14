@@ -112,6 +112,38 @@ button{transition:background .18s,border-color .18s,transform .18s,opacity .18s}
 #terminalHint{padding:0 16px 13px;color:#609a70;font-size:11px}
 
 
+
+/* Administrator console */
+#adminNavBtn{display:none}
+#adminPanelBack{position:fixed;inset:0;z-index:130;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(0,0,0,.68);backdrop-filter:blur(10px)}
+#adminPanel{width:min(1120px,100%);height:min(88vh,900px);display:flex;flex-direction:column;background:var(--modal);border:1px solid var(--border2);border-radius:18px;box-shadow:0 30px 100px #0008;overflow:hidden;color:var(--text)}
+#adminPanelHead{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 22px;border-bottom:1px solid var(--border);flex-shrink:0}
+#adminPanelHead h2{font-size:18px;margin:0;font-weight:650;letter-spacing:-.03em}
+#adminPanelHead p{font-size:12px;color:var(--muted);margin:5px 0 0}
+#adminPanelClose{border:1px solid var(--border);border-radius:9px;padding:8px 11px;background:transparent;color:var(--text);cursor:pointer}
+#adminPanelBody{overflow:auto;padding:20px 22px 26px}
+.admin-section{margin-bottom:26px}
+.admin-section h3{font-size:14px;margin:0 0 10px;font-weight:650}
+.admin-muted{font-size:12px;line-height:1.5;color:var(--muted)}
+.admin-toolbar{display:flex;flex-wrap:wrap;gap:9px;align-items:center;margin:10px 0 14px}
+.admin-btn{border:1px solid var(--border2);border-radius:9px;padding:9px 12px;background:var(--card);color:var(--text);cursor:pointer;font-size:12px;font-weight:600}
+.admin-btn.primary{background:var(--accent);border-color:var(--accent);color:white}
+.admin-btn:disabled{opacity:.5;cursor:wait}
+.admin-input{min-width:0;border:1px solid var(--border2);border-radius:9px;padding:10px 11px;background:var(--input);color:var(--text);font:inherit;font-size:12px}
+.admin-table-wrap{overflow:auto;border:1px solid var(--border);border-radius:11px}
+.admin-table{border-collapse:collapse;width:100%;font-size:12px;min-width:650px}
+.admin-table th,.admin-table td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--border);vertical-align:middle}
+.admin-table th{color:var(--muted);font-size:10px;letter-spacing:.06em;text-transform:uppercase;font-weight:650;background:color-mix(in srgb,var(--card) 70%,transparent)}
+.admin-table tr:last-child td{border-bottom:0}
+.admin-table code{font:11px "Geist Mono",ui-monospace,monospace;overflow-wrap:anywhere}
+.admin-status{display:inline-block;border-radius:999px;padding:4px 7px;background:color-mix(in srgb,var(--accent) 14%,var(--card));font-size:10px}
+.admin-status.off{background:color-mix(in srgb,#e05252 13%,var(--card))}
+#adminActivation{max-width:560px;margin:24px auto;padding:22px;border:1px solid var(--border);border-radius:14px}
+#adminActivation h3{margin:0 0 8px;font-size:16px}
+#adminActivation input{width:100%;margin:12px 0}
+#adminMessage{font-size:12px;line-height:1.5;color:var(--muted);white-space:pre-wrap;margin-top:10px}
+@media(max-width:600px){#adminPanelBack{padding:8px}#adminPanel{height:94vh;border-radius:13px}#adminPanelHead{padding:14px}#adminPanelBody{padding:14px}}
+
 </style>
 </head>
 
@@ -164,8 +196,49 @@ button{transition:background .18s,border-color .18s,transform .18s,opacity .18s}
     <button class="footer-item" data-target="posts" type="button">POSTS</button>
     <span class="footer-dot">/</span>
     <button class="footer-item" data-target="sectionLabel" type="button">APPS</button>
+    <span class="footer-dot" id="adminNavDivider" style="display:none">/</span>
+    <button class="footer-item" id="adminNavBtn" type="button">ADMIN</button>
   </footer>
 </main>
+
+<div id="adminPanelBack" aria-hidden="true">
+  <section id="adminPanel" role="dialog" aria-modal="true" aria-labelledby="adminPanelTitle">
+    <header id="adminPanelHead">
+      <div><h2 id="adminPanelTitle">LacesOS Admin</h2><p>Device approvals and AI access</p></div>
+      <button id="adminPanelClose" type="button">Close ×</button>
+    </header>
+    <div id="adminPanelBody">
+      <div id="adminActivation" style="display:none">
+        <h3>Activate administrator access</h3>
+        <div class="admin-muted">This device is designated as an administrator in Supabase. Enter the one-time bootstrap key configured for the <code>ai-gateway</code> function. A private admin session token will be saved on this device.</div>
+        <input class="admin-input" id="adminBootstrapInput" type="password" autocomplete="current-password" placeholder="Administrator activation key">
+        <div class="admin-toolbar"><button class="admin-btn primary" id="adminActivateBtn" type="button">Activate admin panel</button></div>
+        <div id="adminActivationMessage" role="status"></div>
+      </div>
+      <div id="adminDashboard" style="display:none">
+        <div class="admin-toolbar">
+          <button class="admin-btn primary" id="adminRefreshBtn" type="button">Refresh data</button>
+          <span class="admin-muted" id="adminLastRefresh">Data loads only when you open this panel.</span>
+        </div>
+        <section class="admin-section">
+          <h3>Verification requests</h3>
+          <p class="admin-muted">Shows the two-digit reference code, username, device ID, and request status. The code is only a reference; it does not grant access by itself.</p>
+          <div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Sent</th><th>Username</th><th>Device ID</th><th>Code</th><th>Status</th><th>Review</th></tr></thead><tbody id="adminRequestsBody"><tr><td colspan="6">Loading…</td></tr></tbody></table></div>
+        </section>
+        <section class="admin-section">
+          <h3>AI access</h3>
+          <p class="admin-muted">Grant or revoke AI access, or change the daily request limit. The server enforces the limit.</p>
+          <div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Username</th><th>Device ID</th><th>Access</th><th>Daily limit</th><th>Actions</th></tr></thead><tbody id="adminAccessBody"><tr><td colspan="5">Loading…</td></tr></tbody></table></div>
+        </section>
+        <section class="admin-section">
+          <h3>Registered devices</h3>
+          <div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Username</th><th>Device ID</th><th>First seen</th><th>Last seen</th></tr></thead><tbody id="adminDevicesBody"><tr><td colspan="4">Loading…</td></tr></tbody></table></div>
+        </section>
+        <div id="adminDashboardMessage" role="status"></div>
+      </div>
+    </div>
+  </section>
+</div>
 
 <div id="appWindowBack" aria-hidden="true">
   <div id="appWindowBar"><span id="appWindowTitle">App</span><button id="appWindowClose" type="button">Close ×</button></div>
@@ -698,6 +771,174 @@ document.getElementById("terminalForm").addEventListener("submit",async event=>{
 });
 
 
+
+// Admin panel: the browser only receives a private session token after a designated
+// admin enters the server-side bootstrap key. All privileged reads/writes are gateway-checked.
+const ADMIN_TOKEN_KEY = "lacesos_admin_session_v1:" + PROJECT_SCOPE;
+let adminDesignated = false;
+let adminActivated = false;
+let adminBusy = false;
+
+async function adminGateway(action, extra={}, token=localStorage.getItem(ADMIN_TOKEN_KEY)||""){
+  const headers={"Content-Type":"application/json"};
+  if(token) headers["x-admin-token"]=token;
+  return await supabaseRequest("/functions/v1/ai-gateway",{
+    method:"POST",headers,
+    body:JSON.stringify({action,device_id:getDeviceId(),username:localStorage.getItem(USERNAME_KEY)||"",...extra})
+  });
+}
+function adminShowPanel(){
+  const back=document.getElementById("adminPanelBack");
+  back.style.display="flex";back.setAttribute("aria-hidden","false");
+  if(adminActivated) loadAdminDashboard();
+  else {
+    document.getElementById("adminActivation").style.display="block";
+    document.getElementById("adminDashboard").style.display="none";
+    document.getElementById("adminBootstrapInput").focus();
+  }
+}
+function adminClosePanel(){
+  const back=document.getElementById("adminPanelBack");
+  back.style.display="none";back.setAttribute("aria-hidden","true");
+}
+function adminSetMessage(message){
+  const dashboardVisible=document.getElementById("adminDashboard").style.display==="block";
+  document.getElementById(dashboardVisible?"adminDashboardMessage":"adminActivationMessage").textContent=message||"";
+}
+function adminCell(row,value,code=false){
+  const td=document.createElement("td");
+  if(code){const c=document.createElement("code");c.textContent=value==null?"—":String(value);td.appendChild(c);}
+  else td.textContent=value==null||value===""?"—":String(value);
+  row.appendChild(td);return td;
+}
+function adminButton(label,handler,primary=false){
+  const b=document.createElement("button");b.className="admin-btn"+(primary?" primary":"");b.type="button";b.textContent=label;b.addEventListener("click",handler);return b;
+}
+function adminStatus(text,on){
+  const span=document.createElement("span");span.className="admin-status"+(on?"":" off");span.textContent=text;return span;
+}
+function adminFormatDate(value){
+  if(!value)return "—";
+  try{return new Date(value).toLocaleString();}catch{return String(value);}
+}
+async function initAdminPanel(){
+  try{
+    const status=await adminGateway("admin_status",{});
+    adminDesignated=status?.is_admin===true;
+    if(!adminDesignated)return;
+    const nav=document.getElementById("adminNavBtn");
+    nav.style.display="inline-block";document.getElementById("adminNavDivider").style.display="inline";
+    const token=localStorage.getItem(ADMIN_TOKEN_KEY)||"";
+    if(token){
+      try{
+        const check=await adminGateway("admin_dashboard",{},token);
+        adminActivated=check?.ok===true;
+      }catch{adminActivated=false;}
+      if(!adminActivated)localStorage.removeItem(ADMIN_TOKEN_KEY);
+    }
+    nav.textContent=adminActivated?"ADMIN":"ADMIN SETUP";
+  }catch(error){console.warn("Admin status check failed.",error);}
+}
+async function activateAdminPanel(){
+  if(adminBusy)return;
+  const key=document.getElementById("adminBootstrapInput").value;
+  if(!key){adminSetMessage("Enter the activation key configured in the ai-gateway secrets.");return;}
+  adminBusy=true;document.getElementById("adminActivateBtn").disabled=true;adminSetMessage("Activating…");
+  try{
+    const result=await adminGateway("admin_activate",{bootstrap_key:key},"");
+    if(!result?.token)throw new Error(result?.error||"Activation failed.");
+    localStorage.setItem(ADMIN_TOKEN_KEY,result.token);
+    adminActivated=true;document.getElementById("adminActivation").style.display="none";document.getElementById("adminDashboard").style.display="block";
+    document.getElementById("adminNavBtn").textContent="ADMIN";
+    document.getElementById("adminBootstrapInput").value="";
+    adminSetMessage("Administrator access activated.");
+    await loadAdminDashboard();
+  }catch(error){adminSetMessage(String(error.message||error));}
+  finally{adminBusy=false;document.getElementById("adminActivateBtn").disabled=false;}
+}
+async function loadAdminDashboard(){
+  if(!adminActivated)return;
+  adminBusy=true;document.getElementById("adminRefreshBtn").disabled=true;
+  adminSetMessage("Loading admin data…");
+  for(const [id,cols] of [["adminRequestsBody",6],["adminAccessBody",5],["adminDevicesBody",4]]){
+    const body=document.getElementById(id);body.replaceChildren();const tr=document.createElement("tr");const td=document.createElement("td");td.colSpan=cols;td.textContent="Loading…";tr.appendChild(td);body.appendChild(tr);
+  }
+  try{
+    const data=await adminGateway("admin_dashboard");
+    if(!data?.ok)throw new Error(data?.error||"Could not load admin data.");
+    renderAdminRequests(data.requests||[]);
+    renderAdminAccess(data.devices||[],data.ai_access||[]);
+    renderAdminDevices(data.devices||[]);
+    document.getElementById("adminLastRefresh").textContent="Updated "+new Date().toLocaleTimeString();
+    adminSetMessage("");
+  }catch(error){
+    adminSetMessage(String(error.message||error));
+    adminActivated=false;localStorage.removeItem(ADMIN_TOKEN_KEY);
+    document.getElementById("adminDashboard").style.display="none";
+    document.getElementById("adminActivation").style.display="block";
+    document.getElementById("adminNavBtn").textContent="ADMIN SETUP";
+    adminSetMessage("Admin session could not be verified. Enter the activation key to refresh this device's admin session. Details: "+String(error.message||error));
+  }finally{adminBusy=false;document.getElementById("adminRefreshBtn").disabled=false;}
+}
+function renderAdminRequests(requests){
+  const body=document.getElementById("adminRequestsBody");body.replaceChildren();
+  if(!requests.length){const tr=document.createElement("tr");const td=document.createElement("td");td.colSpan=6;td.textContent="No verification requests yet.";tr.appendChild(td);body.appendChild(tr);return;}
+  for(const item of requests){
+    const tr=document.createElement("tr");
+    adminCell(tr,adminFormatDate(item.created_at));adminCell(tr,item.username);adminCell(tr,item.device_id,true);adminCell(tr,item.reference_code,true);
+    const st=document.createElement("td");st.appendChild(adminStatus(item.status||"pending",item.status==="approved"));tr.appendChild(st);
+    const review=document.createElement("td");
+    if(item.status==="pending"){
+      review.append(adminButton("Approve",()=>reviewAdminRequest(item.id,"approved"),true)," ",adminButton("Deny",()=>reviewAdminRequest(item.id,"denied")));
+    }else review.textContent="Reviewed";
+    tr.appendChild(review);body.appendChild(tr);
+  }
+}
+function renderAdminAccess(devices,accessRows){
+  const body=document.getElementById("adminAccessBody");body.replaceChildren();
+  const byId=new Map((accessRows||[]).map(a=>[a.device_id,a]));
+  if(!devices.length){const tr=document.createElement("tr");const td=document.createElement("td");td.colSpan=5;td.textContent="No registered devices.";tr.appendChild(td);body.appendChild(tr);return;}
+  for(const d of devices){
+    const a=byId.get(d.device_id)||{};
+    const tr=document.createElement("tr");adminCell(tr,d.username);adminCell(tr,d.device_id,true);
+    const active=a.enabled===true&&!a.blocked_at;const st=document.createElement("td");st.appendChild(adminStatus(active?"Enabled":"Disabled",active));tr.appendChild(st);
+    const limitCell=document.createElement("td");const limit=document.createElement("input");limit.className="admin-input";limit.type="number";limit.min="0";limit.max="500";limit.step="1";limit.value=String(a.daily_limit??20);limit.style.width="82px";limitCell.appendChild(limit);tr.appendChild(limitCell);
+    const actions=document.createElement("td");
+    actions.append(adminButton(active?"Revoke AI":"Grant AI",()=>setAdminAi(d.device_id,d.username,!active,limit.value),!active));
+    actions.append(document.createTextNode(" "));
+    actions.append(adminButton("Save limit",()=>setAdminAi(d.device_id,d.username,active,limit.value)));
+    tr.appendChild(actions);body.appendChild(tr);
+  }
+}
+function renderAdminDevices(devices){
+  const body=document.getElementById("adminDevicesBody");body.replaceChildren();
+  if(!devices.length){const tr=document.createElement("tr");const td=document.createElement("td");td.colSpan=4;td.textContent="No registered devices.";tr.appendChild(td);body.appendChild(tr);return;}
+  for(const d of devices){const tr=document.createElement("tr");adminCell(tr,d.username);adminCell(tr,d.device_id,true);adminCell(tr,adminFormatDate(d.first_seen));adminCell(tr,adminFormatDate(d.last_seen));body.appendChild(tr);}
+}
+async function setAdminAi(deviceId,username,enabled,limitValue){
+  const limit=Number(limitValue);
+  if(!Number.isInteger(limit)||limit<0||limit>500){adminSetMessage("Daily limit must be a whole number from 0 to 500.");return;}
+  try{
+    await adminGateway("admin_set_ai",{target_device_id:deviceId,target_username:username,enabled,daily_limit:limit});
+    adminSetMessage((enabled?"AI enabled for ":"AI disabled for ")+username+".");
+    await loadAdminDashboard();
+  }catch(error){adminSetMessage(String(error.message||error));}
+}
+async function reviewAdminRequest(id,status){
+  try{
+    await adminGateway("admin_review_request",{request_id:id,status});
+    adminSetMessage("Request marked "+status+".");
+    await loadAdminDashboard();
+  }catch(error){adminSetMessage(String(error.message||error));}
+}
+document.getElementById("adminNavBtn").addEventListener("click",adminShowPanel);
+document.getElementById("adminPanelClose").addEventListener("click",adminClosePanel);
+document.getElementById("adminPanelBack").addEventListener("click",e=>{if(e.target.id==="adminPanelBack")adminClosePanel();});
+document.getElementById("adminActivateBtn").addEventListener("click",activateAdminPanel);
+document.getElementById("adminRefreshBtn").addEventListener("click",loadAdminDashboard);
+document.getElementById("adminBootstrapInput").addEventListener("keydown",e=>{if(e.key==="Enter")activateAdminPanel();});
+
+
 const footerButtons=document.querySelectorAll("#footer [data-target]");
 footerButtons.forEach(button=>{
   button.addEventListener("click",()=>{
@@ -714,6 +955,7 @@ async function startHome(){
   // Load data while the welcome screen is visible. The desktop itself stays hidden
   // until Continue is pressed, and the terminal shortcut remains available meanwhile.
   await Promise.allSettled([loadPosts(),loadApps()]);
+  await initAdminPanel();
   document.getElementById("loading").style.display="none";
   showLanding();
   if(!identityCheckPassed){
