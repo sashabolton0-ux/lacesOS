@@ -18,18 +18,36 @@ button,input,select{font:inherit}
 button{transition:background .18s,border-color .18s,transform .18s,opacity .18s}
 #main{width:100%;height:100%;display:flex;flex-direction:column;position:relative}
 #main.os-hidden{display:none}
-#landing{position:fixed;inset:0;z-index:95;display:none;align-items:center;justify-content:center;padding:24px;background:var(--bg);color:var(--text)}
-#landingCard{width:min(620px,100%);padding:clamp(28px,6vw,60px);border:1px solid var(--border);border-radius:22px;background:linear-gradient(145deg,color-mix(in srgb,var(--card) 92%,var(--accent) 8%),var(--card));box-shadow:0 28px 100px #0003}
-#landingEyebrow{font:11px/1.4 "Geist Mono",ui-monospace,monospace;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:26px}
-#landingTitle{font-size:clamp(38px,8vw,64px);line-height:1;letter-spacing:-.06em;font-weight:600;margin:0 0 14px}
-#landingCopy{font-size:15px;line-height:1.6;color:var(--muted);margin:0 0 26px}
-#landingUsername{font-size:14px;color:var(--text);padding:12px 14px;border:1px solid var(--border);border-radius:10px;background:color-mix(in srgb,var(--bg) 60%,transparent);margin-bottom:22px;overflow-wrap:anywhere}
-#landingActions{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
-#landingContinue{border:1px solid var(--accent);border-radius:10px;padding:12px 18px;background:var(--accent);color:white;font-weight:600;cursor:pointer}
-#landingContinue:hover{filter:brightness(1.08);transform:translateY(-1px)}
-#landingHint{font-size:12px;color:var(--muted)}
-#landingHint kbd{font:12px "Geist Mono",ui-monospace,monospace;border:1px solid var(--border2);border-radius:5px;padding:3px 6px;color:var(--text)}
-@media(max-width:520px){#landingCard{padding:28px 22px}#landingTitle{font-size:42px}}
+#landing{position:fixed;inset:0;z-index:95;display:none;align-items:center;justify-content:center;padding:24px;overflow:hidden;background:var(--bg);color:var(--text);isolation:isolate}
+#landing:before,#landing:after{content:"";position:absolute;z-index:-1;pointer-events:none;border-radius:50%;filter:blur(2px);opacity:.5;animation:landingFloat 14s ease-in-out infinite alternate}
+#landing:before{width:min(62vw,720px);height:min(62vw,720px);left:-18%;top:-35%;background:radial-gradient(circle,color-mix(in srgb,var(--accent) 24%,transparent),transparent 68%)}
+#landing:after{width:min(56vw,650px);height:min(56vw,650px);right:-18%;bottom:-38%;background:radial-gradient(circle,color-mix(in srgb,var(--accent) 15%,transparent),transparent 68%);animation-delay:-6s}
+#landingCard{width:min(440px,100%);padding:clamp(28px,5vw,42px);border:1px solid color-mix(in srgb,var(--border2) 70%,transparent);border-radius:24px;background:color-mix(in srgb,var(--card) 88%,transparent);backdrop-filter:blur(24px);box-shadow:0 32px 100px #0005;animation:landingEnter .65s cubic-bezier(.2,.8,.2,1) both}
+#landingBrand{display:flex;align-items:center;gap:11px;margin-bottom:34px}
+#landingMark{width:38px;height:38px;display:grid;place-items:center;border-radius:12px;background:var(--accent);color:white;font-size:18px;font-weight:700;box-shadow:0 5px 24px color-mix(in srgb,var(--accent) 35%,transparent)}
+#landingBrandName{font-size:14px;font-weight:650;letter-spacing:-.02em}
+#landingBrandSub{font-size:11px;color:var(--muted);margin-top:3px}
+#landingTitle{font-size:clamp(32px,6vw,42px);line-height:1.08;letter-spacing:-.055em;font-weight:650;margin:0 0 10px}
+#landingCopy{font-size:14px;line-height:1.65;color:var(--muted);margin:0 0 28px}
+#landingUserLabel{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+#landingUsername{display:flex;align-items:center;gap:12px;font-size:14px;color:var(--text);padding:14px;border:1px solid var(--border);border-radius:13px;background:color-mix(in srgb,var(--bg) 58%,transparent);margin-bottom:20px;overflow-wrap:anywhere;transition:border-color .2s,background .2s,transform .2s}
+#landingUsername:hover{border-color:var(--border2);background:color-mix(in srgb,var(--card) 80%,transparent);transform:translateY(-1px)}
+#landingAvatar{width:36px;height:36px;flex-shrink:0;display:grid;place-items:center;border-radius:11px;background:color-mix(in srgb,var(--accent) 16%,var(--card));color:var(--text);font-weight:650;font-size:14px}
+#landingUserText{min-width:0;flex:1}
+#landingUserName{font-weight:600;overflow-wrap:anywhere}
+#landingUserMeta{font-size:11px;color:var(--muted);margin-top:3px}
+#landingActions{display:flex;flex-direction:column;align-items:stretch;gap:16px}
+#landingContinue{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;border:1px solid var(--accent);border-radius:12px;padding:14px 18px;background:var(--accent);color:white;font-weight:600;cursor:pointer;box-shadow:0 7px 24px color-mix(in srgb,var(--accent) 20%,transparent);transition:transform .2s,filter .2s,box-shadow .2s}
+#landingContinue:hover{filter:brightness(1.08);transform:translateY(-2px);box-shadow:0 10px 30px color-mix(in srgb,var(--accent) 28%,transparent)}
+#landingContinue:active{transform:translateY(0) scale(.99)}
+#landingContinue span{transition:transform .2s}
+#landingContinue:hover span{transform:translateX(3px)}
+#landingHint{font-size:11px;color:var(--muted);text-align:center}
+#landingHint kbd{font:11px "Geist Mono",ui-monospace,monospace;border:1px solid var(--border2);border-radius:5px;padding:3px 6px;color:var(--text);background:color-mix(in srgb,var(--card) 75%,transparent)}
+@keyframes landingEnter{from{opacity:0;transform:translateY(16px) scale(.985);filter:blur(5px)}to{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}}
+@keyframes landingFloat{from{transform:translate3d(-2%,0,0) scale(.96)}to{transform:translate3d(3%,4%,0) scale(1.06)}}
+@media(prefers-reduced-motion:reduce){#landing:before,#landing:after,#landingCard{animation:none}#landingUsername,#landingContinue,#landingContinue span{transition:none}}
+@media(max-width:520px){#landing{padding:18px}#landingCard{padding:28px 22px;border-radius:20px}#landingBrand{margin-bottom:28px}#landingTitle{font-size:34px}}
 #top{height:72px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 34px;flex-shrink:0;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(14px)}
 #systemName{font-size:15px;font-weight:600;letter-spacing:-.01em;display:flex;align-items:center;gap:10px}
 #systemName:before{content:"";width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 18px color-mix(in srgb,var(--accent) 75%,transparent)}
@@ -92,14 +110,7 @@ button{transition:background .18s,border-color .18s,transform .18s,opacity .18s}
 #terminalForm{display:flex;gap:9px;padding:0 16px 15px;align-items:center}
 #terminalPrompt{color:#69d98c}#terminalInput{flex:1;min-width:0;background:transparent;color:#d8ffe1;border:0;outline:0;font:inherit}
 #terminalHint{padding:0 16px 13px;color:#609a70;font-size:11px}
-#adminBack{position:fixed;inset:0;z-index:105;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(0,0,0,.68);backdrop-filter:blur(9px)}
-#adminPanel{width:min(900px,100%);max-height:min(86vh,850px);overflow:auto;background:var(--modal);color:var(--text);border:1px solid var(--border);border-radius:16px;padding:22px;box-shadow:0 24px 90px #0008}
-#adminPanel h2{margin:0 0 8px;font-size:21px}#adminPanel p{color:var(--muted);font-size:13px;line-height:1.5}
-.adminRow{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin:10px 0;padding:12px;border:1px solid var(--border);border-radius:10px}
-.adminRow .deviceMeta{flex:1;min-width:200px}.adminRow small{display:block;color:var(--muted);margin-top:4px;overflow-wrap:anywhere}
-.adminRow button,#adminPanel button{border:1px solid var(--border);border-radius:8px;padding:8px 10px;background:var(--card);color:var(--text);cursor:pointer}
-#adminPanel input,#adminPanel select{min-width:0;padding:10px;border:1px solid var(--border);border-radius:8px;background:var(--input);color:var(--text)}
-#adminStatus{white-space:pre-wrap;font-size:13px;color:var(--muted);margin:10px 0}#adminDevices{margin-top:14px}#adminTools{display:flex;gap:8px;flex-wrap:wrap}
+
 
 </style>
 </head>
@@ -112,10 +123,11 @@ button{transition:background .18s,border-color .18s,transform .18s,opacity .18s}
 
 <section id="landing" aria-label="Welcome to LacesOS">
   <div id="landingCard">
-    <div id="landingEyebrow">LacesOS · Personal system</div>
-    <h1 id="landingTitle">Welcome.</h1>
-    <p id="landingCopy">Everything is ready when you are.</p>
-    <div id="landingUsername">Loading your username…</div>
+    <div id="landingBrand"><div id="landingMark" aria-hidden="true">L</div><div><div id="landingBrandName">LacesOS</div><div id="landingBrandSub">Your space, ready when you are</div></div></div>
+    <h1 id="landingTitle">Welcome back.</h1>
+    <p id="landingCopy">Pick up right where you left off.</p>
+    <div id="landingUserLabel">Your profile</div>
+    <div id="landingUsername"><div id="landingAvatar">?</div><div id="landingUserText"><div id="landingUserName">Loading profile…</div><div id="landingUserMeta">This device</div></div></div>
     <div id="landingActions">
       <button id="landingContinue" type="button">Continue <span aria-hidden="true">→</span></button>
       <span id="landingHint">Press <kbd>~</kbd> to open the command prompt</span>
@@ -177,9 +189,12 @@ button{transition:background .18s,border-color .18s,transform .18s,opacity .18s}
 
     <div class="field">
       <label for="nameInput">Username</label>
-      <input id="nameInput" type="text" maxlength="80" autocomplete="name" autofocus>
-      <div class="name-note">Use your real name.</div>
-      <div class="name-note">This is used for verification.</div>
+      <input id="nameInput" type="text" maxlength="80" autocomplete="nickname" autofocus>
+    </div>
+    <div class="field">
+      <label for="realNameInput">Real name <span style="font-weight:400">(optional)</span></label>
+      <input id="realNameInput" type="text" maxlength="100" autocomplete="name" placeholder="Your real name">
+      <div class="name-note">Your real name is private and is not shown to other users. It can help the LacesOS team verify eligibility for additional apps.</div>
     </div>
 
     <div class="actions">
@@ -215,29 +230,10 @@ button{transition:background .18s,border-color .18s,transform .18s,opacity .18s}
     </div>
 
     <div class="actions" style="justify-content:space-between;flex-wrap:wrap">
-      <button id="openAdmin" type="button">Device management</button>
       <span style="display:flex;gap:10px"><button id="cancelSettings" type="button">Cancel</button>
       <button id="saveSettings" class="save" type="button">Save</button></span>
     </div>
   </div>
-</div>
-
-<div id="adminBack" aria-hidden="true">
-  <section id="adminPanel" role="dialog" aria-modal="true" aria-labelledby="adminTitle">
-    <h2 id="adminTitle">Device management</h2>
-    <p>Manage AI access and system administrators. Actions are verified by the server.</p>
-    <div id="adminLogin">
-      <div class="field"><label for="ownerKey">Owner setup key</label><input id="ownerKey" type="password" autocomplete="off" placeholder="Only needed to set up the first administrator"></div>
-      <div class="field"><label for="adminCode">Existing administrator access code</label><input id="adminCode" type="password" autocomplete="off" placeholder="Paste a code granted to this device"></div>
-      <div id="adminTools"><button id="adminBootstrap" type="button">Set up this device as admin</button><button id="adminUnlock" type="button">Unlock with access code</button></div>
-    </div>
-    <div id="adminManage" style="display:none">
-      <div id="adminTools"><button id="refreshDevices" type="button">Refresh devices</button><button id="adminLock" type="button">Lock admin panel</button></div>
-      <div id="adminDevices"></div>
-    </div>
-    <div id="adminStatus" role="status"></div>
-    <div class="actions"><button id="closeAdmin" type="button">Close</button></div>
-  </section>
 </div>
 
 <script>
@@ -293,7 +289,7 @@ const PROJECT_SCOPE = btoa(SUPABASE_URL).replace(/[^a-zA-Z0-9]/g, "").slice(-18)
 const SETTINGS_KEY = "lacesos_settings_v2:" + PROJECT_SCOPE;
 const DEVICE_KEY = "lacesos_device_id_v1:" + PROJECT_SCOPE;
 const USERNAME_KEY = "lacesos_username_v1:" + PROJECT_SCOPE;
-const ADMIN_TOKEN_KEY = "lacesos_admin_token_v1:" + PROJECT_SCOPE;
+const REAL_NAME_KEY = "lacesos_real_name_v1:" + PROJECT_SCOPE;
 
 const themes = {
   dark:{
@@ -383,15 +379,23 @@ async function isAiChatAllowedOnThisDevice(){
   }
 }
 
-async function registerDevice(username){
+async function registerDevice(username, realName=""){
   try{
     await supabaseRequest("/rest/v1/rpc/ensure_device",{
       method:"POST",
       headers:{"Content-Type":"application/json"},
       body:JSON.stringify({p_device_id:getDeviceId(),p_username:username})
     });
+    // Private names are written through the server gateway; they are not in the public devices table.
+    if(typeof realName==="string"){
+      const response=await supabaseRequest("/functions/v1/ai-gateway",{
+        method:"POST",headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({action:"save_private_name",device_id:getDeviceId(),username,real_name:realName.trim()})
+      });
+      if(response?.ok) localStorage.setItem(REAL_NAME_KEY,realName.trim());
+    }
   }catch(error){
-    console.warn("Device registration failed:",error);
+    console.warn("Device registration/private profile save failed:",error);
   }
 }
 
@@ -407,7 +411,7 @@ async function verifyStoredIdentity(){
     // A deleted device record must not be silently recreated from stale browser data.
     localStorage.removeItem(DEVICE_KEY);
     localStorage.removeItem(USERNAME_KEY);
-    localStorage.removeItem(ADMIN_TOKEN_KEY);
+    localStorage.removeItem(REAL_NAME_KEY);
     return true;
   }catch(error){
     document.getElementById("error").textContent="Could not verify this device with the new LacesOS project. Check the connection and reload; saved identity was not re-registered.";
@@ -424,7 +428,17 @@ function enterDesktop(){
 }
 function updateLandingUsername(){
   const name=(localStorage.getItem(USERNAME_KEY)||"").trim();
-  document.getElementById("landingUsername").textContent=name ? "Signed in as  "+name : "No username set yet";
+  const label=document.getElementById("landingUserName");
+  const avatar=document.getElementById("landingAvatar");
+  const meta=document.getElementById("landingUserMeta");
+  const title=document.getElementById("landingTitle");
+  const copy=document.getElementById("landingCopy");
+  label.textContent=name || "Set up your profile";
+  avatar.textContent=name ? Array.from(name)[0].toUpperCase() : "+";
+  meta.textContent=name ? "Ready to continue" : "Choose a username to get started";
+  title.textContent=name ? "Welcome back." : "Welcome to LacesOS.";
+  copy.textContent=name ? "Pick up right where you left off." : "A fresh space for your apps and updates.";
+  document.getElementById("landingContinue").innerHTML=name ? 'Continue <span aria-hidden="true">→</span>' : 'Get started <span aria-hidden="true">→</span>';
 }
 function showLanding(){
   updateLandingUsername();
@@ -439,7 +453,7 @@ document.getElementById("landingContinue").addEventListener("click",async()=>{
   const saved=(localStorage.getItem(USERNAME_KEY)||"").trim();
   if(saved){
     enterDesktop();
-    await registerDevice(saved);
+    await registerDevice(saved,localStorage.getItem(REAL_NAME_KEY)||"");
     return;
   }
   document.getElementById("landing").style.display="none";
@@ -449,7 +463,7 @@ function showNamePrompt(){
   const saved=localStorage.getItem(USERNAME_KEY);
   if(saved && saved.trim()){
     enterDesktop();
-    registerDevice(saved.trim());
+    registerDevice(saved.trim(),localStorage.getItem(REAL_NAME_KEY)||"");
     return;
   }
   const back=document.getElementById("nameBack");
@@ -458,12 +472,14 @@ function showNamePrompt(){
   setTimeout(()=>input.focus(),50);
   document.getElementById("saveName").onclick=async()=>{
     const name=input.value.trim();
+    const realName=document.getElementById("realNameInput").value.trim();
     if(!name){input.focus();return;}
     localStorage.setItem(USERNAME_KEY,name);
+    localStorage.setItem(REAL_NAME_KEY,realName);
     back.style.display="none";
     updateLandingUsername();
     enterDesktop();
-    await registerDevice(name);
+    await registerDevice(name,realName);
     await loadApps();
   };
 }
@@ -681,121 +697,6 @@ document.getElementById("terminalForm").addEventListener("submit",async event=>{
   terminalPrint("Unknown command. Type help.");
 });
 
-
-// Server-verified device administration. The owner setup key is only sent to the gateway;
-// it is never saved in browser storage. Per-device admin codes are saved only on that device.
-const adminBack=document.getElementById("adminBack");
-const adminStatus=document.getElementById("adminStatus");
-function adminMessage(message){adminStatus.textContent=message;}
-function adminToken(){return localStorage.getItem(ADMIN_TOKEN_KEY)||"";}
-function adminRequest(action,extra={}){
-  return supabaseRequest("/functions/v1/ai-gateway",{
-    method:"POST",headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({action,device_id:getDeviceId(),username:localStorage.getItem(USERNAME_KEY)||"",admin_token:adminToken(),...extra})
-  });
-}
-function openAdminPanel(){
-  document.getElementById("modalBack").style.display="none";
-  adminBack.style.display="flex";adminBack.setAttribute("aria-hidden","false");
-  const unlocked=!!adminToken();
-  document.getElementById("adminLogin").style.display=unlocked?"none":"block";
-  document.getElementById("adminManage").style.display=unlocked?"block":"none";
-  adminMessage(unlocked?"Checking administrator access…":"Use the owner setup key for the first admin, or enter an admin access code granted to this device.");
-  if(unlocked)refreshAdminDevices();
-}
-function closeAdminPanel(){adminBack.style.display="none";adminBack.setAttribute("aria-hidden","true");}
-document.getElementById("openAdmin").onclick=openAdminPanel;
-document.getElementById("closeAdmin").onclick=closeAdminPanel;
-adminBack.addEventListener("click",e=>{if(e.target===adminBack)closeAdminPanel();});
-document.getElementById("adminBootstrap").onclick=async()=>{
-  const ownerKey=document.getElementById("ownerKey").value;
-  if(!ownerKey){adminMessage("Enter the owner setup key configured in the ai-gateway function secrets.");return;}
-  adminMessage("Verifying owner key…");
-  try{
-    const result=await adminRequest("admin_bootstrap",{owner_key:ownerKey});
-    if(!result?.ok||!result?.admin_token)throw new Error(result?.error||"Admin setup failed.");
-    localStorage.setItem(ADMIN_TOKEN_KEY,result.admin_token);
-    document.getElementById("ownerKey").value="";
-    document.getElementById("adminLogin").style.display="none";document.getElementById("adminManage").style.display="block";
-    adminMessage("This device now has administrator access.");await refreshAdminDevices();
-  }catch(error){adminMessage(error.message||String(error));}
-};
-document.getElementById("adminUnlock").onclick=async()=>{
-  const token=document.getElementById("adminCode").value.trim();
-  if(!token){adminMessage("Paste the administrator access code for this device.");return;}
-  localStorage.setItem(ADMIN_TOKEN_KEY,token);adminMessage("Checking administrator access…");
-  try{await refreshAdminDevices();document.getElementById("adminCode").value="";document.getElementById("adminLogin").style.display="none";document.getElementById("adminManage").style.display="block";}
-  catch(error){localStorage.removeItem(ADMIN_TOKEN_KEY);adminMessage(error.message||String(error));}
-};
-document.getElementById("adminLock").onclick=()=>{localStorage.removeItem(ADMIN_TOKEN_KEY);document.getElementById("adminManage").style.display="none";document.getElementById("adminLogin").style.display="block";document.getElementById("adminDevices").innerHTML="";adminMessage("Administrator panel locked on this device.");};
-document.getElementById("refreshDevices").onclick=()=>refreshAdminDevices();
-async function refreshAdminDevices(){
-  const box=document.getElementById("adminDevices");box.textContent="Loading devices…";
-  const result=await adminRequest("admin_list_devices");
-  if(!result?.ok)throw new Error(result?.error||"Could not load devices.");
-  box.innerHTML="";
-  if(!result.devices?.length){box.textContent="No registered devices yet.";return;}
-  for(const d of result.devices){
-    const row=document.createElement("div");row.className="adminRow";
-    const meta=document.createElement("div");meta.className="deviceMeta";
-    const title=document.createElement("strong");title.textContent=(d.username||"Unnamed device");
-    const detail=document.createElement("small");detail.textContent=d.device_id+" · AI: "+(d.ai_enabled?"enabled":"off")+" · daily limit: "+(d.daily_limit??"—")+" · Admin: "+(d.is_admin?"yes":"no");
-    meta.append(title,detail);row.append(meta);
-    const ai=document.createElement("button");ai.textContent=d.ai_enabled?"Revoke AI":"Grant AI";ai.onclick=()=>manageDevice(d,ai);row.append(ai);
-    if(d.ai_enabled){const code=document.createElement("button");code.textContent="New AI code";code.onclick=()=>createAiCode(d,code);row.append(code);}
-    const limit=document.createElement("button");limit.textContent="Set limit";limit.onclick=()=>setDeviceLimit(d);row.append(limit);
-    const admin=document.createElement("button");admin.textContent=d.is_admin?"Remove admin":"Grant admin";admin.onclick=()=>manageDeviceAdmin(d,admin);row.append(admin);
-    box.append(row);
-  }
-}
-async function manageDevice(d,button){
-  button.disabled=true;
-  try{
-    if(d.ai_enabled){await adminRequest("admin_revoke_ai",{target_device_id:d.device_id});adminMessage("AI access revoked for "+d.username+".");}
-    else{
-      const raw=prompt("Daily AI request limit for "+d.username+"?","30");if(raw===null)return;
-      const daily_limit=Number(raw);if(!Number.isInteger(daily_limit)||daily_limit<0||daily_limit>10000){adminMessage("Enter a whole number from 0 to 10000.");return;}
-      const result=await adminRequest("admin_grant_ai",{target_device_id:d.device_id,daily_limit});
-      if(!result?.ok)throw new Error(result?.error||"Could not grant AI access.");
-      prompt("AI access enabled. Copy this one-time activation code and give it to the device owner:",result.activation_code);
-      adminMessage("AI access enabled. The activation code is shown only once; generate another if it was lost.");
-    }
-    await refreshAdminDevices();
-  }catch(error){adminMessage(error.message||String(error));}
-  finally{button.disabled=false;}
-}
-async function createAiCode(d,button){
-  const raw=prompt("Daily AI request limit for "+d.username+"?",String(d.daily_limit??30));if(raw===null)return;
-  const daily_limit=Number(raw);if(!Number.isInteger(daily_limit)||daily_limit<0||daily_limit>10000){adminMessage("Enter a whole number from 0 to 10000.");return;}
-  button.disabled=true;
-  try{
-    const result=await adminRequest("admin_grant_ai",{target_device_id:d.device_id,daily_limit});
-    if(!result?.ok)throw new Error(result?.error||"Could not create an activation code.");
-    prompt("Copy this one-time AI activation code and give it to the device owner:",result.activation_code);
-    adminMessage("A new one-time activation code was created.");await refreshAdminDevices();
-  }catch(error){adminMessage(error.message||String(error));}
-  finally{button.disabled=false;}
-}
-
-async function setDeviceLimit(d){
-  const raw=prompt("Daily AI request limit for "+d.username+"?",String(d.daily_limit??30));if(raw===null)return;
-  const daily_limit=Number(raw);if(!Number.isInteger(daily_limit)||daily_limit<0||daily_limit>10000){adminMessage("Enter a whole number from 0 to 10000.");return;}
-  try{await adminRequest("admin_set_limit",{target_device_id:d.device_id,daily_limit});adminMessage("AI daily limit updated.");await refreshAdminDevices();}catch(error){adminMessage(error.message||String(error));}
-}
-async function manageDeviceAdmin(d,button){
-  button.disabled=true;
-  try{
-    if(d.is_admin){await adminRequest("admin_set_device_admin",{target_device_id:d.device_id,enabled:false});adminMessage("Administrator access removed.");}
-    else{
-      const result=await adminRequest("admin_set_device_admin",{target_device_id:d.device_id,enabled:true});
-      if(!result?.admin_code)throw new Error(result?.error||"Could not grant administrator access.");
-      prompt("Copy this admin access code and enter it on that device in Settings → Device management → Existing administrator access code:",result.admin_code);
-      adminMessage("Administrator access granted. The access code is shown only once.");
-    }
-    await refreshAdminDevices();
-  }catch(error){adminMessage(error.message||String(error));}
-  finally{button.disabled=false;}
-}
 
 const footerButtons=document.querySelectorAll("#footer [data-target]");
 footerButtons.forEach(button=>{
