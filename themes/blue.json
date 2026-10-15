@@ -1,0 +1,16 @@
+{
+  "id": "blue",
+  "name": "Ocean Blue",
+  "colors": {
+    "bg": "#071525",
+    "text": "#eef7ff",
+    "muted": "#9bb8d3",
+    "border": "#203d59",
+    "border2": "#315b80",
+    "card": "#10243a",
+    "hover": "#17324f",
+    "modal": "#10243a",
+    "input": "#081a2c",
+    "accent": "#329dff"
+  }
+}
