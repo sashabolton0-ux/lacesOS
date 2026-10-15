@@ -1,5 +1,5 @@
 {
-  "id": "blue",
+  "id": "ocean-blue",
   "name": "Ocean Blue",
   "colors": {
     "bg": "#071525",
@@ -11,6 +11,32 @@
     "hover": "#17324f",
     "modal": "#10243a",
     "input": "#081a2c",
-    "accent": "#329dff"
+    "accent": "#329dff",
+    "desktopBg": "radial-gradient(ellipse at 18% 12%,#174d78 0,transparent 42%),radial-gradient(ellipse at 85% 80%,#123d63 0,transparent 40%),linear-gradient(135deg,#06111f,#0b2742 55%,#071525)",
+    "desktopText": "#eef7ff",
+    "desktopMuted": "#9bb8d3",
+    "desktopCard": "#0c2239ee",
+    "desktopDock": "#0a1d31e8",
+    "desktopGrid": "#80caff12",
+    "desktopIconBg": "linear-gradient(145deg,#2f6890cc,#0d2944cc)",
+    "desktopIconBorder": "#8ccfff38",
+    "desktopHover": "#329dff22",
+    "desktopAccentText": "#041523",
+    "windowBg": "#0c1d2e",
+    "windowText": "#eaf5ff",
+    "windowTitleBg": "#102b45",
+    "windowTitleText": "#eef7ff",
+    "windowBorder": "#8ccfff38",
+    "shadow": "#00000066",
+    "brandGradient": "linear-gradient(145deg,#69c8ff,#329dff 58%,#55e0d1)",
+    "selection": "#329dff",
+    "button": "#329dff",
+    "buttonText": "#041523",
+    "link": "#69c8ff",
+    "success": "#35c98b",
+    "warning": "#ffbd59",
+    "danger": "#ff647c",
+    "scrollbar": "#315b80",
+    "scrollbarTrack": "#081a2c"
   }
 }
