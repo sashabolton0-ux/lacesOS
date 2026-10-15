@@ -87,7 +87,8 @@ button{transition:background .18s,border-color .18s,transform .18s,opacity .18s}
 .spinner{width:28px;height:28px;border:2px solid rgba(255,255,255,.14);border-top-color:var(--accent);border-radius:50%;animation:spin .75s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 #modalBack,#nameBack{position:fixed;inset:0;background:rgba(0,0,0,.58);display:none;align-items:center;justify-content:center;padding:20px;z-index:90;backdrop-filter:blur(5px);animation:overlayIn .2s ease both}
-#modal,#nameBox{width:min(460px,100%);background:var(--modal);border:1px solid var(--border);border-radius:16px;padding:24px;box-shadow:0 20px 70px rgba(0,0,0,.35);animation:dialogIn .28s cubic-bezier(.2,.8,.2,1) both}
+#modal{width:min(920px,96vw);max-height:90vh;overflow:auto;background:var(--modal);border:1px solid var(--border);border-radius:18px;padding:26px;box-shadow:0 20px 70px rgba(0,0,0,.35);animation:dialogIn .28s cubic-bezier(.2,.8,.2,1) both}#nameBox{width:min(460px,100%);background:var(--modal);border:1px solid var(--border);border-radius:16px;padding:24px;box-shadow:0 20px 70px rgba(0,0,0,.35);animation:dialogIn .28s cubic-bezier(.2,.8,.2,1) both}
+.settings-layout{display:grid;grid-template-columns:190px minmax(0,1fr);gap:24px;min-height:420px}.settings-nav{border-right:1px solid var(--border);padding-right:16px}.settings-nav button{display:block;width:100%;text-align:left;margin:4px 0;padding:11px 12px;border:0;border-radius:9px;background:transparent;color:var(--muted);cursor:pointer}.settings-nav button.active,.settings-nav button:hover{background:var(--hover);color:var(--text)}.settings-page{display:none}.settings-page.active{display:block}.settings-page h3{margin:0 0 8px}.settings-help{font-size:13px;color:var(--muted);line-height:1.5}.settings-two{display:grid;grid-template-columns:1fr 1fr;gap:14px}.settings-page textarea{width:100%;min-height:180px;resize:vertical;padding:12px;border-radius:9px;border:1px solid var(--border);background:var(--input);color:var(--text);font:12px ui-monospace,monospace}@media(max-width:650px){.settings-layout{grid-template-columns:1fr;gap:12px}.settings-nav{border-right:0;border-bottom:1px solid var(--border);padding:0 0 10px;display:flex;overflow:auto}.settings-nav button{min-width:max-content;width:auto}.settings-two{grid-template-columns:1fr}}
 @keyframes overlayIn{from{opacity:0}to{opacity:1}}
 @keyframes dialogIn{from{opacity:0;transform:translateY(12px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
 @media(prefers-reduced-motion:reduce){#modalBack,#nameBack,#modal,#nameBox,#terminal{animation:none!important;transition:none!important}}
@@ -102,10 +103,44 @@ button{transition:background .18s,border-color .18s,transform .18s,opacity .18s}
 .name-subtitle{color:var(--muted);line-height:1.5;margin:0 0 18px}
 .name-note{font-size:12px;color:var(--muted);margin-top:7px}
 
-#appWindowBack{position:fixed;inset:0;display:none;z-index:80;background:var(--bg);flex-direction:column}
-#appWindowBar{height:48px;flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:0 16px;border-bottom:1px solid var(--border);background:var(--card);color:var(--text);font-size:13px}
-#appWindowClose{border:1px solid var(--border);border-radius:8px;background:transparent;color:var(--text);padding:7px 11px;cursor:pointer}
-#appFrame{border:0;width:100%;height:calc(100% - 48px);background:white;flex:1}
+
+.utility-body{padding:18px;overflow:auto;flex:1;min-height:0;background:var(--windowBg,#f7f8fc);color:var(--windowText,#202434);font-size:13px}.utility-body button,.utility-body input,.utility-body textarea{font:inherit}.utility-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}.utility-card{padding:16px;border:1px solid var(--border,#ddd);border-radius:13px;background:var(--card,#fff);color:var(--text,#222);min-width:0}.utility-muted{font-size:12px;color:var(--muted,#777);line-height:1.5;margin:7px 0}.utility-big{font-size:25px;font-weight:700;letter-spacing:-.04em;margin:12px 0}.utility-card textarea,.utility-files textarea{width:100%;min-height:115px;resize:vertical;border:1px solid var(--border,#ddd);border-radius:9px;padding:10px;background:var(--input,#fff);color:var(--text,#222)}.utility-button{border:1px solid var(--border,#ddd);background:var(--hover,#eee);color:var(--text,#222);padding:8px 11px;border-radius:8px;cursor:pointer;margin:5px 4px 0 0}.utility-button:hover{border-color:var(--accent,#5865f2)}.utility-button:disabled{opacity:.5;cursor:not-allowed}.utility-row{display:flex;gap:8px;margin-bottom:10px}.utility-row input,.utility-search{min-width:0;flex:1;border:1px solid var(--border,#ddd);border-radius:8px;padding:9px 10px;background:var(--input,#fff);color:var(--text,#222)}.utility-file-layout{display:grid;grid-template-columns:minmax(130px,.7fr) minmax(0,1.5fr);gap:12px}.utility-file-layout>div:first-child{display:flex;flex-direction:column;gap:4px}.utility-file{border:1px solid transparent;border-radius:8px;padding:9px;text-align:left;background:transparent;color:var(--text,#222);cursor:pointer}.utility-file.active,.utility-file:hover{background:var(--hover,#eee);border-color:var(--border,#ddd)}.utility-store-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-top:12px}.utility-store-icon{font-size:25px;margin-bottom:12px}.utility-card p{line-height:1.5}@media(max-width:520px){.utility-file-layout{grid-template-columns:1fr}.utility-body{padding:12px}}
+
+/* LacesOS Desktop v1 — a layered desktop, not a full-screen app overlay. */
+#top,#content,#footer{display:none!important}
+#main{position:fixed;inset:0;display:block!important;overflow:hidden;background:var(--desktopBg,#10131d)}
+#desktopShell{position:absolute;inset:0;overflow:hidden;color:var(--desktopText,#f5f7ff);background:var(--desktopBg,radial-gradient(ellipse at 18% 8%,#293a69 0,transparent 42%),radial-gradient(ellipse at 88% 82%,#4b285b 0,transparent 38%),linear-gradient(135deg,#101522,#171a2b 55%,#10131d));isolation:isolate}
+#desktopShell:before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.22;background-image:linear-gradient(var(--desktopGrid,#ffffff08) 1px,transparent 1px),linear-gradient(90deg,var(--desktopGrid,#ffffff08) 1px,transparent 1px);background-size:42px 42px;mask-image:linear-gradient(to bottom,black,transparent 88%)}
+#desktopBrand{position:absolute;left:28px;top:24px;display:flex;align-items:center;gap:10px;color:var(--desktopText,#fff);opacity:.96;pointer-events:none}
+#desktopBrandMark{width:31px;height:31px;border-radius:11px;display:grid;place-items:center;background:var(--brandGradient,linear-gradient(145deg,var(--accent),color-mix(in srgb,var(--accent) 55%,#53d7d0)));box-shadow:0 8px 28px var(--shadow,#7378ff55);font-weight:800;color:var(--desktopAccentText,#121629)}
+#desktopBrandText{font-size:13px;font-weight:700;letter-spacing:.02em}#desktopBrandSub{font-size:10px;color:var(--desktopMuted,#aeb8d4);margin-top:3px;letter-spacing:.07em;text-transform:uppercase}
+#desktopQuickTools{position:absolute;right:20px;top:62px;display:flex;gap:6px;z-index:25;flex-wrap:wrap;justify-content:flex-end;max-width:60vw}.desktop-tool{border:1px solid #ffffff24;border-radius:10px;background:var(--desktopDock,#161b2bc9);color:var(--desktopText,#fff);padding:7px 10px;font-size:11px;cursor:pointer;backdrop-filter:blur(12px)}.desktop-tool:hover{background:var(--desktopHover,#ffffff22)}
+#desktopClock{position:absolute;right:28px;top:28px;color:var(--desktopMuted,#c4cce2);font:11px "Geist Mono",monospace;letter-spacing:.04em}
+#desktopIcons{position:absolute;inset:78px 20px 88px 20px;display:flex;flex-direction:column;flex-wrap:wrap;align-content:flex-start;gap:10px;width:auto;max-width:calc(100% - 40px);}
+.desktop-icon{position:absolute;left:var(--icon-x,0px);top:var(--icon-y,0px);width:88px;min-height:92px;border:1px solid transparent;border-radius:15px;background:transparent;color:var(--desktopText,#f6f7ff);display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:8px;padding:11px 5px 8px;cursor:pointer;text-align:center;transition:background .16s,border-color .16s,transform .16s;}
+.desktop-icon:hover,.desktop-icon:focus-visible,.desktop-icon.selected{background:var(--desktopHover,#ffffff13);border-color:var(--desktopIconBorder,#ffffff1c);outline:0;transform:translateY(-1px)}
+.desktop-icon-glyph{width:45px;height:45px;border-radius:15px;display:grid;place-items:center;background:var(--desktopIconBg,linear-gradient(145deg,#ffffff24,#ffffff0a));border:1px solid var(--desktopIconBorder,#ffffff22);box-shadow:0 8px 22px var(--shadow,#0002);font-size:22px;color:#fff;backdrop-filter:blur(12px)}
+.desktop-icon-label{max-width:82px;font-size:11px;line-height:1.25;text-shadow:0 1px 5px #0009;overflow-wrap:anywhere}
+#desktopDock{position:absolute;left:50%;bottom:15px;transform:translateX(-50%);height:58px;max-width:calc(100% - 24px);display:flex;align-items:center;gap:6px;padding:7px 9px;border:1px solid var(--desktopIconBorder,#ffffff25);border-radius:20px;background:var(--desktopDock,#161b2bc9);box-shadow:0 16px 50px var(--shadow,#0005), inset 0 1px var(--desktopHover,#ffffff13);backdrop-filter:blur(24px);z-index:60}
+.dock-button{height:42px;min-width:42px;max-width:180px;border:1px solid transparent;border-radius:13px;background:transparent;color:var(--desktopText,#f4f6ff);display:flex;align-items:center;justify-content:center;gap:9px;padding:0 11px;cursor:pointer;font-size:12px;white-space:nowrap;transition:background .15s,border-color .15s}
+.dock-button:hover,.dock-button.active{background:var(--desktopHover,#ffffff14);border-color:var(--desktopIconBorder,#ffffff20)}.dock-button.start{background:var(--accent);color:var(--desktopAccentText,#15172a);font-weight:800;min-width:44px;font-size:16px}.dock-divider{height:26px;width:1px;background:#ffffff20;margin:0 2px}.dock-app{max-width:145px;overflow:hidden;text-overflow:ellipsis}.dock-glyph{font-size:17px}.dock-dot{position:absolute;width:4px;height:4px;border-radius:50%;background:#a99aff;bottom:3px;left:50%;transform:translateX(-50%)}
+#startMenu{position:absolute;left:50%;bottom:84px;transform:translateX(-50%) translateY(8px);width:min(520px,calc(100% - 24px));max-height:min(650px,calc(100% - 110px));overflow:auto;padding:17px;border:1px solid var(--desktopIconBorder,#ffffff25);border-radius:22px;background:var(--desktopCard,#171c2aee);box-shadow:0 28px 90px var(--shadow,#0008);backdrop-filter:blur(28px);z-index:70;opacity:0;visibility:hidden;transition:opacity .18s,transform .18s,visibility .18s}
+#startMenu.open{opacity:1;visibility:visible;transform:translateX(-50%) translateY(0)}
+#startMenuHead{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:1px 2px 14px}#startMenuTitle{font-size:16px;font-weight:700;letter-spacing:-.02em}#startMenuUser{font-size:11px;color:#aeb8d4;margin-top:4px}
+#startSearch{width:100%;border:1px solid #ffffff22;border-radius:12px;padding:11px 13px;background:var(--input,#0d1120a8);color:var(--desktopText,#fff);outline:0;margin-bottom:14px;font-size:12px}#startSearch:focus{border-color:#9990ff}
+#startAppGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:5px}.start-app{display:flex;align-items:center;gap:10px;text-align:left;border:1px solid transparent;border-radius:12px;padding:10px 8px;background:transparent;color:var(--desktopText,#f5f6ff);cursor:pointer;min-width:0}.start-app:hover{background:var(--desktopHover,#ffffff11);border-color:var(--desktopIconBorder,#ffffff18)}.start-app-glyph{width:34px;height:34px;flex-shrink:0;border-radius:11px;display:grid;place-items:center;background:color-mix(in srgb,var(--accent) 12%,var(--card));font-size:17px}.start-app-name{font-size:11px;overflow-wrap:anywhere}.start-empty{grid-column:1/-1;padding:15px;color:#aeb8d4;font-size:12px}
+#desktopWindows{position:absolute;inset:0 0 74px;z-index:30;pointer-events:none}
+.os-window{position:absolute;left:clamp(12px,12vw,180px);top:clamp(12px,9vh,80px);width:min(900px,calc(100% - 24px));height:min(650px,calc(100% - 24px));min-width:min(300px,calc(100vw - 24px));min-height:220px;display:flex;flex-direction:column;overflow:hidden;resize:both;pointer-events:auto;border:1px solid var(--windowBorder,#ffffff2b);border-radius:15px;background:var(--windowBg,#f7f8fc);color:var(--windowText,#202434);box-shadow:0 26px 90px var(--shadow,#0007),0 2px 8px var(--shadow,#0003);animation:windowPop .18s cubic-bezier(.2,.8,.2,1) both}
+@keyframes windowPop{from{opacity:0;transform:translateY(8px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
+.os-window.focused{border-color:#b3a9ff80;box-shadow:0 28px 95px #0008,0 0 0 1px #a99aff25}
+.os-window.maximized{left:10px!important;top:10px!important;width:calc(100% - 20px)!important;height:calc(100% - 20px)!important;resize:none;border-radius:12px}
+.os-window.minimized{display:none}
+.os-window-head{height:43px;min-height:43px;display:flex;align-items:center;gap:10px;padding:0 9px 0 14px;background:var(--windowTitleBg,#20253a);color:var(--windowTitleText,#f7f7ff);border-bottom:1px solid var(--windowBorder,#ffffff18);cursor:grab;user-select:none;touch-action:none}
+.os-window-head:active{cursor:grabbing}.os-window-name{display:flex;align-items:center;gap:9px;min-width:0;flex:1;font-size:12px;font-weight:600}.os-window-name span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.os-window-glyph{width:23px;height:23px;border-radius:7px;display:grid;place-items:center;background:var(--desktopHover,#ffffff13);font-size:13px}
+.os-window-controls{display:flex;gap:4px}.os-window-control{width:29px;height:27px;border:0;border-radius:7px;background:transparent;color:#e5e8f6;cursor:pointer;font-size:14px}.os-window-control:hover{background:#ffffff18}.os-window-control.close:hover{background:#e45d72;color:#fff}.os-window iframe{border:0;width:100%;height:100%;flex:1;background:#fff;min-height:0}
+#desktopStatus{position:absolute;left:22px;bottom:32px;color:#c0c9e2;font-size:10px;letter-spacing:.06em;text-transform:uppercase;opacity:.8;pointer-events:none}
+@media(max-width:640px){#desktopQuickTools{top:55px;right:8px;max-width:72vw}.desktop-tool{padding:6px 7px;font-size:10px}#desktopBrand{left:15px;top:15px}#desktopClock{right:15px;top:20px;font-size:9px}#desktopIcons{inset:66px 8px 86px 8px;gap:4px}.desktop-icon{width:76px;min-height:82px}.desktop-icon-glyph{width:39px;height:39px}#desktopStatus{display:none}#desktopDock{bottom:9px;height:54px;border-radius:17px}.dock-button{min-width:38px;height:38px;padding:0 8px}.dock-app .dock-label{display:none}.os-window{left:8px;top:8px;width:calc(100% - 16px);height:calc(100% - 16px);min-width:0;min-height:0}.os-window.maximized{left:5px!important;top:5px!important;width:calc(100% - 10px)!important;height:calc(100% - 10px)!important}#startMenu{bottom:72px}}
+@media(prefers-reduced-motion:reduce){.os-window,#startMenu{animation:none;transition:none}}
 #terminalBack{position:fixed;inset:0;z-index:110;display:none;align-items:center;justify-content:center;padding:0;background:rgba(0,0,0,.62);animation:overlayIn .16s ease both}
 #terminal{width:min(900px,100%);height:min(620px,88vh);min-height:280px;background:#050505;color:#f2f2f2;border:1px solid #393939;border-radius:3px;box-shadow:0 20px 70px #0009;overflow:hidden;display:flex;flex-direction:column;font:15px/1.55 Consolas,"Lucida Console",monospace;animation:terminalIn .2s ease-out both}
 @keyframes terminalIn{from{opacity:0;transform:scale(.99) translateY(5px)}to{opacity:1;transform:scale(1) translateY(0)}}
@@ -149,10 +184,55 @@ button{transition:background .18s,border-color .18s,transform .18s,opacity .18s}
 #adminMessage{font-size:12px;line-height:1.5;color:var(--muted);white-space:pre-wrap;margin-top:10px}
 @media(max-width:600px){#adminPanelBack{padding:8px}#adminPanel{height:94vh;border-radius:13px}#adminPanelHead{padding:14px}#adminPanelBody{padding:14px}}
 
+
+#lacesBoot{position:fixed;inset:0;z-index:9999;background:#0b0e17;color:#e9edf5;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px;font:14px/1.65 "Geist Mono",ui-monospace,monospace}
+#lacesBoot.hidden{display:none}
+#lacesBootBrand{text-align:center;margin-bottom:56px}
+#lacesBootFish{font-size:54px;line-height:1;margin-bottom:22px;color:#78d0bd}
+#lacesBootTitle{font-size:clamp(22px,4vw,32px);font-weight:700;letter-spacing:.18em}
+#lacesBootVersion{color:#8b93a5;margin-top:9px}
+#lacesBootTrack{width:min(720px,94vw);height:5px;background:#222a38;border-radius:99px;overflow:hidden;margin-bottom:26px}
+#lacesBootProgress{height:100%;width:0;background:#78d0bd;transition:width .2s linear}
+#lacesBootLog{width:min(720px,94vw);height:180px;overflow:hidden;color:#8f97a7;white-space:pre-wrap}
+#lacesBootLog .ok{color:#78d0bd}
+#installModeBack{position:fixed;inset:0;z-index:998;display:none;align-items:center;justify-content:center;padding:20px;background:#080b13eF;color:var(--text)}
+#installModeCard{width:min(620px,100%);border:1px solid var(--border2);border-radius:20px;background:var(--modal);padding:28px;box-shadow:0 25px 90px #0008}
+#installModeCard h2{margin:0 0 8px;font-size:25px}#installModeCard p{color:var(--muted);font-size:13px;line-height:1.6}
+.install-choice{display:flex;gap:13px;padding:15px;border:1px solid var(--border);border-radius:13px;margin:12px 0;cursor:pointer;align-items:flex-start}
+.install-choice:has(input:checked){border-color:var(--accent);background:color-mix(in srgb,var(--accent) 9%,var(--card))}
+.install-choice input{margin-top:4px;accent-color:var(--accent)}
+.install-choice strong{display:block;margin-bottom:4px}.install-choice small{display:block;color:var(--muted);line-height:1.5}
+#installModeActions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px;flex-wrap:wrap}
+#installModeActions button{border:1px solid var(--border2);border-radius:10px;padding:10px 15px;background:var(--card);color:var(--text);cursor:pointer}
+#installModeActions .primary{background:var(--accent);border-color:var(--accent);color:white}
+html.bloatless *,html.bloatless *::before,html.bloatless *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+html.bloatless #desktopShell{background:var(--bg)!important}
+html.bloatless #desktopShell:before{display:none}
+html.bloatless #desktopBrand{display:none}
+html.bloatless #desktopStatus{display:none}
+html.bloatless #desktopIcons{inset:18px!important;display:grid!important;grid-template-columns:repeat(auto-fill,minmax(105px,1fr));align-content:start;gap:8px}
+html.bloatless .desktop-icon{position:relative!important;left:auto!important;top:auto!important}
+html.bloatless #desktopDock{display:none!important}
+
 </style>
 </head>
 
 <body>
+
+<div id="lacesBoot" aria-live="polite">
+  <div id="lacesBootBrand"><div id="lacesBootFish" aria-hidden="true">◉</div><div id="lacesBootTitle">LACESOS</div><div id="lacesBootVersion">Starting system</div></div>
+  <div id="lacesBootTrack"><div id="lacesBootProgress"></div></div>
+  <div id="lacesBootLog"></div>
+</div>
+<div id="installModeBack" role="dialog" aria-modal="true" aria-labelledby="installModeTitle">
+  <div id="installModeCard">
+    <h2 id="installModeTitle">Choose your LacesOS install</h2>
+    <p>This only chooses which interface and optional modules load. Your device ID, username, and AI access are kept.</p>
+    <label class="install-choice"><input type="radio" name="installMode" value="normal" checked><span><strong>Normal install</strong><small>Full desktop, animations setting, and optional modules such as themes, widgets, and notifications.</small></span></label>
+    <label class="install-choice"><input type="radio" name="installMode" value="bloatless"><span><strong>Bloatless install</strong><small>Lightweight app-list interface, no optional modules, and no animations.</small></span></label>
+    <div id="installModeActions"><button id="cancelInstallMode" type="button">Cancel</button><button id="saveInstallMode" class="primary" type="button">Continue</button></div>
+  </div>
+</div>
 
 <div id="loading" aria-label="Loading">
   <div class="spinner"></div>
@@ -204,6 +284,25 @@ button{transition:background .18s,border-color .18s,transform .18s,opacity .18s}
     <span class="footer-dot" id="adminNavDivider" style="display:none">/</span>
     <button class="footer-item" id="adminNavBtn" type="button">ADMIN</button>
   </footer>
+  <section id="desktopShell" aria-label="LacesOS desktop">
+    <div id="desktopBrand"><div id="desktopBrandMark">L</div><div><div id="desktopBrandText">lacesOS</div><div id="desktopBrandSub">Your space, connected</div></div></div>
+    <div id="desktopClock" aria-live="off"></div>
+    <div id="desktopQuickTools"><button class="desktop-tool" id="toolWidgets">▦ Widgets</button><button class="desktop-tool" id="toolNotifications">♧ Notifications <span id="notificationCount"></span></button><button class="desktop-tool" id="toolFiles">▤ Files</button><button class="desktop-tool" id="toolStore">▣ Store</button></div>
+    <div id="desktopIcons" aria-label="Desktop applications"></div>
+    <div id="desktopStatus">Ready when you are · LacesOS Desktop</div>
+    <div id="desktopWindows" aria-label="Open application windows"></div>
+    <section id="startMenu" aria-label="App launcher">
+      <div id="startMenuHead"><div><div id="startMenuTitle">Your space</div><div id="startMenuUser">Applications and tools</div></div><button class="dock-button" id="startSettings" type="button" title="Settings">⚙ Settings</button></div>
+      <input id="startSearch" type="search" placeholder="Find an app…" autocomplete="off" aria-label="Find an app">
+      <div id="startAppGrid"></div>
+      <div style="display:flex;flex-wrap:wrap;gap:7px;border-top:1px solid #ffffff19;margin-top:14px;padding-top:13px">
+        <button class="dock-button" id="startUpdates" type="button">◈ Updates</button>
+        <button class="dock-button" id="startConsole" type="button">⌘ Console</button>
+        <button class="dock-button" id="startAdmin" type="button" style="display:none">♢ Admin</button>
+      </div>
+    </section>
+    <nav id="desktopDock" aria-label="Desktop taskbar"><button class="dock-button start" id="startButton" type="button" aria-label="Open app launcher" title="App launcher">L</button><span class="dock-divider"></span><button class="dock-button" id="dockHome" type="button" title="Show desktop">⌂</button><span class="dock-divider"></span><div id="dockRunning" style="display:flex;align-items:center;gap:5px;min-width:0"></div></nav>
+  </section>
 </main>
 
 <div id="adminPanelBack" aria-hidden="true">
@@ -245,10 +344,6 @@ button{transition:background .18s,border-color .18s,transform .18s,opacity .18s}
   </section>
 </div>
 
-<div id="appWindowBack" aria-hidden="true">
-  <div id="appWindowBar"><span id="appWindowTitle">App</span><button id="appWindowClose" type="button">Close ×</button></div>
-  <iframe id="appFrame" title="Application" allow="fullscreen; clipboard-read; clipboard-write"></iframe>
-</div>
 <div id="terminalBack" aria-hidden="true">
   <section id="terminal" role="dialog" aria-modal="true" aria-label="System console">
     <div id="terminalHead"><span>LacesOS Console</span><span>Esc to close</span></div>
@@ -276,37 +371,83 @@ button{transition:background .18s,border-color .18s,transform .18s,opacity .18s}
 <div id="modalBack">
   <div id="modal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
     <h2 id="settingsTitle">Settings</h2>
-
-<div class="field"><label>Username</label><div id="settingsUsername" style="padding:11px 12px;border-radius:9px;border:1px solid var(--border);background:var(--input);color:var(--text)">Not set</div></div>
-
-<div class="field">
-      <label for="tabName">Tab name</label>
-      <input id="tabName" type="text" maxlength="80" placeholder="LacesOS">
+    <p class="settings-help">Personalize your LacesOS desktop and appearance.</p>
+    <div class="settings-layout">
+      <nav class="settings-nav" aria-label="Settings categories">
+        <button type="button" class="active" data-settings-page="general">⚙ General</button>
+        <button type="button" data-settings-page="appearance">🎨 Appearance</button>
+        <button type="button" data-settings-page="theme-editor">✎ Theme editor</button>
+      </nav>
+      <div>
+        <section class="settings-page active" data-page="general">
+          <h3>General</h3>
+          <div class="field"><label>Username</label><div id="settingsUsername" style="padding:11px 12px;border-radius:9px;border:1px solid var(--border);background:var(--input);color:var(--text)">Not set</div></div><div class="field" style="margin-top:14px"><label><input id="animationsToggle" type="checkbox" style="accent-color:var(--accent);margin-right:8px"> Enable interface animations</label><p class="settings-help">Normal install only. Bloatless always disables animations.</p></div><div class="field"><button id="changeInstallMode" type="button">Reinstall / Change installation</button></div>
+          <div class="settings-two"><div class="field"><label for="tabName">Tab name</label><input id="tabName" type="text" maxlength="80" placeholder="LacesOS"></div><div class="field"><label for="iconUrl">Tab icon URL</label><input id="iconUrl" type="url" placeholder="https://example.com/icon.png"></div></div>
+        </section>
+        <section class="settings-page" data-page="appearance">
+          <h3>Appearance</h3><p class="settings-help">Choose a built-in or downloaded theme. Changes apply across the desktop and OS surfaces.</p>
+          <div class="field"><label for="theme">Active theme</label><select id="theme"><option value="dark">Dark</option><option value="light">Light</option><option value="system">System default</option></select></div>
+          <div class="settings-two"><div class="field"><label for="accentOverride">Accent color override</label><input id="accentOverride" type="color" value="#5865f2"></div><div class="field"><label for="wallpaperOverride">Wallpaper style</label><select id="wallpaperOverride"><option value="theme">Use theme wallpaper</option><option value="solid">Solid desktop color</option><option value="gradient">Use accent gradient</option></select></div></div>
+          <div class="field"><label for="wallpaperColor">Desktop background color</label><input id="wallpaperColor" type="color" value="#111318"></div>
+          <p class="settings-help">Download more themes in Extensions. Installed themes appear in the selector above.</p>
+        </section>
+        <section class="settings-page" data-page="theme-editor">
+          <h3>Theme editor</h3><p class="settings-help">Create a local theme preset by editing its JSON. Theme values are data only; scripts are not allowed. Use hex colors and CSS gradients for background fields.</p>
+          <div class="field"><label for="themeDraftName">Theme name</label><input id="themeDraftName" maxlength="60" placeholder="My custom theme"></div>
+          <div class="field"><label for="themeDraft">Theme JSON</label><textarea id="themeDraft" spellcheck="false"></textarea></div>
+          <div class="actions" style="justify-content:flex-start;flex-wrap:wrap"><button id="themeDraftLoad" type="button">Load current theme</button><button id="themeDraftSave" class="save" type="button">Save as downloaded theme</button></div><div id="themeEditorStatus" class="settings-help" role="status"></div>
+        </section>
+      </div>
     </div>
-
-    <div class="field">
-      <label for="iconUrl">Tab icon URL</label>
-      <input id="iconUrl" type="url" placeholder="https://example.com/icon.png">
-      <div class="note">Use a direct image URL.</div>
-    </div>
-
-    <div class="field">
-      <label for="theme">Theme</label>
-      <select id="theme">
-        <option value="dark">Dark</option>
-        <option value="light">Light</option>
-        <option value="system">System default</option>
-      </select>
-    </div>
-
-    <div class="actions" style="justify-content:space-between;flex-wrap:wrap">
-      <span style="display:flex;gap:10px"><button id="cancelSettings" type="button">Cancel</button>
-      <button id="saveSettings" class="save" type="button">Save</button></span>
-    </div>
+    <div class="actions" style="justify-content:space-between;flex-wrap:wrap"><button id="cancelSettings" type="button">Cancel</button><button id="saveSettings" class="save" type="button">Save settings</button></div>
   </div>
 </div>
 
 <script>
+const LACES_INSTALL_MODE_KEY="lacesos_install_mode_v1";
+const LACES_BOOT_LOG_KEY="lacesos_boot_log_v1";
+function lacesBootLine(message,ok=true){
+  const host=document.getElementById("lacesBootLog");if(!host)return;
+  const line=document.createElement("div");line.textContent=(ok?"[OK] ":"[INFO] ")+message;
+  if(ok)line.className="ok";host.appendChild(line);host.scrollTop=host.scrollHeight;
+}
+function lacesBootProgress(percent){const el=document.getElementById("lacesBootProgress");if(el)el.style.width=Math.max(0,Math.min(100,percent))+"%";}
+async function lacesBoot(){
+  const lines=[
+    ["Starting LacesOS boot sequence...",8],
+    ["Checking saved installation settings...",22],
+    ["Preparing core system...",38],
+    ["Registering module loader...",54],
+    ["Preparing desktop interface...",72],
+    ["System ready.",100]
+  ];
+  for(const [message,progress] of lines){lacesBootLine(message);lacesBootProgress(progress);await new Promise(resolve=>setTimeout(resolve,95));}
+  document.getElementById("lacesBoot").classList.add("hidden");
+}
+function getInstallMode(){return localStorage.getItem(LACES_INSTALL_MODE_KEY)||"";}
+function applyInstallMode(){
+  const mode=getInstallMode();
+  document.documentElement.classList.toggle("bloatless",mode==="bloatless");
+  if(mode==="bloatless"){
+    const s=(()=>{try{return JSON.parse(localStorage.getItem(SETTINGS_KEY)||"{}")}catch{return {}}})();
+    s.animations=false;
+    try{localStorage.setItem(SETTINGS_KEY,JSON.stringify(s))}catch{}
+  }
+}
+function openInstallModeDialog(){
+  const current=getInstallMode()||"normal";
+  document.querySelectorAll('input[name="installMode"]').forEach(r=>r.checked=r.value===current);
+  document.getElementById("installModeBack").style.display="flex";
+}
+function saveInstallModeChoice(){
+  const mode=document.querySelector('input[name="installMode"]:checked')?.value||"normal";
+  localStorage.setItem(LACES_INSTALL_MODE_KEY,mode);
+  applyInstallMode();
+  document.getElementById("installModeBack").style.display="none";
+  location.reload();
+}
+document.getElementById("saveInstallMode").addEventListener("click",saveInstallModeChoice);
+document.getElementById("cancelInstallMode").addEventListener("click",()=>document.getElementById("installModeBack").style.display="none");
 const SUPABASE_URL =
   "https://exsvwwxomovjstlhgjjy.supabase.co";
 
@@ -361,19 +502,31 @@ const DEVICE_KEY = "lacesos_device_id_v1:" + PROJECT_SCOPE;
 const USERNAME_KEY = "lacesos_username_v1:" + PROJECT_SCOPE;
 const REAL_NAME_KEY = "lacesos_real_name_v1:" + PROJECT_SCOPE;
 
+const CUSTOM_THEMES_KEY = "lacesos_custom_themes_v1:" + PROJECT_SCOPE;
 const themes = {
   dark:{
-    bg:"#111318",text:"#fff",muted:"#8d94a3",border:"#2b2f38",
+    bg:"#111318",text:"#fff",muted:"#8d94a3",border:"#2b2f38",desktopBg:"radial-gradient(ellipse at 18% 8%,#293a69 0,transparent 42%),radial-gradient(ellipse at 88% 82%,#4b285b 0,transparent 38%),linear-gradient(135deg,#101522,#171a2b 55%,#10131d)",desktopText:"#f5f7ff",desktopMuted:"#aeb8d4",desktopCard:"#171c2aee",desktopDock:"#161b2bc9",desktopGrid:"#ffffff08",desktopIconBg:"linear-gradient(145deg,#ffffff24,#ffffff0a)",desktopIconBorder:"#ffffff22",desktopHover:"#ffffff14",desktopAccentText:"#15172a",windowBg:"#f7f8fc",windowText:"#202434",windowTitleBg:"#20253a",windowTitleText:"#f7f7ff",windowBorder:"#ffffff2b",shadow:"#00000055",
     border2:"#414856",card:"#181b22",hover:"#222731",
     modal:"#181b22",input:"#111318",accent:"#5865f2"
   },
   light:{
-    bg:"#f4f5f7",text:"#17191d",muted:"#68707d",border:"#d9dde4",
+    bg:"#f4f5f7",text:"#17191d",muted:"#68707d",border:"#d9dde4",desktopBg:"linear-gradient(135deg,#f8fafc,#e8edf5 60%,#dce5f1)",desktopText:"#172033",desktopMuted:"#526078",desktopCard:"#ffffffed",desktopDock:"#ffffffdc",desktopGrid:"#17203308",desktopIconBg:"linear-gradient(145deg,#ffffffdd,#dce4f0aa)",desktopIconBorder:"#17203320",desktopHover:"#1720330c",desktopAccentText:"#ffffff",windowBg:"#ffffff",windowText:"#172033",windowTitleBg:"#e8edf5",windowTitleText:"#172033",windowBorder:"#17203324",shadow:"#17203330",
     border2:"#b9c0cb",card:"#fff",hover:"#e9ecf1",
     modal:"#fff",input:"#f4f5f7",accent:"#4f5bd5"
   }
 };
 
+function getCustomThemes(){
+  try{return JSON.parse(localStorage.getItem(CUSTOM_THEMES_KEY)||"{}");}catch{return {};}
+}
+function refreshThemeOptions(){
+  const select=document.getElementById("theme");if(!select)return;
+  const current=select.value;select.querySelectorAll("option[data-custom-theme]").forEach(o=>o.remove());
+  for(const [id,t] of Object.entries(getCustomThemes())){
+    const o=document.createElement("option");o.value="custom:"+id;o.textContent=t.name||id;o.dataset.customTheme="1";select.appendChild(o);
+  }
+  if([...select.options].some(o=>o.value===current))select.value=current;
+}
 function getSettings(){
   try{
     return JSON.parse(localStorage.getItem(SETTINGS_KEY)||"{}");
@@ -392,9 +545,22 @@ function resolvedTheme(mode){
     : (mode==="light" ? "light" : "dark");
 }
 
+function isLightColor(hex){
+  const m=String(hex||"").match(/^#([0-9a-f]{6})$/i);if(!m)return false;
+  const n=parseInt(m[1],16),r=n>>16,g=(n>>8)&255,b=n&255;
+  return (0.2126*r+0.7152*g+0.0722*b)>155;
+}
 function applySettings(){
   const s=getSettings();
-  const t=themes[resolvedTheme(s.theme||"dark")];
+  document.documentElement.classList.toggle("no-animations",s.animations===false || getInstallMode()==="bloatless");
+  const custom=getCustomThemes();
+  const customId=String(s.theme||"").startsWith("custom:")?String(s.theme).slice(7):"";
+  const t=customId&&custom[customId]?{...custom[customId].colors}:themes[resolvedTheme(s.theme||"dark")];
+  if(t && s.accentOverride) t.accent=s.accentOverride;
+  if(t && s.wallpaperOverride==="solid" && s.wallpaperColor) t.desktopBg=s.wallpaperColor;
+  if(t && s.wallpaperOverride==="gradient" && s.accentOverride) t.desktopBg=`linear-gradient(135deg, ${s.wallpaperColor||t.bg}, ${s.accentOverride})`;
+  if(!t)return;
+  document.documentElement.style.colorScheme=(s.theme==="light"||(customId&&t.bg&&isLightColor(t.bg)))?"light":"dark";
 
   for(const [k,v] of Object.entries(t)){
     document.documentElement.style.setProperty("--"+k,v);
@@ -406,6 +572,7 @@ function applySettings(){
   document.getElementById("favicon").href=s.iconUrl?.trim()||"data:,";
 }
 
+refreshThemeOptions();
 applySettings();
 
 matchMedia("(prefers-color-scheme: dark)")
@@ -516,6 +683,7 @@ document.getElementById("landingContinue").addEventListener("click",async()=>{
   if(saved){
     enterDesktop();
     await registerDevice(saved);
+    await showUpdatesOnLogin();
     return;
   }
   document.getElementById("landing").style.display="none";
@@ -541,7 +709,8 @@ function showNamePrompt(){
     updateLandingUsername();
     enterDesktop();
     await registerDevice(name);
-    await loadApps();
+    await Promise.allSettled([loadApps(),loadPosts()]);
+    await showUpdatesOnLogin();
   };
 }
 
@@ -555,7 +724,11 @@ document.getElementById("settingsBtn").onclick=()=>{
   tabName.value=s.tabName||"LacesOS";
   iconUrl.value=s.iconUrl||"";
   document.getElementById("settingsUsername").textContent = localStorage.getItem(USERNAME_KEY) || "Not set";
+  const animationsToggle=document.getElementById("animationsToggle");if(animationsToggle){animationsToggle.checked=s.animations!==false&&getInstallMode()!=="bloatless";animationsToggle.disabled=getInstallMode()==="bloatless";}
   theme.value=s.theme||"dark";
+  document.getElementById("accentOverride").value=s.accentOverride||"#5865f2";
+  document.getElementById("wallpaperOverride").value=s.wallpaperOverride||"theme";
+  document.getElementById("wallpaperColor").value=s.wallpaperColor||"#111318";
   modalBack.style.display="flex";
   tabName.focus();
 };
@@ -568,37 +741,208 @@ modalBack.onclick=e=>{
   if(e.target===modalBack) modalBack.style.display="none";
 };
 
+document.getElementById("changeInstallMode")?.addEventListener("click",openInstallModeDialog);
 document.getElementById("saveSettings").onclick=()=>{
   saveSettings({
     tabName:tabName.value.trim()||"LacesOS",
     iconUrl:iconUrl.value.trim(),
-    theme:theme.value
+    theme:theme.value,
+    animations:getInstallMode()==="bloatless"?false:(document.getElementById("animationsToggle")?.checked!==false),
+    accentOverride:document.getElementById("accentOverride").value,
+    wallpaperOverride:document.getElementById("wallpaperOverride").value,
+    wallpaperColor:document.getElementById("wallpaperColor").value
   });
 
+  refreshThemeOptions();
   applySettings();
   modalBack.style.display="none";
 };
 
+document.querySelectorAll("[data-settings-page]").forEach(btn=>btn.addEventListener("click",()=>{document.querySelectorAll("[data-settings-page]").forEach(b=>b.classList.toggle("active",b===btn));document.querySelectorAll("[data-page]").forEach(p=>p.classList.toggle("active",p.dataset.page===btn.dataset.settingsPage));if(btn.dataset.settingsPage==="theme-editor")loadThemeDraft();}));
+function loadThemeDraft(){const s=getSettings(),id=String(s.theme||"").startsWith("custom:")?String(s.theme).slice(7):"",custom=getCustomThemes(),base=id&&custom[id]?custom[id]:{id:"my-theme",name:"My custom theme",colors:themes[resolvedTheme(s.theme||"dark")]};document.getElementById("themeDraftName").value=base.name||"My custom theme";document.getElementById("themeDraft").value=JSON.stringify(base,null,2);document.getElementById("themeEditorStatus").textContent="";}
+document.getElementById("themeDraftLoad").onclick=loadThemeDraft;
+document.getElementById("themeDraftSave").onclick=()=>{const status=document.getElementById("themeEditorStatus");try{const raw=JSON.parse(document.getElementById("themeDraft").value);raw.name=document.getElementById("themeDraftName").value.trim()||raw.name||"My custom theme";raw.id=String(raw.id||raw.name).toLowerCase().replace(/[^a-z0-9_-]+/g,"-").replace(/^-|-$/g,"").slice(0,48)||"my-theme";const colors=raw.colors||raw;if(!colors||typeof colors!=="object")throw Error("Add a colors object or color fields.");const safe={};for(const [k,v] of Object.entries(colors)){if(typeof v!=="string"||v.length>300||/[<>]|url\s*\(|javascript:/i.test(v))throw Error("Unsafe or invalid value for "+k);if(!/^(#[0-9a-f]{3,8}|rgba?\([0-9.,%\s]+\)|hsla?\([0-9.,%\s]+\)|linear-gradient\([#a-zA-Z0-9.,%\s()-]+\)|radial-gradient\([#a-zA-Z0-9.,%\s()-]+\))$/i.test(v))throw Error("Unsupported color format for "+k);safe[k]=v;}if(!safe.bg||!safe.text||!safe.desktopBg)throw Error("Include at least bg, text, and desktopBg.");const all=getCustomThemes();all[raw.id]={id:raw.id,name:raw.name,colors:safe,source:"local-editor"};localStorage.setItem(CUSTOM_THEMES_KEY,JSON.stringify(all));refreshThemeOptions();theme.value="custom:"+raw.id;saveSettings({...getSettings(),theme:theme.value});applySettings();status.textContent="Theme saved locally and applied. You can edit it again here.";}catch(e){status.textContent="Could not save theme: "+e.message;}};
+
 let activeAppLoad=0;
+const desktopWindows=new Map();
+let focusedWindowId=null;
+let nextWindowId=1;
+let loadedApps=[];
+let zCounter=40;
+const desktopGlyphs={"ai-chat":"✦","chat":"◌","games":"◇","settings":"⚙","browser":"◎","files":"▤","terminal":"⌘","admin":"♢","update":"◈","music":"♫","video":"▶","calendar":"▦","notes":"▤","calculator":"＋","mail":"✉","clock":"◷","store":"▦"};
+function appGlyph(app){
+  // The app catalog's icon field is the source of truth: preserve the exact emoji
+  // or symbol configured for each app instead of replacing it by app name.
+  const configured=String(app?.icon??"").trim();
+  if(configured)return configured;
+  const id=String(app?.id||"").toLowerCase();
+  const name=String(app?.name||"").toLowerCase();
+  for(const [key,glyph] of Object.entries(desktopGlyphs))if(id.includes(key)||name.includes(key))return glyph;
+  return "◈";
+}
+function closeStartMenu(){document.getElementById("startMenu").classList.remove("open");}
+function toggleStartMenu(force){
+  const menu=document.getElementById("startMenu");
+  const shouldOpen=typeof force==="boolean"?force:!menu.classList.contains("open");
+  menu.classList.toggle("open",shouldOpen);
+  if(shouldOpen){document.getElementById("startMenuUser").textContent=(localStorage.getItem(USERNAME_KEY)||"Applications and tools").trim()||"Applications and tools";renderStartApps(document.getElementById("startSearch").value);setTimeout(()=>document.getElementById("startSearch").focus(),30);}
+}
+function renderStartApps(filter=""){
+  const grid=document.getElementById("startAppGrid");
+  const q=String(filter).trim().toLowerCase();
+  const apps=loadedApps.filter(a=>String(a.status||"on").toLowerCase()!=="hidden"&&(!q||String(a.name||"").toLowerCase().includes(q)||String(a.description||"").toLowerCase().includes(q)));
+  grid.innerHTML="";
+  if(!apps.length){const empty=document.createElement("div");empty.className="start-empty";empty.textContent=q?"No matching apps.":"Your apps will appear here when available.";grid.appendChild(empty);return;}
+  for(const app of apps){
+    const b=document.createElement("button");b.type="button";b.className="start-app";
+    const glyph=document.createElement("span");glyph.className="start-app-glyph";glyph.textContent=appGlyph(app);
+    const name=document.createElement("span");name.className="start-app-name";name.textContent=app.name||"App";
+    b.append(glyph,name);b.addEventListener("click",()=>{closeStartMenu();openApp(app);});grid.appendChild(b);
+  }
+}
+function renderDesktopIcons(){
+  const host=document.getElementById("desktopIcons");host.innerHTML="";
+  const positions=readIconPositions();
+  for(const app of loadedApps){
+    if(String(app.status||"on").toLowerCase()==="hidden")continue;
+    const b=document.createElement("button");b.type="button";b.className="desktop-icon";b.title=(app.description||app.name||"Open app")+" · drag to move, double-click to open";b.dataset.appId=String(app.id||app.name||"");
+    const pos=positions[b.dataset.appId];if(pos){b.style.left=pos.x+"px";b.style.top=pos.y+"px";}else{const i=host.children.length;b.style.left=(Math.floor(i/6)*100)+"px";b.style.top=((i%6)*104)+"px";}
+    const glyph=document.createElement("span");glyph.className="desktop-icon-glyph";glyph.textContent=appGlyph(app);
+    const label=document.createElement("span");label.className="desktop-icon-label";label.textContent=app.name||"App";
+    b.append(glyph,label);b.addEventListener("dblclick",()=>{if(b.dataset.dragged!=="1")openApp(app)});b.addEventListener("click",()=>{host.querySelectorAll(".desktop-icon").forEach(x=>x.classList.remove("selected"));b.classList.add("selected");});
+    b.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();openApp(app);}});
+    b.addEventListener("pointerdown",e=>{if(e.button!==0)return;const r=b.getBoundingClientRect(),hr=host.getBoundingClientRect(),sx=e.clientX,sy=e.clientY,ox=r.left-hr.left,oy=r.top-hr.top;let moved=false;b.setPointerCapture(e.pointerId);const move=ev=>{if(Math.abs(ev.clientX-sx)+Math.abs(ev.clientY-sy)>4)moved=true;if(!moved)return;const x=Math.max(0,Math.min(host.clientWidth-b.offsetWidth,ox+ev.clientX-sx)),y=Math.max(0,Math.min(host.clientHeight-b.offsetHeight,oy+ev.clientY-sy));b.style.left=x+"px";b.style.top=y+"px";};const up=()=>{b.removeEventListener("pointermove",move);b.removeEventListener("pointerup",up);if(moved){saveIconPosition(b.dataset.appId,parseFloat(b.style.left)||0,parseFloat(b.style.top)||0);b.dataset.dragged="1";setTimeout(()=>delete b.dataset.dragged,250);}};b.addEventListener("pointermove",move);b.addEventListener("pointerup",up);});
+    host.appendChild(b);
+  }
+}
+const ICON_POSITIONS_KEY="lacesos_desktop_icon_positions_v1";
+function readIconPositions(){try{return JSON.parse(localStorage.getItem(ICON_POSITIONS_KEY)||"{}")}catch{return {}}}
+function saveIconPosition(id,x,y){const p=readIconPositions();p[id]={x,y};localStorage.setItem(ICON_POSITIONS_KEY,JSON.stringify(p));}
+
+function updateDock(){
+  const host=document.getElementById("dockRunning");host.innerHTML="";
+  for(const [id,w] of desktopWindows){
+    const b=document.createElement("button");b.type="button";b.className="dock-button dock-app"+(w.minimized?"":" active");b.title=w.name;
+    const glyph=document.createElement("span");glyph.className="dock-glyph";glyph.textContent=w.glyph;
+    const label=document.createElement("span");label.className="dock-label";label.textContent=w.name;
+    b.append(glyph,label);b.addEventListener("click",()=>{if(w.minimized){w.minimized=false;w.el.classList.remove("minimized");}focusWindow(id);});host.appendChild(b);
+  }
+}
+function focusWindow(id){
+  const w=desktopWindows.get(id);if(!w)return;
+  for(const [otherId,other] of desktopWindows){other.el.classList.toggle("focused",otherId===id);if(otherId===id)other.el.style.zIndex=String(++zCounter);}
+  w.minimized=false;w.el.classList.remove("minimized");focusedWindowId=id;updateDock();
+}
+function closeWindow(id){
+  const w=desktopWindows.get(id);if(!w)return;
+  w.el.remove();desktopWindows.delete(id);if(focusedWindowId===id)focusedWindowId=null;
+  updateDock();
+}
+function setWindowMaximized(id){
+  const w=desktopWindows.get(id);if(!w)return;
+  if(w.el.classList.contains("maximized")){w.el.classList.remove("maximized");w.el.style.left=w.restore.left;w.el.style.top=w.restore.top;w.el.style.width=w.restore.width;w.el.style.height=w.restore.height;}
+  else{w.restore={left:w.el.style.left,top:w.el.style.top,width:w.el.style.width,height:w.el.style.height};w.el.classList.add("maximized");}
+  focusWindow(id);
+}
+function wireWindowDrag(el,head,id){
+  let drag=null;
+  head.addEventListener("pointerdown",e=>{
+    if(e.target.closest("button")||el.classList.contains("maximized"))return;
+    focusWindow(id);drag={x:e.clientX,y:e.clientY,left:el.offsetLeft,top:el.offsetTop};head.setPointerCapture(e.pointerId);
+  });
+  head.addEventListener("pointermove",e=>{
+    if(!drag)return;
+    const left=Math.max(0,Math.min(window.innerWidth-el.offsetWidth,drag.left+e.clientX-drag.x));
+    const top=Math.max(0,Math.min(window.innerHeight-110,drag.top+e.clientY-drag.y));
+    el.style.left=left+"px";el.style.top=top+"px";
+  });
+  const stop=()=>{drag=null;};head.addEventListener("pointerup",stop);head.addEventListener("pointercancel",stop);
+  head.addEventListener("dblclick",e=>{if(!e.target.closest("button"))setWindowMaximized(id);});
+}
+async function openAppInBlankTab(app){
+  // Open synchronously from the button click so popup blockers allow the tab.
+  const tab=window.open("about:blank","_blank");
+  if(!tab){alert("The new tab was blocked. Allow pop-ups for LacesOS and try again.");return;}
+  try{tab.document.title=String(app.name||"LacesOS App");tab.document.body.innerHTML="<p style=\"font:14px system-ui;padding:24px;color:#555\">Opening app…</p>";}catch{}
+  try{
+    const response=await fetch(REPO+String(app.file||"").split("?")[0]+"?t="+Date.now(),{cache:"no-store"});
+    if(!response.ok)throw new Error("App could not be loaded ("+response.status+").");
+    let html=await response.text();
+    const cleanFile=String(app.file).split("?")[0].split("#")[0];
+    const slash=cleanFile.lastIndexOf("/");
+    const baseURL=REPO+(slash>=0?cleanFile.slice(0,slash+1):"");
+    const safeBase=baseURL.replace(/&/g,"&amp;").replace(/\"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+    html=html.replace(/<base\b[^>]*>/gi,"");
+    if(/<head\b[^>]*>/i.test(html))html=html.replace(/<head\b([^>]*)>/i,'<head$1><base href="'+safeBase+'">');
+    else html='<head><base href="'+safeBase+'"></head>'+html;
+    if(!tab.closed){tab.document.open();tab.document.write(html);tab.document.close();}
+  }catch(error){try{tab.document.body.innerHTML="";const message=tab.document.createElement("p");message.style.cssText="font:14px system-ui;padding:24px;color:#555";message.textContent="App could not be loaded: "+String(error.message||error);tab.document.body.appendChild(message);}catch{}}
+}
+
+function extensionsPageHtml(){return `<!doctype html><html><head><meta charset="utf-8"><style>
+*{box-sizing:border-box}body{margin:0;padding:24px;font:14px system-ui;background:var(--bg,#f4f5f7);color:var(--text,#17191d)}h1{font-size:24px;margin:0 0 8px}p{color:var(--muted,#68707d);line-height:1.5}.card{border:1px solid var(--border,#d9dde4);border-radius:14px;padding:18px;margin:18px 0;background:var(--card,#fff)}button{border:0;border-radius:9px;padding:9px 12px;background:var(--accent,#5865f2);color:#fff;font-weight:600;cursor:pointer;margin:4px 6px 4px 0}.secondary{background:var(--hover,#e9ecf1);color:var(--text,#17191d);border:1px solid var(--border2,#b9c0cb)}.theme-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 0;border-bottom:1px solid var(--border,#d9dde4)}.theme-row:last-child{border:0}.small{font-size:12px;color:var(--muted,#68707d)}#status{white-space:pre-wrap;margin-top:12px;padding:10px;border-radius:8px;display:none}#status.good{display:block;background:#dcfce7;color:#166534}#status.bad{display:block;background:#fee2e2;color:#991b1b}#catalog,#installed{margin-top:10px}
+</style></head><body><h1>Extensions</h1><p>Browse themes published in the LacesOS GitHub themes folder. Download themes to save them in this browser, or uninstall ones you no longer need.</p><div class="card"><b>Available themes</b><p class="small">The list refreshes from GitHub automatically.</p><button id="refresh" class="secondary">Refresh list</button><div id="catalog">Loading available themes…</div></div><div class="card"><b>Installed themes</b><div id="installed">Loading installed themes…</div></div><div id="status" role="status"></div><script>
+const repo='https://api.github.com/repos/sashabolton0-ux/lacesOS/contents/themes';
+const rawBase='https://raw.githubusercontent.com/sashabolton0-ux/lacesOS/main/themes/';
+const required=['bg','text','muted','border','border2','card','hover','modal','input','accent'];
+function status(msg,ok=true){const e=document.getElementById('status');e.textContent=msg;e.className=ok?'good':'bad'}
+function installed(){try{return parent.getCustomThemes()}catch{return {}}}
+function renderInstalled(){const root=document.getElementById('installed'),all=installed();root.innerHTML='';const entries=Object.entries(all);if(!entries.length){root.textContent='No downloaded themes yet.';return;}entries.forEach(([id,t])=>{const row=document.createElement('div');row.className='theme-row';const info=document.createElement('div');info.innerHTML='<b></b><div class="small"></div>';info.firstChild.textContent=t.name||id;info.lastChild.textContent=id;const b=document.createElement('button');b.className='secondary';b.textContent='Uninstall';b.onclick=()=>{parent.postMessage({type:'lacesos-uninstall-theme',id},'*');renderInstalled();status('Theme uninstalled.');};row.append(info,b);root.append(row);});}
+async function refresh(){const root=document.getElementById('catalog');root.textContent='Loading available themes…';try{const r=await fetch(repo,{headers:{'Accept':'application/vnd.github+json'},cache:'no-store'});if(!r.ok)throw Error('GitHub returned '+r.status);const files=await r.json(),json=files.filter(f=>f.type==='file'&&f.name.endsWith('.json')&&f.name.toLowerCase()!=='index.json');root.innerHTML='';if(!json.length){root.textContent='No theme JSON files found in the repository themes folder.';return;}const have=installed();for(const f of json){const row=document.createElement('div');row.className='theme-row';const info=document.createElement('div');info.innerHTML='<b></b><div class="small"></div>';info.firstChild.textContent=f.name.replace(/\.json$/i,'');info.lastChild.textContent=f.path;const b=document.createElement('button');const key=f.name.replace(/\.json$/i,'').toLowerCase().replace(/[^a-z0-9_-]+/g,'-');b.textContent=Object.keys(have).includes(key)?'Downloaded':'Download';b.disabled=Object.keys(have).includes(key);b.onclick=()=>download(rawBase+encodeURIComponent(f.name),b);row.append(info,b);root.append(row);}}catch(e){root.textContent='Could not load GitHub theme list: '+e.message;status('Check that the repository and themes folder are public.',false)}}
+async function download(url,button){button.disabled=true;button.textContent='Downloading…';try{const r=await fetch(url,{cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status);const t=await r.json(),c=t.colors||t;if(!t.name||required.some(k=>typeof c[k]!=='string'||!/^#[0-9a-f]{6}(?:[0-9a-f]{2})?$/i.test(c[k])))throw Error('Theme JSON needs a name and all 10 required hex color fields.');const id=String(t.id||t.name).toLowerCase().replace(/[^a-z0-9_-]+/g,'-').replace(/^-|-$/g,'').slice(0,48)||'theme';parent.postMessage({type:'lacesos-install-theme',theme:t,url},'*');button.textContent='Downloaded';status('✓ '+t.name+' downloaded and saved in this browser. You can select it in Settings → Theme.');setTimeout(()=>{refresh();renderInstalled()},300);}catch(e){button.disabled=false;button.textContent='Retry';status('Download failed: '+e.message,false)}}
+document.getElementById('refresh').onclick=refresh;refresh();renderInstalled();
+<\/script></body></html>`}
+window.addEventListener("message",e=>{
+  if(e.data?.type==="lacesos-uninstall-theme"){const all=getCustomThemes();delete all[String(e.data.id)];localStorage.setItem(CUSTOM_THEMES_KEY,JSON.stringify(all));if(String(getSettings().theme||"")==="custom:"+String(e.data.id)){saveSettings({...getSettings(),theme:"dark"});applySettings();}refreshThemeOptions();return;}
+  if(e.data?.type!=="lacesos-install-theme")return;
+  const raw=e.data.theme||{};const colors=raw.colors||raw;
+  const required=["bg","text","muted","border","border2","card","hover","modal","input","accent"];
+  const optional=["desktopBg","desktopText","desktopMuted","desktopCard","desktopDock","desktopGrid","desktopIconBg","desktopIconBorder","desktopHover","desktopAccentText","windowBg","windowText","windowTitleBg","windowTitleText","windowBorder","shadow","brandGradient","selection","button","buttonText","link","success","warning","danger","scrollbar","scrollbarTrack","wallpaperSize","wallpaperPosition","wallpaperRepeat"];
+  const isHex=v=>typeof v==="string"&&/^#[0-9a-f]{6}(?:[0-9a-f]{2})?$/i.test(v);
+  const isBackground=v=>typeof v==="string"&&v.length<500&&!/[;{}<>]|url\s*\(|javascript:/i.test(v)&&(/^(#[0-9a-f]{3,8}|[a-z]+)$/i.test(v)||/^(linear|radial|conic)-gradient\([a-z0-9 #.,%()\-]+\)$/i.test(v));
+  if(!raw.name||!colors||required.some(k=>!isHex(colors[k]))){alert("Theme JSON is invalid. Include a name and the 10 required hex color fields.");return;}
+  const id=String(raw.id||raw.name).toLowerCase().replace(/[^a-z0-9_-]+/g,"-").replace(/^-|-$/g,"").slice(0,48)||"theme";
+  const picked={};for(const k of required)picked[k]=colors[k];for(const k of optional){if(typeof colors[k]==="string"&&colors[k].length<500&&(/Bg$|^desktopIconBg$|^brandGradient$/.test(k)?isBackground(colors[k]):(isHex(colors[k])||((k==="wallpaperSize"||k==="wallpaperPosition"||k==="wallpaperRepeat")&&/^[a-z0-9 %,-]+$/i.test(colors[k])))))picked[k]=colors[k];}
+  const all=getCustomThemes();all[id]={name:String(raw.name).slice(0,60),colors:picked};
+  localStorage.setItem(CUSTOM_THEMES_KEY,JSON.stringify(all));refreshThemeOptions();applySettings();
+});
+
 async function openApp(app){
-  const thisLoad=++activeAppLoad;
-  if(!app.file)return;
   const status=String(app.status||"on").trim().toLowerCase();
+  if(!app.file)return;
   if(status==="hidden")return;
-  if(status==="maintenance"){
-    alert(app.warning?.trim()||"This app is currently under maintenance.");
+  if(status==="maintenance"){alert(app.warning?.trim()||"This app is currently under maintenance.");return;}
+  const warning=String(app.warning||"").trim();
+  if(status==="on"&&warning&&!confirm(warning+"\n\nContinue?"))return;
+  closeStartMenu();
+  const id="oswin-"+(nextWindowId++);
+  const name=String(app.name||"App");const glyph=appGlyph(app);
+  const el=document.createElement("section");el.className="os-window focused";el.dataset.windowId=id;el.setAttribute("role","dialog");el.setAttribute("aria-label",name);
+  el.style.zIndex=String(++zCounter);
+  const head=document.createElement("header");head.className="os-window-head";
+  const title=document.createElement("div");title.className="os-window-name";
+  const glyphEl=document.createElement("span");glyphEl.className="os-window-glyph";glyphEl.textContent=glyph;
+  const titleText=document.createElement("span");titleText.textContent=name;title.append(glyphEl,titleText);
+  const controls=document.createElement("div");controls.className="os-window-controls";
+  const min=document.createElement("button");min.className="os-window-control";min.type="button";min.title="Minimize";min.setAttribute("aria-label","Minimize window");min.textContent="—";
+  const max=document.createElement("button");max.className="os-window-control";max.type="button";max.title="Maximize / restore";max.setAttribute("aria-label","Maximize or restore window");max.textContent="□";
+  const close=document.createElement("button");close.className="os-window-control close";close.type="button";close.title="Close";close.setAttribute("aria-label","Close window");close.textContent="×";
+  const popout=document.createElement("button");popout.className="os-window-control";popout.type="button";popout.title="Open in a new about:blank tab";popout.setAttribute("aria-label","Open app in a new about:blank tab");popout.textContent="↗";
+  controls.append(popout,min,max,close);head.append(title,controls);
+  popout.addEventListener("click",()=>openAppInBlankTab(app));
+  const frame=document.createElement("iframe");frame.title=name;frame.allow="fullscreen; clipboard-read; clipboard-write";frame.referrerPolicy="strict-origin-when-cross-origin";
+  frame.srcdoc='<!doctype html><html><body style="font:14px system-ui;padding:24px;color:#303442">Opening '+name.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))+'…</body></html>';
+  el.append(head,frame);document.getElementById("desktopWindows").appendChild(el);
+  const win={id,app,name,glyph,el,frame,minimized:false,restore:{left:"",top:"",width:"",height:""}};desktopWindows.set(id,win);
+  min.addEventListener("click",()=>{win.minimized=true;el.classList.add("minimized");updateDock();});
+  max.addEventListener("click",()=>setWindowMaximized(id));close.addEventListener("click",()=>closeWindow(id));
+  el.addEventListener("pointerdown",()=>focusWindow(id));wireWindowDrag(el,head,id);focusWindow(id);
+  if(String(app.id)==="extensions"){
+    frame.srcdoc=extensionsPageHtml();
     return;
   }
-  const warning=String(app.warning||"").trim();
-  if(status==="on" && warning && !confirm(warning+"\n\nContinue?"))return;
-
-  const back=document.getElementById("appWindowBack");
-  const frame=document.getElementById("appFrame");
-  document.getElementById("appWindowTitle").textContent=String(app.name||"App");
-  back.style.display="flex";
-  back.setAttribute("aria-hidden","false");
-  frame.srcdoc='<!doctype html><html><body style="font:14px system-ui;padding:24px">Loading app…</body></html>';
   try{
+    const thisLoad=++activeAppLoad;
     const response=await fetch(REPO+app.file.split("?")[0]+"?t="+Date.now(),{cache:"no-store"});
     if(!response.ok)throw new Error("App could not be loaded ("+response.status+").");
     let html=await response.text();
@@ -609,20 +953,61 @@ async function openApp(app){
     html=html.replace(/<base\b[^>]*>/gi,"");
     if(/<head\b[^>]*>/i.test(html))html=html.replace(/<head\b([^>]*)>/i,'<head$1><base href="'+safeBase+'">');
     else html='<head><base href="'+safeBase+'"></head>'+html;
-    if(!back.isConnected||thisLoad!==activeAppLoad)return;
+    if(!desktopWindows.has(id))return;
     frame.srcdoc=html;
   }catch(error){
-    frame.srcdoc='<!doctype html><html><body style="font:14px system-ui;padding:24px"><h2>App could not be loaded</h2><p></p></body></html>';
-    frame.addEventListener("load",()=>{try{frame.contentDocument.querySelector("p").textContent=String(error.message||error)}catch(_){}},{once:true});
+    frame.srcdoc='<!doctype html><html><body style="font:14px system-ui;padding:24px;color:#303442"><h2>App could not be loaded</h2><p id="loadError"></p></body></html>';
+    frame.addEventListener("load",()=>{try{frame.contentDocument.getElementById("loadError").textContent=String(error.message||error)}catch(_){}},{once:true});
   }
 }
+document.getElementById("startButton").addEventListener("click",()=>toggleStartMenu());
+document.getElementById("startSearch").addEventListener("input",e=>renderStartApps(e.target.value));
+document.getElementById("startSettings").addEventListener("click",()=>{closeStartMenu();document.getElementById("settingsBtn").click();});
+document.getElementById("startUpdates").addEventListener("click",()=>{closeStartMenu();openUpdatesWindow();});
+function openUpdatesWindow(){
+  const id="oswin-updates";if(desktopWindows.has(id)){const w=desktopWindows.get(id);w.minimized=false;w.el.classList.remove("minimized");focusWindow(id);return;}
+  const el=document.createElement("section");el.className="os-window focused";el.dataset.windowId=id;el.style.zIndex=String(++zCounter);el.style.width="min(760px,calc(100% - 24px))";el.style.height="min(620px,calc(100% - 24px))";
+  const head=document.createElement("header");head.className="os-window-head";const title=document.createElement("div");title.className="os-window-name";title.innerHTML='<span class="os-window-glyph">◈</span><span>LacesOS Updates</span>';
+  const controls=document.createElement("div");controls.className="os-window-controls";const min=document.createElement("button");min.className="os-window-control";min.textContent="—";min.title="Minimize";const close=document.createElement("button");close.className="os-window-control close";close.textContent="×";close.title="Close";controls.append(min,close);head.append(title,controls);
+  const body=document.createElement("div");body.style.cssText="flex:1;min-height:0;overflow:auto;padding:24px;background:#f7f8fc;color:#202434";
+  const heading=document.createElement("h2");heading.textContent="Updates";heading.style.cssText="margin:0 0 8px;font-size:24px";const desc=document.createElement("p");desc.textContent="The latest notices from LacesOS.";desc.style.cssText="color:#6d7385;font-size:13px;margin:0 0 22px";const list=document.createElement("div");list.style.cssText="display:grid;gap:10px";
+  const posts=document.querySelectorAll("#postsList .post");if(!posts.length){const empty=document.createElement("div");empty.textContent="No updates are available right now.";empty.style.cssText="padding:18px;border:1px solid #e1e4ec;border-radius:12px;color:#6d7385;font-size:13px";list.appendChild(empty);}else posts.forEach(post=>{const card=document.createElement("article");card.style.cssText="padding:16px;border:1px solid #e1e4ec;border-radius:12px;background:white";const h=document.createElement("h3");h.textContent=post.querySelector("h3")?.textContent||"Update";h.style.cssText="margin:0 0 5px;font-size:14px";const date=document.createElement("div");date.textContent=post.querySelector(".date")?.textContent||"";date.style.cssText="font-size:10px;color:#81879a;margin-bottom:8px";const text=document.createElement("p");text.textContent=post.querySelector(".body")?.textContent||"";text.style.cssText="font-size:13px;line-height:1.55;color:#51596b;white-space:pre-wrap;margin:0";card.append(h,date,text);list.appendChild(card);});
+  body.append(heading,desc,list);el.append(head,body);document.getElementById("desktopWindows").appendChild(el);const w={id,app:{name:"Updates"},name:"Updates",glyph:"◈",el,frame:null,minimized:false,restore:{}};desktopWindows.set(id,w);min.onclick=()=>{w.minimized=true;el.classList.add("minimized");updateDock();};close.onclick=()=>closeWindow(id);el.addEventListener("pointerdown",()=>focusWindow(id));wireWindowDrag(el,head,id);focusWindow(id);
+}
+async function showUpdatesOnLogin(){
+  notifyOS("Welcome to LacesOS","Your desktop is ready.");
+  // Refresh the feed on every login, then always bring the Updates window forward.
+  if(desktopWindows.has("oswin-updates"))closeWindow("oswin-updates");
+  await loadPosts();
+  openUpdatesWindow();
+}
+document.getElementById("startConsole").addEventListener("click",()=>{closeStartMenu();terminalOpen();});
+document.getElementById("startAdmin").addEventListener("click",()=>{closeStartMenu();document.getElementById("adminNavBtn").click();});
+document.getElementById("dockHome").addEventListener("click",()=>{closeStartMenu();for(const w of desktopWindows.values()){w.minimized=true;w.el.classList.add("minimized");}updateDock();});
+document.addEventListener("pointerdown",e=>{if(!e.target.closest("#startMenu")&&!e.target.closest("#startButton"))closeStartMenu();});
 
-document.getElementById("appWindowClose").onclick=()=>{
-  activeAppLoad++;
-  const back=document.getElementById("appWindowBack");
-  document.getElementById("appFrame").srcdoc="";
-  back.style.display="none";back.setAttribute("aria-hidden","true");
-};
+const OS_NOTICES_KEY="lacesos_notifications_v1", OS_FILES_KEY="lacesos_local_files_v1";
+function readNotices(){try{return JSON.parse(localStorage.getItem(OS_NOTICES_KEY)||"[]")}catch{return []}}
+function notifyOS(title,message="",kind="info"){const all=readNotices();all.unshift({id:Date.now()+Math.random(),title:String(title),message:String(message),kind,at:new Date().toISOString()});localStorage.setItem(OS_NOTICES_KEY,JSON.stringify(all.slice(0,60)));renderNoticeCount();}
+function renderNoticeCount(){const n=readNotices().filter(x=>!x.read).length,el=document.getElementById("notificationCount");if(el)el.textContent=n?"· "+n:"";}
+function openUtilityWindow(id,name,glyph,html){const existing=desktopWindows.get(id);if(existing){existing.minimized=false;existing.el.classList.remove("minimized");focusWindow(id);return existing;}
+ const el=document.createElement("section");el.className="os-window focused";el.dataset.windowId=id;el.style.zIndex=String(++zCounter);el.style.width="min(760px,calc(100% - 24px))";el.style.height="min(560px,calc(100% - 24px))";
+ const head=document.createElement("header");head.className="os-window-head";const title=document.createElement("div");title.className="os-window-name";title.innerHTML='<span class="os-window-glyph"></span><span></span>';title.children[0].textContent=glyph;title.children[1].textContent=name;
+ const controls=document.createElement("div");controls.className="os-window-controls";const min=document.createElement("button"),close=document.createElement("button");min.className=close.className="os-window-control";close.classList.add("close");min.textContent="—";close.textContent="×";min.title="Minimize";close.title="Close";controls.append(min,close);head.append(title,controls);
+ const body=document.createElement("div");body.className="utility-body";body.innerHTML=html;el.append(head,body);document.getElementById("desktopWindows").appendChild(el);const w={id,app:{name},name,glyph,el,frame:null,minimized:false,restore:{}};desktopWindows.set(id,w);min.onclick=()=>{w.minimized=true;el.classList.add("minimized");updateDock()};close.onclick=()=>closeWindow(id);el.addEventListener("pointerdown",()=>focusWindow(id));wireWindowDrag(el,head,id);focusWindow(id);return w;}
+function openWidgets(){const d=new Date(),html='<div class="utility-grid"><article class="utility-card"><div class="utility-muted">TODAY</div><div class="utility-big" id="widgetDate"></div><div id="widgetTime"></div></article><article class="utility-card"><div class="utility-muted">QUICK NOTE</div><textarea id="widgetNote" placeholder="Keep a note here…"></textarea><button class="utility-button" id="widgetNoteSave">Save note</button><div class="utility-muted" id="widgetNoteStatus"></div></article><article class="utility-card"><div class="utility-muted">SYSTEM</div><div class="utility-big">LacesOS</div><div class="utility-muted">Your apps and tools, together.</div><button class="utility-button" id="widgetTheme">Open Theme Studio</button></article></div>';
+ const w=openUtilityWindow("oswin-widgets","Desktop Widgets","▦",html);const body=w.el.querySelector(".utility-body");if(!body.dataset.wired){body.dataset.wired="1";const tick=()=>{const now=new Date();body.querySelector("#widgetDate").textContent=now.toLocaleDateString(undefined,{weekday:"long",month:"long",day:"numeric"});body.querySelector("#widgetTime").textContent=now.toLocaleTimeString(undefined,{hour:"2-digit",minute:"2-digit",second:"2-digit"});};tick();w.widgetTimer=setInterval(()=>{if(body.isConnected)tick();else clearInterval(w.widgetTimer)},1000);body.querySelector("#widgetNote").value=localStorage.getItem("lacesos_widget_note_v1")||"";body.querySelector("#widgetNoteSave").onclick=()=>{localStorage.setItem("lacesos_widget_note_v1",body.querySelector("#widgetNote").value);body.querySelector("#widgetNoteStatus").textContent="Saved on this device.";};body.querySelector("#widgetTheme").onclick=()=>{document.getElementById("settingsBtn").click();document.querySelector('[data-settings-page="theme-editor"]')?.click();};}}
+function openNotifications(){const all=readNotices();const html='<div style="display:flex;gap:8px;margin-bottom:12px"><button class="utility-button" id="noticeReadAll">Mark all read</button><button class="utility-button" id="noticeClear">Clear all</button></div><div id="noticeList"></div>';const w=openUtilityWindow("oswin-notifications","Notification Center","♧",html);const body=w.el.querySelector(".utility-body");const draw=()=>{const list=body.querySelector("#noticeList"),items=readNotices();list.innerHTML="";if(!items.length){list.innerHTML='<div class="utility-muted">You’re all caught up. Notifications will appear here.</div>';return;}items.forEach(n=>{const card=document.createElement("article");card.className="utility-card";card.style.marginBottom="8px";const h=document.createElement("b");h.textContent=n.title;const m=document.createElement("div");m.textContent=n.message; m.style.marginTop="5px";m.style.color="var(--muted)";const t=document.createElement("div");t.className="utility-muted";t.textContent=new Date(n.at).toLocaleString();card.append(h,m,t);list.appendChild(card);});};draw();body.querySelector("#noticeReadAll").onclick=()=>{localStorage.setItem(OS_NOTICES_KEY,JSON.stringify(readNotices().map(n=>({...n,read:true}))));renderNoticeCount();draw();};body.querySelector("#noticeClear").onclick=()=>{localStorage.setItem(OS_NOTICES_KEY,"[]");renderNoticeCount();draw();};}
+function openFileManager(){const html='<div class="utility-files"><div class="utility-row"><input id="localFileName" placeholder="File name (e.g. note.txt)"><button class="utility-button" id="newLocalFile">New file</button></div><div class="utility-file-layout"><div id="localFileList"></div><div><textarea id="localFileContent" placeholder="Select or create a text file…"></textarea><div class="utility-row"><button class="utility-button" id="saveLocalFile">Save</button><button class="utility-button" id="deleteLocalFile">Delete</button></div><div class="utility-muted" id="localFileStatus">Files are stored in this browser on this device.</div></div></div></div>';const w=openUtilityWindow("oswin-files","File Manager","▤",html),body=w.el.querySelector(".utility-body");if(body.dataset.wired)return;body.dataset.wired="1";let selected="";const read=()=>{try{return JSON.parse(localStorage.getItem(OS_FILES_KEY)||"{}")}catch{return {}}};const draw=()=>{const list=body.querySelector("#localFileList"),files=read();list.innerHTML="";Object.keys(files).sort().forEach(name=>{const b=document.createElement("button");b.className="utility-file";b.textContent="▤  "+name;b.onclick=()=>{selected=name;body.querySelector("#localFileName").value=name;body.querySelector("#localFileContent").value=files[name];draw();};b.classList.toggle("active",name===selected);list.appendChild(b);});if(!Object.keys(files).length)list.textContent="No local files yet.";};body.querySelector("#newLocalFile").onclick=()=>{const name=body.querySelector("#localFileName").value.trim();if(!name){body.querySelector("#localFileName").focus();return;}selected=name;body.querySelector("#localFileContent").value=read()[name]||"";draw();};body.querySelector("#saveLocalFile").onclick=()=>{const name=body.querySelector("#localFileName").value.trim();if(!name){body.querySelector("#localFileStatus").textContent="Enter a file name first.";return;}const files=read();files[name]=body.querySelector("#localFileContent").value;localStorage.setItem(OS_FILES_KEY,JSON.stringify(files));selected=name;body.querySelector("#localFileStatus").textContent="Saved locally.";draw();};body.querySelector("#deleteLocalFile").onclick=()=>{if(!selected)return;const files=read();delete files[selected];localStorage.setItem(OS_FILES_KEY,JSON.stringify(files));selected="";body.querySelector("#localFileName").value="";body.querySelector("#localFileContent").value="";draw();};draw();}
+function openStore(){const html='<p class="utility-muted">Browse apps currently available to this LacesOS installation. The catalog is managed by the system administrator.</p><input id="storeSearch" class="utility-search" placeholder="Search apps…"><div id="storeCatalog" class="utility-store-grid"></div>';const w=openUtilityWindow("oswin-store","App Store","▣",html),body=w.el.querySelector(".utility-body");const draw=()=>{const q=body.querySelector("#storeSearch").value.trim().toLowerCase(),grid=body.querySelector("#storeCatalog");grid.innerHTML="";const apps=loadedApps.filter(a=>String(a.status||"on").toLowerCase()!=="hidden"&&(!q||String(a.name||"").toLowerCase().includes(q)||String(a.description||"").toLowerCase().includes(q)));apps.forEach(app=>{const card=document.createElement("article");card.className="utility-card";const icon=document.createElement("div");icon.className="utility-store-icon";icon.textContent=appGlyph(app);const name=document.createElement("b");name.textContent=app.name||"App";const desc=document.createElement("p");desc.textContent=app.description||"Available in LacesOS";desc.className="utility-muted";const btn=document.createElement("button");btn.className="utility-button";btn.textContent=String(app.status||"on").toLowerCase()==="maintenance"?"Under maintenance":"Open";btn.disabled=btn.textContent!=="Open";btn.onclick=()=>openApp(app);card.append(icon,name,desc,btn);grid.appendChild(card);});if(!apps.length)grid.textContent="No matching apps.";};body.querySelector("#storeSearch").addEventListener("input",draw);draw();}
+function openQuickLauncher(){toggleStartMenu(true);}
+document.getElementById("toolWidgets").addEventListener("click",openWidgets);document.getElementById("toolNotifications").addEventListener("click",openNotifications);document.getElementById("toolFiles").addEventListener("click",openFileManager);document.getElementById("toolStore").addEventListener("click",openStore);renderNoticeCount();
+function updateDesktopClock(){const el=document.getElementById("desktopClock");if(!el)return;const now=new Date();el.textContent=now.toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"})+"  ·  "+now.toLocaleTimeString(undefined,{hour:"2-digit",minute:"2-digit"});}
+updateDesktopClock();
+setInterval(updateDesktopClock,1000);
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)updateDesktopClock();});
+window.addEventListener("focus",updateDesktopClock);
+window.addEventListener("pageshow",updateDesktopClock);
 
 async function loadPosts(){
   const list=document.getElementById("postsList");
@@ -674,8 +1059,13 @@ async function loadApps(){
     );
 
     box.innerHTML="";
+    loadedApps=(apps||[]).filter(app=>String(app.status||"on").trim().toLowerCase()!=="hidden");
+    if(!loadedApps.some(a=>String(a.id)==="extensions"))loadedApps.push({id:"extensions",name:"Extensions",description:"Download and manage themes from GitHub",icon:"🧩",file:"__internal_extensions__",status:"on"});
+    renderDesktopIcons();
+    renderStartApps(document.getElementById("startSearch")?.value||"");
+    const adminVisible=document.getElementById("adminNavBtn")?.style.display!=="none";
+    document.getElementById("startAdmin").style.display=adminVisible?"inline-flex":"none";
 
-    
     for(const app of (apps||[])){
       const status=String(app.status||"on").trim().toLowerCase();
 
@@ -693,7 +1083,7 @@ async function loadApps(){
 
       const icon=document.createElement("span");
       icon.className="icon";
-      icon.textContent=app.icon||"◼";
+      icon.textContent=appGlyph(app);
 
       const wrap=document.createElement("span");
 
@@ -738,8 +1128,9 @@ window.addEventListener("keydown",event=>{
     try{const target=new URL(panicConfig.url);if(target.protocol==="https:"||target.protocol==="http:")window.location.assign(target.href);}catch{}
     return;
   }
+  if(event.key==="Escape"&&document.getElementById("startMenu").classList.contains("open")){closeStartMenu();return;}
   if(event.key==="Escape"&&terminalBack.style.display==="flex"){terminalClose();return;}
-  if(event.key==="Escape"&&document.getElementById("appWindowBack").style.display==="flex"){document.getElementById("appWindowClose").click();return;}
+  if(event.key==="Escape"&&focusedWindowId&&desktopWindows.has(focusedWindowId)){closeWindow(focusedWindowId);return;}
   if(event.key==="~"&&!event.ctrlKey&&!event.metaKey&&!event.altKey){event.preventDefault();terminalBack.style.display==="flex"?terminalClose():terminalOpen();}
 });
 terminalBack.addEventListener("click",event=>{if(event.target===terminalBack)terminalClose();});
@@ -822,11 +1213,16 @@ async function adminGateway(action, extra={}, token=localStorage.getItem(ADMIN_T
 }
 function adminShowPanel(){
   const back=document.getElementById("adminPanelBack");
+  const activation=document.getElementById("adminActivation");
+  const dashboard=document.getElementById("adminDashboard");
   back.style.display="flex";back.setAttribute("aria-hidden","false");
-  if(adminActivated) loadAdminDashboard();
-  else {
-    document.getElementById("adminActivation").style.display="block";
-    document.getElementById("adminDashboard").style.display="none";
+  if(adminActivated){
+    activation.style.display="none";
+    dashboard.style.display="block";
+    loadAdminDashboard();
+  }else{
+    activation.style.display="block";
+    dashboard.style.display="none";
     document.getElementById("adminBootstrapInput").focus();
   }
 }
@@ -860,7 +1256,7 @@ async function initAdminPanel(){
     adminDesignated=status?.is_admin===true;
     if(!adminDesignated)return;
     const nav=document.getElementById("adminNavBtn");
-    nav.style.display="inline-block";document.getElementById("adminNavDivider").style.display="inline";
+    nav.style.display="inline-block";document.getElementById("adminNavDivider").style.display="inline";document.getElementById("startAdmin").style.display="inline-flex";
     const token=localStorage.getItem(ADMIN_TOKEN_KEY)||"";
     if(token){
       try{
@@ -980,6 +1376,9 @@ footerButtons.forEach(button=>{
 });
 
 async function startHome(){
+  applyInstallMode();
+  await lacesBoot();
+  if(!getInstallMode())openInstallModeDialog();
   identityCheckPassed=await verifyStoredIdentity();
   // Load data while the welcome screen is visible. The desktop itself stays hidden
   // until Continue is pressed, and the terminal shortcut remains available meanwhile.
