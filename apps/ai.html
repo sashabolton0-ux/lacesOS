@@ -5,7 +5,7 @@
 <title>AI Chat — LacesOS</title>
 <style>
 *{box-sizing:border-box}body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:radial-gradient(ellipse at top left,#e8edff,#f6f7fb 50%,#edf8f2);margin:0;display:flex;flex-direction:column;height:100dvh;color:#30343b}
-#topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 18px;background:#ffffffd9;border-bottom:1px solid #dfe3eb;backdrop-filter:blur(14px)}#brand{font-weight:750;font-size:1.05rem;letter-spacing:-.025em}button{font:inherit;cursor:pointer}#access-toggle{border:1px solid #d4d9e4;background:#fff;border-radius:13px;padding:8px 12px;color:#343b49}#access{display:none;background:#fff;padding:13px 18px;border-bottom:1px solid #e1e4eb;gap:9px;align-items:center;flex-wrap:wrap}#access.open{display:flex}#access-status{font-size:.9rem;color:#535d6c;flex:1;min-width:220px}#refresh{border:0;border-radius:10px;padding:9px 13px;background:#263bce;color:white}#refresh:disabled{opacity:.55;cursor:wait}
+#topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 18px;background:#ffffffd9;border-bottom:1px solid #dfe3eb;backdrop-filter:blur(14px)}#brand{font-weight:750;font-size:1.05rem;letter-spacing:-.025em}button{font:inherit;cursor:pointer}#access-toggle{border:1px solid #d4d9e4;background:#fff;border-radius:13px;padding:8px 12px;color:#343b49}#access{display:none;background:#fff;padding:13px 18px;border-bottom:1px solid #e1e4eb;gap:9px;align-items:center;flex-wrap:wrap}#access.open{display:flex}#access-status{font-size:.9rem;color:#535d6c;flex:1;min-width:220px}#verification-request{display:none;flex-basis:100%;align-items:center;gap:9px;flex-wrap:wrap;padding-top:8px}#verification-request.open{display:flex}#verification-code{width:180px;max-width:100%;padding:10px 12px;border:1px solid #d4d9e4;border-radius:10px;font:inherit;letter-spacing:.18em}#request-code{border:0;border-radius:10px;padding:10px 13px;background:#263bce;color:#fff}#request-message{font-size:.86rem;color:#535d6c;flex-basis:100%}#refresh{border:0;border-radius:10px;padding:9px 13px;background:#263bce;color:white}#refresh:disabled{opacity:.55;cursor:wait}
 #chat{flex:1;padding:20px;max-width:850px;width:100%;margin:0 auto;overflow-y:auto;display:flex;flex-direction:column}#notice{background:#ffffffbd;color:#536071;border:1px solid #dfe5ef;padding:13px 16px;border-radius:13px;margin-bottom:18px;font-size:.94em;line-height:1.5}.message{margin:9px 0;padding:12px 16px;border-radius:18px;max-width:88%;overflow-wrap:anywhere;animation:fadeIn .2s ease;line-height:1.55;box-shadow:0 2px 9px #1725540a}.user{align-self:flex-end;background:#dbeafe;color:#183c78;border-bottom-right-radius:6px}.bot{align-self:flex-start;background:#fff;color:#243047;border:1px solid #e1e6ef;border-bottom-left-radius:6px}.error{align-self:center;max-width:100%;background:#fff0f0;color:#8a1c1c;border:1px solid #e8baba}.message p:first-child{margin-top:0}.message p:last-child{margin-bottom:0}pre{padding:12px;border-radius:10px;overflow-x:auto;background:#20242a;color:#f4f4f4;font-family:ui-monospace,monospace}code{overflow-wrap:anywhere}pre code{white-space:pre;overflow-wrap:normal}a{color:#0056b3}.message table{border-collapse:collapse;display:block;overflow-x:auto}.message th,.message td{border:1px solid #b9c2cc;padding:6px 9px}blockquote{border-left:3px solid #94a3b8;margin-left:0;padding-left:12px;color:#526070}
 #quota{font-size:.8rem;color:#626c7a;padding:7px 18px;background:#ffffffb8;text-align:center;border-top:1px solid #e5e8ef}#form{display:flex;gap:10px;padding:15px;border-top:1px solid #dfe3eb;background:#ffffffd9;backdrop-filter:blur(12px)}#input{flex:1;min-width:0;padding:12px 16px;font-size:1em;border:1px solid #d5dbe6;border-radius:17px;outline:none;background:#fff}#input:focus{border-color:#7585f4;box-shadow:0 0 0 3px #7585f426}#send{padding:12px 20px;background:#3448d3;color:white;border:0;border-radius:15px}#send:disabled{opacity:.5;cursor:not-allowed}@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}@media(max-width:520px){#chat{padding:12px}.message{max-width:96%}#form{padding:10px}#send{padding:12px 16px}#access{padding:12px}}
 </style>
@@ -16,8 +16,8 @@
 </head>
 <body>
 <header id="topbar"><div id="brand">LacesOS <span style="color:#7b8494;font-weight:500">· AI</span></div><button id="access-toggle" type="button">Access status</button></header>
-<section id="access" aria-label="AI access status"><div id="access-status" role="status">Checking access…</div><button id="refresh" type="button">Check again</button></section>
-<div id="chat"><div id="notice"><strong>Welcome to AI.</strong> Please do not abuse it, and watch your limit. If you want more, contact admin.</div></div>
+<section id="access" aria-label="AI access status"><div id="access-status" role="status">Checking access…</div><button id="refresh" type="button">Check again</button><form id="verification-request"><label for="verification-code">Get verification code</label><input id="verification-code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" placeholder="6-digit code" aria-label="Six-digit verification code" required><button id="request-code" type="submit">Request access</button><div id="request-message" role="status"></div></form></section>
+<div id="chat"><div id="notice"><strong>Welcome to AI.</strong> Ask questions, brainstorm, or get help with schoolwork. Access and daily usage are checked by LacesOS.</div></div>
 <div id="quota">Checking AI access…</div>
 <form id="form"><input id="input" autocomplete="off" placeholder="Ask something…" aria-label="Message" disabled><button id="send" type="submit" disabled>Send</button></form>
 <script>
@@ -31,6 +31,7 @@
   const USERNAME_KEY='lacesos_username_v1:'+PROJECT_SCOPE;
   const chat=document.getElementById('chat'), form=document.getElementById('form'), input=document.getElementById('input'), send=document.getElementById('send');
   const access=document.getElementById('access'), accessStatus=document.getElementById('access-status'), quota=document.getElementById('quota'), refreshButton=document.getElementById('refresh');
+  const requestForm=document.getElementById('verification-request'), verificationCode=document.getElementById('verification-code'), requestButton=document.getElementById('request-code'), requestMessage=document.getElementById('request-message');
   let history=[], deviceId='', username='', dailyLimit=0, usedToday=0, allowed=false, checking=false;
   try { deviceId=localStorage.getItem(DEVICE_KEY)||''; username=localStorage.getItem(USERNAME_KEY)||''; } catch (_) {}
   document.getElementById('access-toggle').addEventListener('click',()=>access.classList.toggle('open'));
@@ -51,14 +52,22 @@
   async function refreshAccess(){
     if(checking)return;checking=true;refreshButton.disabled=true;refreshButton.textContent='Checking…';
     try{
-      if(!deviceId){allowed=false;setChatEnabled(false);access.classList.add('open');accessStatus.textContent='No device ID found. Close this tab and open AI from inside LacesOS.';quota.textContent='Open AI from the LacesOS home screen.';return;}
+      if(!deviceId){allowed=false;setChatEnabled(false);access.classList.add('open');requestForm.classList.remove('open');accessStatus.textContent='No device ID found. Close this tab and open AI from inside LacesOS.';quota.textContent='Open AI from the LacesOS home screen.';return;}
       const result=await api('status');allowed=result.allowed===true;dailyLimit=Number(result.daily_limit||0);usedToday=Number(result.used||0);
-      if(!allowed){setChatEnabled(false);access.classList.add('open');accessStatus.textContent='AI is not enabled for this device. The LacesOS owner can grant access in Supabase; no activation code is needed.';quota.textContent='AI access is currently disabled for this device.';return;}
-      setChatEnabled(true);accessStatus.textContent='AI access is enabled for this device.';quota.textContent='Requests used today: '+usedToday+' / '+dailyLimit+' · resets at midnight UTC';
+      if(!allowed){setChatEnabled(false);access.classList.add('open');requestForm.classList.add('open');accessStatus.textContent='AI is available, but this device needs verification. Enter the six-digit code to request access.';quota.textContent='Your request will be reviewed by the LacesOS owner. Access is enabled after approval.';return;}
+      setChatEnabled(true);requestForm.classList.remove('open');accessStatus.textContent='AI access is enabled for this device.';quota.textContent='Requests used today: '+usedToday+' / '+dailyLimit+' · resets at midnight UTC';
     }catch(error){allowed=false;setChatEnabled(false);access.classList.add('open');accessStatus.textContent='Could not check access: '+error.message;quota.textContent='AI access check failed. Check the connection and try again.';}
     finally{checking=false;refreshButton.disabled=false;refreshButton.textContent='Check again';}
   }
   refreshButton.addEventListener('click',refreshAccess);
+  requestForm.addEventListener('submit',async(event)=>{
+    event.preventDefault();const code=verificationCode.value.trim();
+    if(!/^\d{6}$/.test(code)){requestMessage.textContent='Enter exactly six digits.';return;}
+    requestButton.disabled=true;requestButton.textContent='Submitting…';requestMessage.textContent='';
+    try{const result=await api('request_verification',{reference_code:code});requestMessage.textContent=result.message||'Request submitted. Wait for the owner to approve it.';verificationCode.value='';}
+    catch(error){requestMessage.textContent=error.message||'Could not submit the request.';}
+    finally{requestButton.disabled=false;requestButton.textContent='Request access';}
+  });
   form.addEventListener('submit',async(event)=>{
     event.preventDefault();const prompt=input.value.trim();if(!prompt||send.disabled)return;
     addMessage('user',prompt);input.value='';setChatEnabled(false);send.textContent='Thinking…';const thinking=addMessage('bot','Thinking…');
