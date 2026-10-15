@@ -1,0 +1,42 @@
+{
+  "schema": 1,
+  "description": "LacesOS optional module manifest",
+  "modules": [
+    {
+      "id": "themes",
+      "file": "modules/themes.js",
+      "label": "Themes",
+      "optional": true
+    },
+    {
+      "id": "notifications",
+      "file": "modules/notifications.js",
+      "label": "Notifications",
+      "optional": true
+    },
+    {
+      "id": "widgets",
+      "file": "modules/widgets.js",
+      "label": "Desktop widgets",
+      "optional": true
+    },
+    {
+      "id": "app-store",
+      "file": "modules/app-store.js",
+      "label": "App Store",
+      "optional": true
+    },
+    {
+      "id": "file-manager",
+      "file": "modules/file-manager.js",
+      "label": "File Manager",
+      "optional": true
+    },
+    {
+      "id": "quick-launcher",
+      "file": "modules/quick-launcher.js",
+      "label": "Quick launcher",
+      "optional": true
+    }
+  ]
+}
