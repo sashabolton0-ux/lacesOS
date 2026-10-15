@@ -86,8 +86,11 @@ button{transition:background .18s,border-color .18s,transform .18s,opacity .18s}
 #loading{position:fixed;inset:0;background:rgba(17,19,24,.9);display:flex;align-items:center;justify-content:center;z-index:100;backdrop-filter:blur(10px)}
 .spinner{width:28px;height:28px;border:2px solid rgba(255,255,255,.14);border-top-color:var(--accent);border-radius:50%;animation:spin .75s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-#modalBack,#nameBack{position:fixed;inset:0;background:rgba(0,0,0,.58);display:none;align-items:center;justify-content:center;padding:20px;z-index:90}
-#modal,#nameBox{width:min(460px,100%);background:var(--modal);border:1px solid var(--border);border-radius:16px;padding:24px;box-shadow:0 20px 70px rgba(0,0,0,.35)}
+#modalBack,#nameBack{position:fixed;inset:0;background:rgba(0,0,0,.58);display:none;align-items:center;justify-content:center;padding:20px;z-index:90;backdrop-filter:blur(5px);animation:overlayIn .2s ease both}
+#modal,#nameBox{width:min(460px,100%);background:var(--modal);border:1px solid var(--border);border-radius:16px;padding:24px;box-shadow:0 20px 70px rgba(0,0,0,.35);animation:dialogIn .28s cubic-bezier(.2,.8,.2,1) both}
+@keyframes overlayIn{from{opacity:0}to{opacity:1}}
+@keyframes dialogIn{from{opacity:0;transform:translateY(12px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
+@media(prefers-reduced-motion:reduce){#modalBack,#nameBack,#modal,#nameBox,#terminal{animation:none!important;transition:none!important}}
 #modal h2,#nameBox h2{margin:0 0 10px;color:var(--text)}
 .field{margin:15px 0}
 .field label{display:block;font-size:13px;font-weight:700;margin-bottom:7px;color:var(--muted)}
@@ -103,26 +106,16 @@ button{transition:background .18s,border-color .18s,transform .18s,opacity .18s}
 #appWindowBar{height:48px;flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:0 16px;border-bottom:1px solid var(--border);background:var(--card);color:var(--text);font-size:13px}
 #appWindowClose{border:1px solid var(--border);border-radius:8px;background:transparent;color:var(--text);padding:7px 11px;cursor:pointer}
 #appFrame{border:0;width:100%;height:calc(100% - 48px);background:white;flex:1}
-#terminalBack{position:fixed;inset:0;z-index:110;display:none;align-items:center;justify-content:center;padding:16px;background:rgba(0,0,0,.58)}
-#terminal{width:min(900px,100%);height:min(620px,calc(100dvh - 32px));min-height:300px;display:flex;flex-direction:column;background:#0c0c0c;color:#f2f2f2;border:1px solid #3a3a3a;border-radius:6px;box-shadow:0 24px 70px #0009;overflow:hidden;font:14px/1.5 Consolas,"Cascadia Mono","Courier New",monospace}
-#terminalHead{flex-shrink:0;padding:10px 14px;border-bottom:1px solid #333;color:#f2f2f2;display:flex;align-items:center;justify-content:space-between;gap:12px;background:#181818}
-#terminalHead strong{display:block;font-size:13px;font-weight:500;color:#fff}
-#terminalHead small{display:none}
-#terminalHead>span{font-size:11px;color:#aaa}
-#terminalOutput{flex:1;min-height:0;padding:16px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;scrollbar-color:#555 #111}
-#terminalForm{display:flex;gap:8px;padding:10px 16px;align-items:center;border-top:1px solid #333;background:#0c0c0c}
-#terminalPrompt{color:#fff;white-space:nowrap}#terminalInput{flex:1;min-width:0;background:transparent;color:#fff;border:0;outline:0;font:inherit;caret-color:#fff}#terminalInput::placeholder{color:#777}
-#terminalHint{padding:0 16px 10px;color:#888;font-size:11px;background:#0c0c0c}
-#accessRequestBack{position:fixed;inset:0;z-index:125;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.65)}
-#accessRequestBox{width:min(420px,100%);padding:24px;border:1px solid var(--border2);border-radius:14px;background:var(--modal);color:var(--text);box-shadow:0 24px 80px #0008}
-#accessRequestBox h2{font-size:20px;margin:0 0 8px;letter-spacing:-.03em}
-#accessRequestBox p{font-size:13px;line-height:1.55;color:var(--muted);margin:0 0 16px}
-#accessRequestActions{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;margin-top:18px}
-#accessRequestActions button{border:1px solid var(--border);border-radius:8px;padding:9px 12px;background:var(--card);color:var(--text);cursor:pointer}
-#accessRequestActions .primary{background:var(--accent);border-color:var(--accent);color:white}
-#accessCode{display:none;padding:14px;border:1px solid var(--border);border-radius:10px;background:var(--input);font:600 28px/1.2 Consolas,"Courier New",monospace;letter-spacing:.16em;text-align:center;color:var(--text);user-select:all}
-#accessRequestMessage{font-size:12px;color:var(--muted);margin-top:10px;white-space:pre-wrap}
-@media(max-width:600px){#terminalBack{padding:8px}#terminal{height:calc(100dvh - 16px);min-height:260px;border-radius:4px;font-size:13px}#terminalHead{padding:10px 12px}#terminalOutput{padding:12px}#terminalForm{padding:10px 12px}#terminalHint{padding:0 12px 10px}}
+#terminalBack{position:fixed;inset:0;z-index:110;display:none;align-items:center;justify-content:center;padding:0;background:rgba(0,0,0,.62);animation:overlayIn .16s ease both}
+#terminal{width:min(900px,100%);height:min(620px,88vh);min-height:280px;background:#050505;color:#f2f2f2;border:1px solid #393939;border-radius:3px;box-shadow:0 20px 70px #0009;overflow:hidden;display:flex;flex-direction:column;font:15px/1.55 Consolas,"Lucida Console",monospace;animation:terminalIn .2s ease-out both}
+@keyframes terminalIn{from{opacity:0;transform:scale(.99) translateY(5px)}to{opacity:1;transform:scale(1) translateY(0)}}
+#terminalHead{padding:9px 12px;border-bottom:1px solid #292929;color:#f2f2f2;display:flex;justify-content:space-between;background:#080808;font:13px/1.3 Consolas,"Lucida Console",monospace}
+#terminalOutput{padding:12px 14px 4px;flex:1;min-height:0;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;color:#f2f2f2;scrollbar-color:#555 #080808}
+#terminalForm{display:flex;gap:0;padding:6px 14px 14px;align-items:center;flex-shrink:0}
+#terminalPrompt{color:#f2f2f2;white-space:pre}#terminalInput{flex:1;min-width:0;background:transparent;color:#f2f2f2;border:0;outline:0;font:inherit;caret-color:#fff}
+#terminalHint{display:none}
+@media(max-width:600px){#terminal{height:82vh;font-size:13px}#terminalHead{font-size:12px}}
+
 
 
 /* Administrator console */
@@ -133,7 +126,7 @@ button{transition:background .18s,border-color .18s,transform .18s,opacity .18s}
 #adminPanelHead h2{font-size:18px;margin:0;font-weight:650;letter-spacing:-.03em}
 #adminPanelHead p{font-size:12px;color:var(--muted);margin:5px 0 0}
 #adminPanelClose{border:1px solid var(--border);border-radius:9px;padding:8px 11px;background:transparent;color:var(--text);cursor:pointer}
-#adminPanelBody{flex:1;min-height:0;overflow:auto;padding:20px 22px 26px}
+#adminPanelBody{overflow:auto;padding:20px 22px 26px}
 .admin-section{margin-bottom:26px}
 .admin-section h3{font-size:14px;margin:0 0 10px;font-weight:650}
 .admin-muted{font-size:12px;line-height:1.5;color:var(--muted)}
@@ -234,7 +227,7 @@ button{transition:background .18s,border-color .18s,transform .18s,opacity .18s}
         </div>
         <section class="admin-section">
           <h3>Verification requests</h3>
-          <p class="admin-muted">Shows the six-digit request code, username, device ID, and request status. The code is only a reference; it does not grant access by itself.</p>
+          <p class="admin-muted">Shows the two-digit reference code, username, device ID, and request status. The code is only a reference; it does not grant access by itself.</p>
           <div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Sent</th><th>Username</th><th>Device ID</th><th>Code</th><th>Status</th><th>Review</th></tr></thead><tbody id="adminRequestsBody"><tr><td colspan="6">Loading…</td></tr></tbody></table></div>
         </section>
         <section class="admin-section">
@@ -258,43 +251,20 @@ button{transition:background .18s,border-color .18s,transform .18s,opacity .18s}
 </div>
 <div id="terminalBack" aria-hidden="true">
   <section id="terminal" role="dialog" aria-modal="true" aria-label="System console">
-    <div id="terminalHead"><div><strong>Command Prompt — LacesOS</strong><small></small></div><span>Esc to close</span></div>
-    <div id="terminalOutput">LacesOS [Version]
-Type "help" for the available command.</div>
-    <form id="terminalForm"><span id="terminalPrompt">C:\LacesOS&gt;</span><input id="terminalInput" autocomplete="off" spellcheck="false" aria-label="Console command" placeholder="Enter command"></form>
-    <div id="terminalHint">Only help is available right now.</div>
-  </section>
-</div>
-
-<div id="accessRequestBack" aria-hidden="true">
-  <section id="accessRequestBox" role="dialog" aria-modal="true" aria-labelledby="accessRequestTitle">
-    <h2 id="accessRequestTitle">AI access required</h2>
-    <p id="accessRequestIntro">This device does not have AI access yet. Request a verification code to give to a platform administrator.</p>
-    <div id="accessCode" aria-live="polite"></div>
-    <div id="accessRequestMessage" role="status"></div>
-    <div id="accessRequestActions">
-      <button id="accessRequestClose" type="button">Close</button>
-      <button id="accessRequestCopy" type="button" style="display:none">Copy code</button>
-      <button id="accessRequestSend" class="primary" type="button">Request access</button>
-    </div>
+    <div id="terminalHead"><span>LacesOS Console</span><span>Esc to close</span></div>
+    <div id="terminalOutput"></div>
+    <form id="terminalForm"><span id="terminalPrompt">C:\LacesOS\user&gt;</span><input id="terminalInput" autocomplete="off" spellcheck="false" aria-label="Console command"></form>
+    <div id="terminalHint"></div>
   </section>
 </div>
 
 <div id="nameBack">
   <div id="nameBox" role="dialog" aria-modal="true" aria-labelledby="nameTitle">
     <h2 id="nameTitle">Welcome to LacesOS</h2>
-    <p class="name-subtitle">
-      Before you continue, choose a username.
-    </p>
-
     <div class="field">
       <label for="nameInput">Username</label>
       <input id="nameInput" type="text" maxlength="80" autocomplete="nickname" autofocus>
-    </div>
-    <div class="field">
-      <label for="realNameInput">Real name <span style="font-weight:400">(optional)</span></label>
-      <input id="realNameInput" type="text" maxlength="100" autocomplete="name" placeholder="Your real name">
-      <div class="name-note">Your real name is private and is not shown to other users. It can help the LacesOS team verify eligibility for additional apps.</div>
+      <div class="name-note" style="font-size:13px;line-height:1.5;margin-top:10px">It is highly recommended to use your real name to gain access to additional applications.</div>
     </div>
 
     <div class="actions">
@@ -479,23 +449,15 @@ async function isAiChatAllowedOnThisDevice(){
   }
 }
 
-async function registerDevice(username, realName=""){
+async function registerDevice(username){
   try{
     await supabaseRequest("/rest/v1/rpc/ensure_device",{
       method:"POST",
       headers:{"Content-Type":"application/json"},
       body:JSON.stringify({p_device_id:getDeviceId(),p_username:username})
     });
-    // Private names are written through the server gateway; they are not in the public devices table.
-    if(typeof realName==="string"){
-      const response=await supabaseRequest("/functions/v1/ai-gateway",{
-        method:"POST",headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({action:"save_private_name",device_id:getDeviceId(),username,real_name:realName.trim()})
-      });
-      if(response?.ok) localStorage.setItem(REAL_NAME_KEY,realName.trim());
-    }
   }catch(error){
-    console.warn("Device registration/private profile save failed:",error);
+    console.warn("Device registration failed:",error);
   }
 }
 
@@ -553,7 +515,7 @@ document.getElementById("landingContinue").addEventListener("click",async()=>{
   const saved=(localStorage.getItem(USERNAME_KEY)||"").trim();
   if(saved){
     enterDesktop();
-    await registerDevice(saved,localStorage.getItem(REAL_NAME_KEY)||"");
+    await registerDevice(saved);
     return;
   }
   document.getElementById("landing").style.display="none";
@@ -563,7 +525,7 @@ function showNamePrompt(){
   const saved=localStorage.getItem(USERNAME_KEY);
   if(saved && saved.trim()){
     enterDesktop();
-    registerDevice(saved.trim(),localStorage.getItem(REAL_NAME_KEY)||"");
+    registerDevice(saved.trim());
     return;
   }
   const back=document.getElementById("nameBack");
@@ -572,14 +534,13 @@ function showNamePrompt(){
   setTimeout(()=>input.focus(),50);
   document.getElementById("saveName").onclick=async()=>{
     const name=input.value.trim();
-    const realName=document.getElementById("realNameInput").value.trim();
     if(!name){input.focus();return;}
     localStorage.setItem(USERNAME_KEY,name);
-    localStorage.setItem(REAL_NAME_KEY,realName);
+    localStorage.removeItem(REAL_NAME_KEY);
     back.style.display="none";
     updateLandingUsername();
     enterDesktop();
-    await registerDevice(name,realName);
+    await registerDevice(name);
     await loadApps();
   };
 }
@@ -627,10 +588,6 @@ async function openApp(app){
   if(status==="maintenance"){
     alert(app.warning?.trim()||"This app is currently under maintenance.");
     return;
-  }
-  if(String(app.id||"")==="ai-chat"){
-    const allowed=await isAiChatAllowedOnThisDevice();
-    if(!allowed){showAccessRequest();return;}
   }
   const warning=String(app.warning||"").trim();
   if(status==="on" && warning && !confirm(warning+"\n\nContinue?"))return;
@@ -722,6 +679,11 @@ async function loadApps(){
     for(const app of (apps||[])){
       const status=String(app.status||"on").trim().toLowerCase();
 
+      if(String(app.id||"")==="ai-chat"){
+        const allowed=await isAiChatAllowedOnThisDevice();
+        if(!allowed)continue;
+      }
+
       if(status==="hidden")continue;
 
       const b=document.createElement("button");
@@ -762,55 +724,86 @@ async function loadApps(){
 const terminalBack=document.getElementById("terminalBack");
 const terminalInput=document.getElementById("terminalInput");
 const terminalOutput=document.getElementById("terminalOutput");
-function terminalPrint(message){terminalOutput.textContent+="\n"+message;terminalOutput.scrollTop=terminalOutput.scrollHeight;}
-function terminalOpen(){terminalBack.style.display="flex";terminalBack.setAttribute("aria-hidden","false");terminalInput.focus();}
+const terminalPrompt=document.getElementById("terminalPrompt");
+const terminalStartedAt=Date.now();
+function terminalUser(){return (localStorage.getItem(USERNAME_KEY)||"user").trim().replace(/[<>]/g,"")||"user";}
+function terminalSetPrompt(){terminalPrompt.textContent="C:\\LacesOS\\"+terminalUser()+">";}
+function terminalPrint(message){terminalOutput.textContent+=(terminalOutput.textContent?"\n":"")+message;terminalOutput.scrollTop=terminalOutput.scrollHeight;}
+function terminalOpen(){terminalSetPrompt();terminalOutput.textContent="";terminalBack.style.display="flex";terminalBack.setAttribute("aria-hidden","false");terminalInput.value="";setTimeout(()=>terminalInput.focus(),30);}
 function terminalClose(){terminalBack.style.display="none";terminalBack.setAttribute("aria-hidden","true");}
 window.addEventListener("keydown",event=>{
+  // Configurable panic shortcut: Alt + selected key navigates to the saved destination.
+  const panicConfig=(()=>{try{return JSON.parse(localStorage.getItem("lacesos_panic_key_v1")||"null");}catch{return null;}})();
+  if(panicConfig && event.altKey && !event.ctrlKey && !event.metaKey && event.key.toLowerCase()===String(panicConfig.key||"").toLowerCase()){
+    event.preventDefault();
+    try{const target=new URL(panicConfig.url);if(target.protocol==="https:"||target.protocol==="http:")window.location.assign(target.href);}catch{}
+    return;
+  }
   if(event.key==="Escape"&&terminalBack.style.display==="flex"){terminalClose();return;}
-  if(event.key==="Escape"&&document.getElementById("accessRequestBack").style.display==="flex"){closeAccessRequest();return;}
   if(event.key==="Escape"&&document.getElementById("appWindowBack").style.display==="flex"){document.getElementById("appWindowClose").click();return;}
   if(event.key==="~"&&!event.ctrlKey&&!event.metaKey&&!event.altKey){event.preventDefault();terminalBack.style.display==="flex"?terminalClose():terminalOpen();}
 });
 terminalBack.addEventListener("click",event=>{if(event.target===terminalBack)terminalClose();});
-document.getElementById("terminalForm").addEventListener("submit",event=>{
+document.getElementById("terminalForm").addEventListener("submit",async event=>{
   event.preventDefault();const raw=terminalInput.value.trim();terminalInput.value="";if(!raw)return;
-  terminalPrint("C:\\LacesOS>"+raw);
-  if(raw.toLowerCase()==="help")terminalPrint("Available command:\n  help    Show this message");
-  else terminalPrint("'"+raw.split(/\s+/)[0]+"' is not recognized as a command. Type help for the available command.");
+  terminalPrint(terminalPrompt.textContent+raw);
+  const command=raw.toLowerCase();
+  if(command==="help"){
+    terminalPrint("Available commands:\n  help        Displays this help message\n  whoami      Displays your LacesOS username and device ID\n  diagnostic  Checks internet and LacesOS server connectivity\n  apps        Lists currently loaded apps\n  date        Displays the current date and time\n  uptime      Shows time since this LacesOS page was opened\n  clear       Clears the screen\n  panickey    Set an Alt + letter shortcut and destination website");return;
+  }
+  if(command==="panickey"){
+    window.lacesosPanicSetup={step:"key",current:(()=>{try{return JSON.parse(localStorage.getItem("lacesos_panic_key_v1")||"null");}catch{return null;}})()};
+    terminalPrint(`Panic key setup\nEnter one letter (A-Z) for Alt + letter:`);return;
+  }
+  if(window.lacesosPanicSetup){
+    const setup=window.lacesosPanicSetup;
+    if(setup.step==="key"){
+      const key=raw.trim();
+      if(!/^[a-z]$/i.test(key)){terminalPrint("Enter one letter from A to Z.");return;}
+      setup.key=key.toUpperCase();setup.step="url";
+      terminalPrint(`Alt + ${setup.key} selected.\nEnter destination website (https:// or http://):`);return;
+    }
+    if(setup.step==="url"){
+      let url;try{url=new URL(raw.trim());}catch{terminalPrint("Enter a valid website address.");return;}
+      if(url.protocol!=="https:"&&url.protocol!=="http:"){terminalPrint("Enter a website beginning with https:// or http://.");return;}
+      localStorage.setItem("lacesos_panic_key_v1",JSON.stringify({key:setup.key,url:url.href}));
+      window.lacesosPanicSetup=null;terminalPrint(`Panic key saved: Alt + ${setup.key}\nDestination: ${url.href}`);return;
+    }
+  }
+  if(command==="clear"){terminalOutput.textContent="";return;}
+  if(command==="date"){
+    terminalPrint(new Date().toLocaleString());return;
+  }
+  if(command==="uptime"){
+    const seconds=Math.floor((Date.now()-terminalStartedAt)/1000);
+    const hours=Math.floor(seconds/3600),minutes=Math.floor((seconds%3600)/60),remaining=seconds%60;
+    terminalPrint("LacesOS session uptime: "+[hours+"h",minutes+"m",remaining+"s"].join(" "));return;
+  }
+  if(command==="apps"){
+    const appButtons=[...document.querySelectorAll("#apps .app")];
+    if(!appButtons.length){terminalPrint("No apps are currently loaded.");return;}
+    terminalPrint("Available apps:\n"+appButtons.map(button=>"  "+(button.dataset.appName||button.textContent.trim())).join("\n"));return;
+  }
+  if(command==="whoami"){
+    terminalPrint("Username: "+terminalUser()+"\nDevice ID: "+getDeviceId());return;
+  }
+  if(command==="diagnostic"){
+    terminalPrint("Running connection diagnostics...\n");
+    const checks=[];
+    checks.push("Browser network status: "+(navigator.onLine?"online":"offline"));
+    try{
+      const controller=new AbortController();const timer=setTimeout(()=>controller.abort(),5000);
+      await fetch("https://www.google.com/generate_204",{mode:"no-cors",cache:"no-store",signal:controller.signal});clearTimeout(timer);
+      checks.push("Internet reachability: request completed (some school filters may still block specific sites).");
+    }catch(error){checks.push("Internet reachability: failed or blocked by network/browser.");}
+    try{
+      const response=await supabaseRequest("/rest/v1/rpc/device_exists",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({p_device_id:getDeviceId()})});
+      checks.push("LacesOS server: reachable"+(response===true?"; device registered.":"; device registration not confirmed."));
+    }catch(error){checks.push("LacesOS server: connection failed — "+String(error.message||error));}
+    terminalPrint(checks.join("\n"));return;
+  }
+  terminalPrint("'"+raw.split(/\s+/)[0]+"' is not recognized as a LacesOS command. Type help for available commands.");
 });
-
-// AI access request flow: the gateway creates the six-digit code and stores the request.
-const accessRequestBack=document.getElementById("accessRequestBack");
-const accessCode=document.getElementById("accessCode");
-const accessRequestMessage=document.getElementById("accessRequestMessage");
-const accessRequestSend=document.getElementById("accessRequestSend");
-const accessRequestCopy=document.getElementById("accessRequestCopy");
-function showAccessRequest(){
-  accessCode.style.display="none";accessCode.textContent="";accessRequestCopy.style.display="none";
-  accessRequestSend.style.display="";accessRequestSend.disabled=false;accessRequestSend.textContent="Request access";
-  accessRequestMessage.textContent="";
-  accessRequestBack.style.display="flex";accessRequestBack.setAttribute("aria-hidden","false");
-}
-function closeAccessRequest(){accessRequestBack.style.display="none";accessRequestBack.setAttribute("aria-hidden","true");}
-document.getElementById("accessRequestClose").onclick=closeAccessRequest;
-accessRequestBack.addEventListener("click",event=>{if(event.target===accessRequestBack)closeAccessRequest();});
-accessRequestCopy.onclick=async()=>{
-  const code=accessCode.textContent.trim();
-  try{await navigator.clipboard.writeText(code);accessRequestMessage.textContent="Code copied. Remember it and send it to a platform administrator for verification.";}
-  catch(_){accessRequestMessage.textContent="Select the code above to copy it. Remember it and send it to a platform administrator for verification.";}
-};
-accessRequestSend.onclick=async()=>{
-  const username=(localStorage.getItem(USERNAME_KEY)||"").trim();
-  if(!username){accessRequestMessage.textContent="Choose a username before requesting access.";return;}
-  accessRequestSend.disabled=true;accessRequestSend.textContent="Requesting…";accessRequestMessage.textContent="Sending your request…";
-  try{
-    const result=await supabaseRequest("/functions/v1/ai-gateway",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"request_access",device_id:getDeviceId(),username})});
-    if(!result?.ok||!/^\d{6}$/.test(String(result.code||"")))throw new Error(result?.error||"The server did not return a valid six-digit code.");
-    accessCode.textContent=String(result.code);accessCode.style.display="block";accessRequestCopy.style.display="";
-    accessRequestSend.style.display="none";
-    accessRequestMessage.textContent="Copy and remember this six-digit code, then send it to a platform administrator for verification. This code is a request reference; it does not grant access by itself.";
-  }catch(error){accessRequestMessage.textContent=String(error.message||error);accessRequestSend.disabled=false;accessRequestSend.textContent="Try again";}
-};
 
 
 // Admin panel: the browser only receives a private session token after a designated
@@ -830,16 +823,11 @@ async function adminGateway(action, extra={}, token=localStorage.getItem(ADMIN_T
 }
 function adminShowPanel(){
   const back=document.getElementById("adminPanelBack");
-  const activation=document.getElementById("adminActivation");
-  const dashboard=document.getElementById("adminDashboard");
   back.style.display="flex";back.setAttribute("aria-hidden","false");
-  if(adminActivated){
-    activation.style.display="none";
-    dashboard.style.display="block";
-    loadAdminDashboard();
-  }else{
-    dashboard.style.display="none";
-    activation.style.display="block";
+  if(adminActivated) loadAdminDashboard();
+  else {
+    document.getElementById("adminActivation").style.display="block";
+    document.getElementById("adminDashboard").style.display="none";
     document.getElementById("adminBootstrapInput").focus();
   }
 }
