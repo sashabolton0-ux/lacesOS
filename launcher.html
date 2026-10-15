@@ -1,33 +1,84 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
-<meta charset="utf-8">
-<title>BIOS</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Home</title>
 </head>
 <body>
 <script>
 (async () => {
-  const SYSTEM_URL =
-    "https://raw.githubusercontent.com/sashabolton0-ux/lacesOS/main/system/system.html";
+  // The launcher reads the active GitHub target from Firebase.
+  const FIREBASE_CONFIG_URL =
+    "https://github-link-8bdb9-default-rtdb.firebaseio.com/lacesos/launcher.json";
+
+  const showError = (message) => {
+    document.body.innerHTML = "";
+    const pre = document.createElement("pre");
+    pre.style.cssText = "font:16px system-ui,sans-serif;white-space:pre-wrap;padding:24px;max-width:760px;margin:0 auto";
+    pre.textContent = "launcher could not start LacesOS.\n\n" + message;
+    document.body.appendChild(pre);
+  };
 
   try {
-    const r = await fetch(SYSTEM_URL + "?t=" + Date.now(), { cache: "no-store" });
-    if (!r.ok) throw new Error("System could not be loaded (" + r.status + ").");
-    const html = await r.text();
+    const configResponse = await fetch(FIREBASE_CONFIG_URL + "?t=" + Date.now(), {
+      cache: "no-store"
+    });
+    if (!configResponse.ok) {
+      throw new Error("Firebase configuration could not be loaded (HTTP " + configResponse.status + "). Check the database URL and read rules.");
+    }
 
-    const win = window.open("about:blank", "BIOS-System");
-    if (!win) throw new Error("Popup blocked. Allow popups for launcher.html.");
+    const config = await configResponse.json();
+    if (!config || typeof config !== "object") {
+      throw new Error("Firebase returned an empty or invalid launcher configuration.");
+    }
+
+    const owner = String(config.github_owner || "").trim();
+    const repo = String(config.github_repo || "").trim();
+    const branch = String(config.github_branch || "").trim();
+    const filePath = String(config.system_path || "").trim().replace(/^\/+/, "");
+
+    if (!owner || !repo || !branch || !filePath) {
+      throw new Error("Launcher configuration is incomplete. Check github_owner, github_repo, github_branch, and system_path in Firebase.");
+    }
+
+    // Only allow a normal GitHub raw-content URL assembled from the Firebase settings.
+    const safePart = (value, label) => {
+      if (/[?#\\\s]/.test(value) || value === "." || value === "..") {
+        throw new Error("The Firebase setting '" + label + "' contains an unsupported value.");
+      }
+      return value;
+    };
+    safePart(owner, "github_owner");
+    safePart(repo, "github_repo");
+    safePart(branch, "github_branch");
+    if (filePath.split("/").some(part => !part || part === "." || part === ".." || /[?#\\\s]/.test(part))) {
+      throw new Error("The Firebase setting 'system_path' contains an unsupported path.");
+    }
+
+    const SYSTEM_URL = "https://raw.githubusercontent.com/" + owner + "/" + repo + "/" +
+      branch.split("/").map(encodeURIComponent).join("/") + "/" +
+      filePath.split("/").map(encodeURIComponent).join("/");
+
+    const systemResponse = await fetch(SYSTEM_URL + "?t=" + Date.now(), {
+      cache: "no-store"
+    });
+    if (!systemResponse.ok) {
+      throw new Error("The configured system file could not be loaded (HTTP " + systemResponse.status + ").\n\n" + SYSTEM_URL);
+    }
+    const html = await systemResponse.text();
+    if (!html.trim()) throw new Error("The configured system file is empty.");
+
+    // Open after fetching, matching the existing launcher's behavior.
+    const win = window.open("about:blank", "Home-System");
+    if (!win) throw new Error("Popup blocked. Allow popups for launcher.html, then try again.");
 
     win.document.open();
     win.document.write(html);
     win.document.close();
     window.close();
-  } catch (e) {
-    document.body.innerHTML =
-      "<pre style='font:16px system-ui;padding:24px'>" +
-      "BIOS could not start the System.\n\n" +
-      String(e.message) +
-      "</pre>";
+  } catch (error) {
+    showError(error && error.message ? error.message : String(error));
   }
 })();
 </script>
