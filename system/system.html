@@ -184,55 +184,10 @@ button{transition:background .18s,border-color .18s,transform .18s,opacity .18s}
 #adminMessage{font-size:12px;line-height:1.5;color:var(--muted);white-space:pre-wrap;margin-top:10px}
 @media(max-width:600px){#adminPanelBack{padding:8px}#adminPanel{height:94vh;border-radius:13px}#adminPanelHead{padding:14px}#adminPanelBody{padding:14px}}
 
-
-#lacesBoot{position:fixed;inset:0;z-index:9999;background:#0b0e17;color:#e9edf5;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px;font:14px/1.65 "Geist Mono",ui-monospace,monospace}
-#lacesBoot.hidden{display:none}
-#lacesBootBrand{text-align:center;margin-bottom:56px}
-#lacesBootFish{font-size:54px;line-height:1;margin-bottom:22px;color:#78d0bd}
-#lacesBootTitle{font-size:clamp(22px,4vw,32px);font-weight:700;letter-spacing:.18em}
-#lacesBootVersion{color:#8b93a5;margin-top:9px}
-#lacesBootTrack{width:min(720px,94vw);height:5px;background:#222a38;border-radius:99px;overflow:hidden;margin-bottom:26px}
-#lacesBootProgress{height:100%;width:0;background:#78d0bd;transition:width .2s linear}
-#lacesBootLog{width:min(720px,94vw);height:180px;overflow:hidden;color:#8f97a7;white-space:pre-wrap}
-#lacesBootLog .ok{color:#78d0bd}
-#installModeBack{position:fixed;inset:0;z-index:998;display:none;align-items:center;justify-content:center;padding:20px;background:#080b13eF;color:var(--text)}
-#installModeCard{width:min(620px,100%);border:1px solid var(--border2);border-radius:20px;background:var(--modal);padding:28px;box-shadow:0 25px 90px #0008}
-#installModeCard h2{margin:0 0 8px;font-size:25px}#installModeCard p{color:var(--muted);font-size:13px;line-height:1.6}
-.install-choice{display:flex;gap:13px;padding:15px;border:1px solid var(--border);border-radius:13px;margin:12px 0;cursor:pointer;align-items:flex-start}
-.install-choice:has(input:checked){border-color:var(--accent);background:color-mix(in srgb,var(--accent) 9%,var(--card))}
-.install-choice input{margin-top:4px;accent-color:var(--accent)}
-.install-choice strong{display:block;margin-bottom:4px}.install-choice small{display:block;color:var(--muted);line-height:1.5}
-#installModeActions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px;flex-wrap:wrap}
-#installModeActions button{border:1px solid var(--border2);border-radius:10px;padding:10px 15px;background:var(--card);color:var(--text);cursor:pointer}
-#installModeActions .primary{background:var(--accent);border-color:var(--accent);color:white}
-html.bloatless *,html.bloatless *::before,html.bloatless *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
-html.bloatless #desktopShell{background:var(--bg)!important}
-html.bloatless #desktopShell:before{display:none}
-html.bloatless #desktopBrand{display:none}
-html.bloatless #desktopStatus{display:none}
-html.bloatless #desktopIcons{inset:18px!important;display:grid!important;grid-template-columns:repeat(auto-fill,minmax(105px,1fr));align-content:start;gap:8px}
-html.bloatless .desktop-icon{position:relative!important;left:auto!important;top:auto!important}
-html.bloatless #desktopDock{display:none!important}
-
 </style>
 </head>
 
 <body>
-
-<div id="lacesBoot" aria-live="polite">
-  <div id="lacesBootBrand"><div id="lacesBootFish" aria-hidden="true">◉</div><div id="lacesBootTitle">LACESOS</div><div id="lacesBootVersion">Starting system</div></div>
-  <div id="lacesBootTrack"><div id="lacesBootProgress"></div></div>
-  <div id="lacesBootLog"></div>
-</div>
-<div id="installModeBack" role="dialog" aria-modal="true" aria-labelledby="installModeTitle">
-  <div id="installModeCard">
-    <h2 id="installModeTitle">Choose your LacesOS install</h2>
-    <p>This only chooses which interface and optional modules load. Your device ID, username, and AI access are kept.</p>
-    <label class="install-choice"><input type="radio" name="installMode" value="normal" checked><span><strong>Normal install</strong><small>Full desktop, animations setting, and optional modules such as themes, widgets, and notifications.</small></span></label>
-    <label class="install-choice"><input type="radio" name="installMode" value="bloatless"><span><strong>Bloatless install</strong><small>Lightweight app-list interface, no optional modules, and no animations.</small></span></label>
-    <div id="installModeActions"><button id="cancelInstallMode" type="button">Cancel</button><button id="saveInstallMode" class="primary" type="button">Continue</button></div>
-  </div>
-</div>
 
 <div id="loading" aria-label="Loading">
   <div class="spinner"></div>
@@ -381,7 +336,7 @@ html.bloatless #desktopDock{display:none!important}
       <div>
         <section class="settings-page active" data-page="general">
           <h3>General</h3>
-          <div class="field"><label>Username</label><div id="settingsUsername" style="padding:11px 12px;border-radius:9px;border:1px solid var(--border);background:var(--input);color:var(--text)">Not set</div></div><div class="field" style="margin-top:14px"><label><input id="animationsToggle" type="checkbox" style="accent-color:var(--accent);margin-right:8px"> Enable interface animations</label><p class="settings-help">Normal install only. Bloatless always disables animations.</p></div><div class="field"><button id="changeInstallMode" type="button">Reinstall / Change installation</button></div>
+          <div class="field"><label>Username</label><div id="settingsUsername" style="padding:11px 12px;border-radius:9px;border:1px solid var(--border);background:var(--input);color:var(--text)">Not set</div></div>
           <div class="settings-two"><div class="field"><label for="tabName">Tab name</label><input id="tabName" type="text" maxlength="80" placeholder="LacesOS"></div><div class="field"><label for="iconUrl">Tab icon URL</label><input id="iconUrl" type="url" placeholder="https://example.com/icon.png"></div></div>
         </section>
         <section class="settings-page" data-page="appearance">
@@ -404,50 +359,6 @@ html.bloatless #desktopDock{display:none!important}
 </div>
 
 <script>
-const LACES_INSTALL_MODE_KEY="lacesos_install_mode_v1";
-const LACES_BOOT_LOG_KEY="lacesos_boot_log_v1";
-function lacesBootLine(message,ok=true){
-  const host=document.getElementById("lacesBootLog");if(!host)return;
-  const line=document.createElement("div");line.textContent=(ok?"[OK] ":"[INFO] ")+message;
-  if(ok)line.className="ok";host.appendChild(line);host.scrollTop=host.scrollHeight;
-}
-function lacesBootProgress(percent){const el=document.getElementById("lacesBootProgress");if(el)el.style.width=Math.max(0,Math.min(100,percent))+"%";}
-async function lacesBoot(){
-  const lines=[
-    ["Starting LacesOS boot sequence...",8],
-    ["Checking saved installation settings...",22],
-    ["Preparing core system...",38],
-    ["Registering module loader...",54],
-    ["Preparing desktop interface...",72],
-    ["System ready.",100]
-  ];
-  for(const [message,progress] of lines){lacesBootLine(message);lacesBootProgress(progress);await new Promise(resolve=>setTimeout(resolve,95));}
-  document.getElementById("lacesBoot").classList.add("hidden");
-}
-function getInstallMode(){return localStorage.getItem(LACES_INSTALL_MODE_KEY)||"";}
-function applyInstallMode(){
-  const mode=getInstallMode();
-  document.documentElement.classList.toggle("bloatless",mode==="bloatless");
-  if(mode==="bloatless"){
-    const s=(()=>{try{return JSON.parse(localStorage.getItem(SETTINGS_KEY)||"{}")}catch{return {}}})();
-    s.animations=false;
-    try{localStorage.setItem(SETTINGS_KEY,JSON.stringify(s))}catch{}
-  }
-}
-function openInstallModeDialog(){
-  const current=getInstallMode()||"normal";
-  document.querySelectorAll('input[name="installMode"]').forEach(r=>r.checked=r.value===current);
-  document.getElementById("installModeBack").style.display="flex";
-}
-function saveInstallModeChoice(){
-  const mode=document.querySelector('input[name="installMode"]:checked')?.value||"normal";
-  localStorage.setItem(LACES_INSTALL_MODE_KEY,mode);
-  applyInstallMode();
-  document.getElementById("installModeBack").style.display="none";
-  location.reload();
-}
-document.getElementById("saveInstallMode").addEventListener("click",saveInstallModeChoice);
-document.getElementById("cancelInstallMode").addEventListener("click",()=>document.getElementById("installModeBack").style.display="none");
 const SUPABASE_URL =
   "https://exsvwwxomovjstlhgjjy.supabase.co";
 
@@ -552,7 +463,6 @@ function isLightColor(hex){
 }
 function applySettings(){
   const s=getSettings();
-  document.documentElement.classList.toggle("no-animations",s.animations===false || getInstallMode()==="bloatless");
   const custom=getCustomThemes();
   const customId=String(s.theme||"").startsWith("custom:")?String(s.theme).slice(7):"";
   const t=customId&&custom[customId]?{...custom[customId].colors}:themes[resolvedTheme(s.theme||"dark")];
@@ -724,7 +634,6 @@ document.getElementById("settingsBtn").onclick=()=>{
   tabName.value=s.tabName||"LacesOS";
   iconUrl.value=s.iconUrl||"";
   document.getElementById("settingsUsername").textContent = localStorage.getItem(USERNAME_KEY) || "Not set";
-  const animationsToggle=document.getElementById("animationsToggle");if(animationsToggle){animationsToggle.checked=s.animations!==false&&getInstallMode()!=="bloatless";animationsToggle.disabled=getInstallMode()==="bloatless";}
   theme.value=s.theme||"dark";
   document.getElementById("accentOverride").value=s.accentOverride||"#5865f2";
   document.getElementById("wallpaperOverride").value=s.wallpaperOverride||"theme";
@@ -741,13 +650,11 @@ modalBack.onclick=e=>{
   if(e.target===modalBack) modalBack.style.display="none";
 };
 
-document.getElementById("changeInstallMode")?.addEventListener("click",openInstallModeDialog);
 document.getElementById("saveSettings").onclick=()=>{
   saveSettings({
     tabName:tabName.value.trim()||"LacesOS",
     iconUrl:iconUrl.value.trim(),
     theme:theme.value,
-    animations:getInstallMode()==="bloatless"?false:(document.getElementById("animationsToggle")?.checked!==false),
     accentOverride:document.getElementById("accentOverride").value,
     wallpaperOverride:document.getElementById("wallpaperOverride").value,
     wallpaperColor:document.getElementById("wallpaperColor").value
@@ -1376,9 +1283,6 @@ footerButtons.forEach(button=>{
 });
 
 async function startHome(){
-  applyInstallMode();
-  await lacesBoot();
-  if(!getInstallMode())openInstallModeDialog();
   identityCheckPassed=await verifyStoredIdentity();
   // Load data while the welcome screen is visible. The desktop itself stays hidden
   // until Continue is pressed, and the terminal shortcut remains available meanwhile.
