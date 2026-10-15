@@ -227,7 +227,7 @@ button{transition:background .18s,border-color .18s,transform .18s,opacity .18s}
         </div>
         <section class="admin-section">
           <h3>Verification requests</h3>
-          <p class="admin-muted">Shows the two-digit reference code, username, device ID, and request status. The code is only a reference; it does not grant access by itself.</p>
+          <p class="admin-muted">Shows the six-digit verification code, username, device ID, and request status. Approve a request here to enable AI access.</p>
           <div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Sent</th><th>Username</th><th>Device ID</th><th>Code</th><th>Status</th><th>Review</th></tr></thead><tbody id="adminRequestsBody"><tr><td colspan="6">Loading…</td></tr></tbody></table></div>
         </section>
         <section class="admin-section">
@@ -679,9 +679,9 @@ async function loadApps(){
     for(const app of (apps||[])){
       const status=String(app.status||"on").trim().toLowerCase();
 
+      let aiAllowed=null;
       if(String(app.id||"")==="ai-chat"){
-        const allowed=await isAiChatAllowedOnThisDevice();
-        if(!allowed)continue;
+        aiAllowed=await isAiChatAllowedOnThisDevice();
       }
 
       if(status==="hidden")continue;
@@ -704,9 +704,8 @@ async function loadApps(){
       const sub=document.createElement("div");
       sub.className="sub";
       sub.textContent=
-        status==="maintenance"
-          ? "Maintenance"
-          : (app.description||"");
+        status==="maintenance" ? "Maintenance" :
+        (aiAllowed===false ? "Verification required" : (app.description||""));
 
       wrap.append(name,sub);
       b.append(icon,wrap);
@@ -906,12 +905,8 @@ async function loadAdminDashboard(){
     document.getElementById("adminLastRefresh").textContent="Updated "+new Date().toLocaleTimeString();
     adminSetMessage("");
   }catch(error){
-    adminSetMessage(String(error.message||error));
-    adminActivated=false;localStorage.removeItem(ADMIN_TOKEN_KEY);
-    document.getElementById("adminDashboard").style.display="none";
-    document.getElementById("adminActivation").style.display="block";
-    document.getElementById("adminNavBtn").textContent="ADMIN SETUP";
-    adminSetMessage("Admin session could not be verified. Enter the activation key to refresh this device's admin session. Details: "+String(error.message||error));
+    // Keep the dashboard visible on data/schema errors so the owner can see and fix the cause.
+    adminSetMessage("Could not load admin data: "+String(error.message||error));
   }finally{adminBusy=false;document.getElementById("adminRefreshBtn").disabled=false;}
 }
 function renderAdminRequests(requests){
