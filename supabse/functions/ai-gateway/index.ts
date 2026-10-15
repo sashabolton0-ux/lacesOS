@@ -83,6 +83,26 @@ Deno.serve(async (req: Request) => {
   const username = cleanString(body.username, 80);
   if (!isDeviceId(deviceId)) return reply(400, { error: "Open this app from your LacesOS hub; a valid device ID was not found." });
 
+  if (action === "request_verification") {
+    const referenceCode = cleanString(body.reference_code, 6);
+    if (!/^\d{6}$/.test(referenceCode)) return reply(400, { error: "Enter exactly six digits." });
+    if (!username) return reply(400, { error: "Choose a LacesOS username before requesting AI access." });
+    try {
+      if (!await verifyRegisteredDevice(deviceId)) return reply(403, { error: "This device is not registered yet. Reload LacesOS and try again." });
+      const { data: existing, error: existingError } = await db.from("verification_requests")
+        .select("id,status").eq("device_id", deviceId).eq("status", "pending").limit(1);
+      if (existingError) return reply(500, { error: "Could not check pending requests. Verify the verification_requests table and service_role permissions." });
+      if (existing?.length) return reply(200, { ok: true, message: "You already have a pending request. The owner will review it." });
+      const { error } = await db.from("verification_requests").insert({
+        device_id: deviceId, username, reference_code: referenceCode, status: "pending", created_at: new Date().toISOString()
+      });
+      if (error) return reply(500, { error: "Could not submit the verification request. Check the six-digit reference_code constraint and service_role permissions." });
+      return reply(200, { ok: true, message: "Request submitted. The LacesOS owner must approve it before AI access is enabled." });
+    } catch (error) {
+      return reply(500, { error: error instanceof Error ? error.message : "Could not submit verification request." });
+    }
+  }
+
   // Admin designation lives in Supabase. Privileged panel actions additionally require
   // a random per-device token whose SHA-256 hash is stored server-side.
   if (action === "admin_status") {
@@ -128,14 +148,20 @@ Deno.serve(async (req: Request) => {
 
       if (action === "admin_dashboard") {
         const [devicesResult, requestsResult, accessResult] = await Promise.all([
-          db.from("devices").select("device_id,username,first_seen,last_seen").order("last_seen", { ascending: false }).limit(500),
+          db.from("devices").select("*").limit(500),
           db.from("verification_requests").select("id,device_id,username,reference_code,status,created_at,reviewed_at,review_note").order("created_at", { ascending: false }).limit(500),
           db.from("ai_device_access").select("device_id,username,enabled,daily_limit,blocked_at,created_at,updated_at").order("updated_at", { ascending: false }).limit(500),
         ]);
         if (devicesResult.error || requestsResult.error || accessResult.error) {
           return reply(500, { error: "Could not load admin data. Verify the devices, verification_requests, and ai_device_access tables exist and service_role has access." });
         }
-        return reply(200, { ok: true, devices: devicesResult.data ?? [], requests: requestsResult.data ?? [], ai_access: accessResult.data ?? [] });
+        const devices = (devicesResult.data ?? []).map((d: Record<string, unknown>) => ({
+          ...d,
+          username: cleanString(d.username, 80) || cleanString(d.profile_usernames, 300) || "Unknown",
+          first_seen: d.first_seen ?? d.created_at ?? null,
+          last_seen: d.last_seen ?? d.updated_at ?? null,
+        }));
+        return reply(200, { ok: true, devices, requests: requestsResult.data ?? [], ai_access: accessResult.data ?? [] });
       }
 
       if (action === "admin_set_ai") {
@@ -144,19 +170,19 @@ Deno.serve(async (req: Request) => {
         const dailyLimit = Number(body.daily_limit);
         if (!isDeviceId(targetDeviceId)) return reply(400, { error: "Choose a valid device." });
         if (!Number.isInteger(dailyLimit) || dailyLimit < 0 || dailyLimit > 500) return reply(400, { error: "Daily limit must be a whole number from 0 to 500." });
-        const { data: target, error: targetError } = await db.from("devices").select("device_id,username").eq("device_id", targetDeviceId).maybeSingle();
+        const { data: target, error: targetError } = await db.from("devices").select("*").eq("device_id", targetDeviceId).maybeSingle();
         if (targetError || !target) return reply(404, { error: "That device is not registered." });
         const now = new Date().toISOString();
         const { error } = await db.from("ai_device_access").upsert({
           device_id: target.device_id,
-          username: target.username,
+          username: cleanString(target.username, 80) || cleanString(target.profile_usernames, 300) || username || null,
           enabled,
           daily_limit: dailyLimit,
           blocked_at: enabled ? null : now,
           updated_at: now,
         }, { onConflict: "device_id" });
         if (error) return reply(500, { error: "Could not update AI access. Check ai_device_access table columns and permissions." });
-        return reply(200, { ok: true, device_id: target.device_id, username: target.username, enabled, daily_limit: dailyLimit });
+        return reply(200, { ok: true, device_id: target.device_id, username: cleanString(target.username, 80) || cleanString(target.profile_usernames, 300) || username, enabled, daily_limit: dailyLimit });
       }
 
       if (action === "admin_review_request") {
