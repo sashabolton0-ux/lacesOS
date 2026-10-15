@@ -103,14 +103,26 @@ button{transition:background .18s,border-color .18s,transform .18s,opacity .18s}
 #appWindowBar{height:48px;flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:0 16px;border-bottom:1px solid var(--border);background:var(--card);color:var(--text);font-size:13px}
 #appWindowClose{border:1px solid var(--border);border-radius:8px;background:transparent;color:var(--text);padding:7px 11px;cursor:pointer}
 #appFrame{border:0;width:100%;height:calc(100% - 48px);background:white;flex:1}
-#terminalBack{position:fixed;inset:0;z-index:110;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(0,0,0,.66);backdrop-filter:blur(9px)}
-#terminal{width:min(680px,100%);min-height:260px;background:#080b0a;color:#b8ffca;border:1px solid #28583a;border-radius:13px;box-shadow:0 24px 80px #0009;overflow:hidden;font:13px/1.6 "Geist Mono",ui-monospace,monospace}
-#terminalHead{padding:10px 14px;border-bottom:1px solid #1d3d29;color:#76bd8a;display:flex;justify-content:space-between}
-#terminalOutput{padding:14px 16px;min-height:160px;max-height:45vh;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere}
-#terminalForm{display:flex;gap:9px;padding:0 16px 15px;align-items:center}
-#terminalPrompt{color:#69d98c}#terminalInput{flex:1;min-width:0;background:transparent;color:#d8ffe1;border:0;outline:0;font:inherit}
-#terminalHint{padding:0 16px 13px;color:#609a70;font-size:11px}
-
+#terminalBack{position:fixed;inset:0;z-index:110;display:none;align-items:center;justify-content:center;padding:16px;background:rgba(0,0,0,.58)}
+#terminal{width:min(900px,100%);height:min(620px,calc(100dvh - 32px));min-height:300px;display:flex;flex-direction:column;background:#0c0c0c;color:#f2f2f2;border:1px solid #3a3a3a;border-radius:6px;box-shadow:0 24px 70px #0009;overflow:hidden;font:14px/1.5 Consolas,"Cascadia Mono","Courier New",monospace}
+#terminalHead{flex-shrink:0;padding:10px 14px;border-bottom:1px solid #333;color:#f2f2f2;display:flex;align-items:center;justify-content:space-between;gap:12px;background:#181818}
+#terminalHead strong{display:block;font-size:13px;font-weight:500;color:#fff}
+#terminalHead small{display:none}
+#terminalHead>span{font-size:11px;color:#aaa}
+#terminalOutput{flex:1;min-height:0;padding:16px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;scrollbar-color:#555 #111}
+#terminalForm{display:flex;gap:8px;padding:10px 16px;align-items:center;border-top:1px solid #333;background:#0c0c0c}
+#terminalPrompt{color:#fff;white-space:nowrap}#terminalInput{flex:1;min-width:0;background:transparent;color:#fff;border:0;outline:0;font:inherit;caret-color:#fff}#terminalInput::placeholder{color:#777}
+#terminalHint{padding:0 16px 10px;color:#888;font-size:11px;background:#0c0c0c}
+#accessRequestBack{position:fixed;inset:0;z-index:125;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.65)}
+#accessRequestBox{width:min(420px,100%);padding:24px;border:1px solid var(--border2);border-radius:14px;background:var(--modal);color:var(--text);box-shadow:0 24px 80px #0008}
+#accessRequestBox h2{font-size:20px;margin:0 0 8px;letter-spacing:-.03em}
+#accessRequestBox p{font-size:13px;line-height:1.55;color:var(--muted);margin:0 0 16px}
+#accessRequestActions{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;margin-top:18px}
+#accessRequestActions button{border:1px solid var(--border);border-radius:8px;padding:9px 12px;background:var(--card);color:var(--text);cursor:pointer}
+#accessRequestActions .primary{background:var(--accent);border-color:var(--accent);color:white}
+#accessCode{display:none;padding:14px;border:1px solid var(--border);border-radius:10px;background:var(--input);font:600 28px/1.2 Consolas,"Courier New",monospace;letter-spacing:.16em;text-align:center;color:var(--text);user-select:all}
+#accessRequestMessage{font-size:12px;color:var(--muted);margin-top:10px;white-space:pre-wrap}
+@media(max-width:600px){#terminalBack{padding:8px}#terminal{height:calc(100dvh - 16px);min-height:260px;border-radius:4px;font-size:13px}#terminalHead{padding:10px 12px}#terminalOutput{padding:12px}#terminalForm{padding:10px 12px}#terminalHint{padding:0 12px 10px}}
 
 
 /* Administrator console */
@@ -222,7 +234,7 @@ button{transition:background .18s,border-color .18s,transform .18s,opacity .18s}
         </div>
         <section class="admin-section">
           <h3>Verification requests</h3>
-          <p class="admin-muted">Shows the two-digit reference code, username, device ID, and request status. The code is only a reference; it does not grant access by itself.</p>
+          <p class="admin-muted">Shows the six-digit request code, username, device ID, and request status. The code is only a reference; it does not grant access by itself.</p>
           <div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Sent</th><th>Username</th><th>Device ID</th><th>Code</th><th>Status</th><th>Review</th></tr></thead><tbody id="adminRequestsBody"><tr><td colspan="6">Loading…</td></tr></tbody></table></div>
         </section>
         <section class="admin-section">
@@ -246,10 +258,25 @@ button{transition:background .18s,border-color .18s,transform .18s,opacity .18s}
 </div>
 <div id="terminalBack" aria-hidden="true">
   <section id="terminal" role="dialog" aria-modal="true" aria-label="System console">
-    <div id="terminalHead"><span>LacesOS Console</span><span>~ to toggle · exit to close</span></div>
-    <div id="terminalOutput">LacesOS console ready. Type help for commands.</div>
-    <form id="terminalForm"><span id="terminalPrompt">lacesos&gt;</span><input id="terminalInput" autocomplete="off" spellcheck="false" aria-label="Console command"></form>
-    <div id="terminalHint">Commands: help, status, flag NN, exit</div>
+    <div id="terminalHead"><div><strong>Command Prompt — LacesOS</strong><small></small></div><span>Esc to close</span></div>
+    <div id="terminalOutput">LacesOS [Version]
+Type "help" for the available command.</div>
+    <form id="terminalForm"><span id="terminalPrompt">C:\LacesOS&gt;</span><input id="terminalInput" autocomplete="off" spellcheck="false" aria-label="Console command" placeholder="Enter command"></form>
+    <div id="terminalHint">Only help is available right now.</div>
+  </section>
+</div>
+
+<div id="accessRequestBack" aria-hidden="true">
+  <section id="accessRequestBox" role="dialog" aria-modal="true" aria-labelledby="accessRequestTitle">
+    <h2 id="accessRequestTitle">AI access required</h2>
+    <p id="accessRequestIntro">This device does not have AI access yet. Request a verification code to give to a platform administrator.</p>
+    <div id="accessCode" aria-live="polite"></div>
+    <div id="accessRequestMessage" role="status"></div>
+    <div id="accessRequestActions">
+      <button id="accessRequestClose" type="button">Close</button>
+      <button id="accessRequestCopy" type="button" style="display:none">Copy code</button>
+      <button id="accessRequestSend" class="primary" type="button">Request access</button>
+    </div>
   </section>
 </div>
 
@@ -601,6 +628,10 @@ async function openApp(app){
     alert(app.warning?.trim()||"This app is currently under maintenance.");
     return;
   }
+  if(String(app.id||"")==="ai-chat"){
+    const allowed=await isAiChatAllowedOnThisDevice();
+    if(!allowed){showAccessRequest();return;}
+  }
   const warning=String(app.warning||"").trim();
   if(status==="on" && warning && !confirm(warning+"\n\nContinue?"))return;
 
@@ -691,11 +722,6 @@ async function loadApps(){
     for(const app of (apps||[])){
       const status=String(app.status||"on").trim().toLowerCase();
 
-      if(String(app.id||"")==="ai-chat"){
-        const allowed=await isAiChatAllowedOnThisDevice();
-        if(!allowed)continue;
-      }
-
       if(status==="hidden")continue;
 
       const b=document.createElement("button");
@@ -741,35 +767,50 @@ function terminalOpen(){terminalBack.style.display="flex";terminalBack.setAttrib
 function terminalClose(){terminalBack.style.display="none";terminalBack.setAttribute("aria-hidden","true");}
 window.addEventListener("keydown",event=>{
   if(event.key==="Escape"&&terminalBack.style.display==="flex"){terminalClose();return;}
+  if(event.key==="Escape"&&document.getElementById("accessRequestBack").style.display==="flex"){closeAccessRequest();return;}
   if(event.key==="Escape"&&document.getElementById("appWindowBack").style.display==="flex"){document.getElementById("appWindowClose").click();return;}
-  if(event.key==="~"&&!event.ctrlKey&&!event.metaKey&&!event.altKey){
-    event.preventDefault();terminalBack.style.display==="flex"?terminalClose():terminalOpen();
-  }
+  if(event.key==="~"&&!event.ctrlKey&&!event.metaKey&&!event.altKey){event.preventDefault();terminalBack.style.display==="flex"?terminalClose():terminalOpen();}
 });
 terminalBack.addEventListener("click",event=>{if(event.target===terminalBack)terminalClose();});
-document.getElementById("terminalForm").addEventListener("submit",async event=>{
+document.getElementById("terminalForm").addEventListener("submit",event=>{
   event.preventDefault();const raw=terminalInput.value.trim();terminalInput.value="";if(!raw)return;
-  terminalPrint("lacesos> "+raw);
-  const parts=raw.split(/\s+/);const command=parts[0].toLowerCase();
-  if(command==="exit"||command==="quit"){terminalClose();return;}
-  if(command==="help"){terminalPrint("help — show commands\nstatus — show this device's local status\nflag NN — submit a two-digit verification reference\nexit — close the console");return;}
-  if(command==="status"){
-    terminalPrint("Username: "+(localStorage.getItem(USERNAME_KEY)||"not set")+"\nDevice ID: "+getDeviceId()+"\nAI access: checked by the server when the AI app is opened.");return;
-  }
-  if(command==="flag"){
-    const code=parts[1]||"";
-    if(!/^\d{2}$/.test(code)){terminalPrint("Usage: flag NN (NN must be exactly two digits).");return;}
-    const username=(localStorage.getItem(USERNAME_KEY)||"").trim();
-    if(!username){terminalPrint("Choose a username first, then try again.");return;}
-    try{
-      const result=await supabaseRequest("/rest/v1/rpc/submit_verification_request",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({p_device_id:getDeviceId(),p_username:username,p_reference_code:code})});
-      terminalPrint(result?.ok?"Verification request submitted. The two-digit code is only a reference and does not grant access.":(result?.message||"Request not submitted."));
-    }catch(error){terminalPrint("Could not submit request: "+String(error.message||error));}
-    return;
-  }
-  terminalPrint("Unknown command. Type help.");
+  terminalPrint("C:\\LacesOS>"+raw);
+  if(raw.toLowerCase()==="help")terminalPrint("Available command:\n  help    Show this message");
+  else terminalPrint("'"+raw.split(/\s+/)[0]+"' is not recognized as a command. Type help for the available command.");
 });
 
+// AI access request flow: the gateway creates the six-digit code and stores the request.
+const accessRequestBack=document.getElementById("accessRequestBack");
+const accessCode=document.getElementById("accessCode");
+const accessRequestMessage=document.getElementById("accessRequestMessage");
+const accessRequestSend=document.getElementById("accessRequestSend");
+const accessRequestCopy=document.getElementById("accessRequestCopy");
+function showAccessRequest(){
+  accessCode.style.display="none";accessCode.textContent="";accessRequestCopy.style.display="none";
+  accessRequestSend.style.display="";accessRequestSend.disabled=false;accessRequestSend.textContent="Request access";
+  accessRequestMessage.textContent="";
+  accessRequestBack.style.display="flex";accessRequestBack.setAttribute("aria-hidden","false");
+}
+function closeAccessRequest(){accessRequestBack.style.display="none";accessRequestBack.setAttribute("aria-hidden","true");}
+document.getElementById("accessRequestClose").onclick=closeAccessRequest;
+accessRequestBack.addEventListener("click",event=>{if(event.target===accessRequestBack)closeAccessRequest();});
+accessRequestCopy.onclick=async()=>{
+  const code=accessCode.textContent.trim();
+  try{await navigator.clipboard.writeText(code);accessRequestMessage.textContent="Code copied. Remember it and send it to a platform administrator for verification.";}
+  catch(_){accessRequestMessage.textContent="Select the code above to copy it. Remember it and send it to a platform administrator for verification.";}
+};
+accessRequestSend.onclick=async()=>{
+  const username=(localStorage.getItem(USERNAME_KEY)||"").trim();
+  if(!username){accessRequestMessage.textContent="Choose a username before requesting access.";return;}
+  accessRequestSend.disabled=true;accessRequestSend.textContent="Requesting…";accessRequestMessage.textContent="Sending your request…";
+  try{
+    const result=await supabaseRequest("/functions/v1/ai-gateway",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"request_access",device_id:getDeviceId(),username})});
+    if(!result?.ok||!/^\d{6}$/.test(String(result.code||"")))throw new Error(result?.error||"The server did not return a valid six-digit code.");
+    accessCode.textContent=String(result.code);accessCode.style.display="block";accessRequestCopy.style.display="";
+    accessRequestSend.style.display="none";
+    accessRequestMessage.textContent="Copy and remember this six-digit code, then send it to a platform administrator for verification. This code is a request reference; it does not grant access by itself.";
+  }catch(error){accessRequestMessage.textContent=String(error.message||error);accessRequestSend.disabled=false;accessRequestSend.textContent="Try again";}
+};
 
 
 // Admin panel: the browser only receives a private session token after a designated
